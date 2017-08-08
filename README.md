@@ -1,2 +1,2 @@
-# everything-is-automated
+# cybernetic-gamelan-future-automaton
 for laptop ensemble
