@@ -1,0 +1,15 @@
+html,
+body {
+  height: 100%;
+}
+
+html {
+  color: $white;
+
+  background-color: $black;
+
+  font-size: $font-size-base;
+  font-family: $font-family;
+
+  line-height: $line-height-base;
+}

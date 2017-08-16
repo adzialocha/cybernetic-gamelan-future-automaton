@@ -1,0 +1,32 @@
+// typography
+
+$font-family: "Arial", sans-serif;
+
+$font-size-xs: 9px;
+$font-size-sm: 12px;
+$font-size-md: 16px;
+$font-size-lg: 20px;
+$font-size-xl: 24px;
+$font-size-xxl: 58px;
+$font-size-base: 15px;
+
+$font-weight-bold: 900;
+
+$line-height-base: 1.5;
+
+// colors
+
+$black: #000000;
+$gray-darker: #dddddd;
+$gray-dark: #999999;
+$gray: #666666;
+$gray-light: #aaaaaa;
+$gray-lighter: #efefef;
+$white: #ffffff;
+
+$red: #ff0000;
+$green: #00ff00;
+$blue: #0000ff;
+$yellow: #ffff00;
+
+$transparent: rgba($white, 0);

@@ -1,0 +1,11 @@
+* {
+  -webkit-tap-highlight-color: $transparent; // sass-lint:disable-line no-vendor-prefixes
+
+  &,
+  &::before,
+  &::after {
+    box-sizing: border-box;
+
+    text-rendering: optimizeLegibility;
+  }
+}
