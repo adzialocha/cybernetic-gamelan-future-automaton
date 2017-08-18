@@ -1,17 +1,26 @@
 export default class Channel {
   constructor(audioInterface, synthesizer, note) {
-    const { context, gainNode } = audioInterface
-
-    this.synthesizer = synthesizer
-    this.scriptProcessorNode = context.createScriptProcessor()
+    this.audioInterface = audioInterface
+    this.isRunning = false
     this.note = note
+    this.scriptProcessorNode = null
+    this.synthesizer = synthesizer
+  }
+
+  start() {
+    if (this.isRunning) {
+      throw new Error('Channel was already started')
+    }
+
+    const { context, compressorNode } = this.audioInterface
+    this.scriptProcessorNode = context.createScriptProcessor()
 
     const bufferSourceNode = context.createBufferSource()
     bufferSourceNode.start(0)
 
     // Connect audio nodes
     bufferSourceNode.connect(this.scriptProcessorNode)
-    this.scriptProcessorNode.connect(gainNode)
+    this.scriptProcessorNode.connect(compressorNode)
 
     // Start FM synthesis
     this.scriptProcessorNode.onaudioprocess = (event) => {
@@ -20,5 +29,16 @@ export default class Channel {
 
       this.synthesizer.generateAudio(left, right)
     }
+
+    this.isRunning = true
+  }
+
+  stop() {
+    if (!this.isRunning) {
+      throw new Error('Channel was already stopped')
+    }
+
+    this.scriptProcessorNode.disconnect()
+    this.isRunning = false
   }
 }

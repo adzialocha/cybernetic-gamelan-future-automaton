@@ -19,7 +19,7 @@ export default class Synthesizer {
 
     this.sampleRate = options.sampleRate || DEFAULT_SAMPLE_RATE
 
-    this.velocity = 0.0
+    this.velocity = 1.0
     this.feedback = 0.0
 
     this.algorithmId = 0

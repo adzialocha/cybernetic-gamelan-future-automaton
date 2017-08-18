@@ -41,40 +41,38 @@ export default class Envelope {
     this.currentSegmentPosition -= 1
 
     if (this.currentSegmentPosition <= 0) {
-      return
-    }
-
-    switch (this.state) {
-    case ENVELOPE_STATES.DUMP:
-      this.state = ENVELOPE_STATES.ATTACK
-      this.currentSegmentStep = this.segments[0].step
-      this.currentSegmentPosition = this.segments[0].length
-      this.amp = 0.0
-      break
-    case ENVELOPE_STATES.ATTACK:
-      this.state = ENVELOPE_STATES.DECAY
-      this.currentSegmentStep = this.segments[1].step
-      this.currentSegmentPosition = this.segments[1].length
-      break
-    case ENVELOPE_STATES.DECAY:
-      if (!this.isLoop) {
-        this.state = ENVELOPE_STATES.SUSTAIN
-        this.currentSegmentStep = 0.0
-        this.currentSegmentPosition = 0
-      } else {
+      switch (this.state) {
+      case ENVELOPE_STATES.DUMP:
         this.state = ENVELOPE_STATES.ATTACK
         this.currentSegmentStep = this.segments[0].step
         this.currentSegmentPosition = this.segments[0].length
         this.amp = 0.0
+        break
+      case ENVELOPE_STATES.ATTACK:
+        this.state = ENVELOPE_STATES.DECAY
+        this.currentSegmentStep = this.segments[1].step
+        this.currentSegmentPosition = this.segments[1].length
+        break
+      case ENVELOPE_STATES.DECAY:
+        if (!this.isLoop) {
+          this.state = ENVELOPE_STATES.SUSTAIN
+          this.currentSegmentStep = 0.0
+          this.currentSegmentPosition = 0
+        } else {
+          this.state = ENVELOPE_STATES.ATTACK
+          this.currentSegmentStep = this.segments[0].step
+          this.currentSegmentPosition = this.segments[0].length
+          this.amp = 0.0
+        }
+        break
+      case ENVELOPE_STATES.RELEASE:
+        this.state = ENVELOPE_STATES.STOP
+        this.amp = 0.0
+        if (this.onRelease) {
+          this.onRelease()
+        }
+        break
       }
-      break
-    case ENVELOPE_STATES.RELEASE:
-      this.state = ENVELOPE_STATES.STOP
-      this.amp = 0.0
-      if (this.onRelease) {
-        this.onRelease()
-      }
-      break
     }
   }
 

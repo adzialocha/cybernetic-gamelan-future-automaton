@@ -3,11 +3,14 @@ export default class AudioInterface {
     // Create audio context
     this.context = new AudioContext()
 
-    // Prepare volume
+    // Prepare output
+    this.compressorNode = this.context.createDynamicsCompressor()
+
     this.currentVolume = 1
     this.gainNode = this.context.createGain()
     this.gainNode.gain.value = this.currentVolume
 
+    this.compressorNode.connect(this.gainNode)
     this.gainNode.connect(this.context.destination)
   }
 

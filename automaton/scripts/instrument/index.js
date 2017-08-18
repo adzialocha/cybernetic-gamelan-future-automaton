@@ -25,6 +25,7 @@ export default class Instrument {
 
     // Create a channel for audio
     const channel = new Channel(this.audio, synthesizer, note)
+    channel.start()
     this.channels.push(channel)
 
     // Play the note
@@ -40,7 +41,7 @@ export default class Instrument {
     channel.note = undefined
     channel.synthesizer.noteOff()
       .then(() => {
-        channel.scriptProcessorNode.disconnect()
+        channel.stop()
         this.channels.splice(index, 1)
       })
   }
