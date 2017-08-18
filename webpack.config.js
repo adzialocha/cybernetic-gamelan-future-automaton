@@ -5,7 +5,7 @@ const path = require('path')
 const webpack = require('webpack')
 
 const SERVER_PORT = 9000
-const APP_DEPENDENCIES = []
+// const APP_DEPENDENCIES = []
 
 const getPath = (filePath) => path.resolve(__dirname, filePath)
 
@@ -74,11 +74,6 @@ module.exports = {
     // }),
     new webpack.optimize.AggressiveMergingPlugin({}),
     new webpack.optimize.OccurrenceOrderPlugin(true),
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false,
-      },
-    }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       hash: true,
