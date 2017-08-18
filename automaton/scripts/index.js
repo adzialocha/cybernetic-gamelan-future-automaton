@@ -13,6 +13,6 @@ window.noteOn = (note, velocity) => {
   instrument.noteOn(note, velocity)
 }
 
-window.noteOff = () => {
-  instrument.noteOff()
+window.noteOff = (note) => {
+  instrument.noteOff(note)
 }

@@ -23,7 +23,7 @@ export default class Envelope {
 
     this.onRelease = () => true
 
-    for (let i = 0; i < 4; i += 1) {
+    for (let i = 0; i < 3; i += 1) {
       this.segments.push(new EnvelopeSegment())
     }
   }
@@ -92,7 +92,7 @@ export default class Envelope {
   noteOff() {
     if (this.state !== ENVELOPE_STATES.STOP) {
       this.state = ENVELOPE_STATES.RELEASE
-      this.currentSegmentStep = -1 * this.amp / this.segments[2].step
+      this.currentSegmentStep = -1 * this.amp / this.segments[2].length
       this.currentSegmentPosition = this.segments[2].length
     }
   }

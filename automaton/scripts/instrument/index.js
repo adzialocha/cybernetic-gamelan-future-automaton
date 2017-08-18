@@ -36,9 +36,15 @@ export default class Instrument {
     const index = this.channels.findIndex(channel => {
       return channel.note === note
     })
+
+    if (index === -1) {
+      throw new Error('Note was never played')
+    }
+
     const channel = this.channels[index]
 
-    channel.note = undefined
+    channel.note = null
+
     channel.synthesizer.noteOff()
       .then(() => {
         channel.stop()
