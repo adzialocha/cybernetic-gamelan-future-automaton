@@ -34,7 +34,7 @@ const presets = [
   PRESETS.BELL,
 ]
 
-const bpm = 80
+const bpm = 20
 
 for (let i = 0; i < 4; i += 1) {
   const instrument = new Instrument({

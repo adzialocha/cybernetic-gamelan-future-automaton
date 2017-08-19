@@ -49,6 +49,10 @@ module.exports = {
           fallback: 'style-loader',
         }),
       },
+      {
+        test: /\.wav$/,
+        loader: 'file-loader',
+      },
     ],
   },
   resolve: {
@@ -63,7 +67,7 @@ module.exports = {
   devtool: 'source-map',
   devServer: {
     compress: true,
-    contentBase: getPath('./dist'),
+    contentBase: getPath('./src/assets'),
     port: SERVER_PORT,
   },
   plugins: [
