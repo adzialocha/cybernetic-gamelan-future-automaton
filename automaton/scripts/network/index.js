@@ -103,7 +103,9 @@ export default class Network {
           return !(id in this.peer.connections)
         })
         .forEach(id => {
-          const connection = this.peer.connect(id)
+          const connection = this.peer.connect(id, {
+            serialization: 'json',
+          })
           setupConnection(connection)
         })
     }

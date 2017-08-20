@@ -70,8 +70,8 @@ window.automaton = window.automaton || {
 
 // Main keyboard control strokes
 window.addEventListener('keydown', (event) => {
-  const { keyCode, metaKey } = event
-  if (metaKey) {
+  const { keyCode, shiftKey } = event
+  if (shiftKey) {
     view.changeView(keyCode - 49)
   }
 })
