@@ -182,7 +182,7 @@ export default class Network {
       () => {
         const syncDate = new Date(this.sync.now())
         if (syncDate.getSeconds() !== this.lastCheckedDate.getSeconds()) {
-          this.options.onSyncTick()
+          this.options.onSyncTick(this.offset)
           this.lastCheckedDate = syncDate
         }
       }, this.options.syncTickFrequency

@@ -8,5 +8,16 @@
 
 // base
 
+@import "base/button";
+@import "base/form";
 @import "base/global";
 @import "base/layout";
+@import "base/typography";
+
+// components
+
+@import "components/form";
+@import "components/settings";
+@import "components/status";
+@import "components/tick";
+@import "components/view";

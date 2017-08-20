@@ -1,10 +1,12 @@
 html,
 body {
+  overflow: hidden;
+
   height: 100%;
 }
 
 html {
-  color: $white;
+  color: $gray-lighter;
 
   background-color: $black;
 
@@ -12,4 +14,12 @@ html {
   font-family: $font-family;
 
   line-height: $line-height-base;
+}
+
+hr {
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+  border-style: solid;
+  border-color: $gray-dark;
 }

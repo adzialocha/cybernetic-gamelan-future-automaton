@@ -1,0 +1,44 @@
+input {
+  &[type="text"] {
+    width: 100%;
+
+    padding: 10px;
+    padding-top: 5px;
+
+    border: 0;
+    border-radius: 0;
+
+    border-bottom: 5px solid $gray;
+
+    color: $gray-lighter;
+
+    background-color: $gray-dark;
+
+    font-size: $font-size-base;
+
+    outline: 0;
+
+    -webkit-appearance: none; // sass-lint:disable-line no-vendor-prefixes
+
+    &:focus {
+      border-bottom-color: $gray-lighter;
+    }
+
+    &[disabled] {
+      color: $gray;
+
+      cursor: not-allowed;
+    }
+  }
+}
+
+label {
+  display: block;
+
+  padding: 10px;
+  padding-bottom: 5px;
+
+  background-color: $gray-dark;
+
+  font-weight: $font-weight-bold;
+}

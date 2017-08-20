@@ -1,0 +1,22 @@
+// .status {
+// }
+
+.status__field {
+  + .status__field {
+    margin-top: 10px;
+  }
+}
+
+.status__field-label {
+  padding: 10px;
+  padding-bottom: 5px;
+
+  font-weight: $font-weight-bold;
+}
+
+.status__field-value {
+  padding: 10px;
+  padding-top: 5px;
+
+  border-bottom: 5px solid $gray-dark;
+}

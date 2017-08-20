@@ -1,0 +1,21 @@
+.settings {
+  padding: 20px;
+}
+
+.settings__header {
+  margin-bottom: 20px;
+}
+
+.settings__section {
+  background-color: $gray-darker;
+}
+
+.settings__section-header {
+  padding: 10px;
+
+  background-color: $gray-dark;
+}
+
+.settings__section-content {
+  padding: 10px;
+}

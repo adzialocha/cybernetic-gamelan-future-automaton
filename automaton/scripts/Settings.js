@@ -9,15 +9,6 @@ function saveToStorage(configuration) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(configuration))
 }
 
-function updateView(configuration) {
-  Object.keys(configuration).forEach(id => {
-    const inputElement = document.getElementById(id)
-    if (inputElement) {
-      inputElement.value = configuration[id]
-    }
-  })
-}
-
 const defaultConfiguration = {
   clientsNumber: 4,
   peerId: 1,
@@ -33,8 +24,6 @@ export default class Settings {
       defaultConfiguration,
       loadFromStorage()
     )
-
-    updateView(this.configuration)
   }
 
   update(id, value) {

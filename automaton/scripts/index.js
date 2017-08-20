@@ -1,33 +1,43 @@
 import styles from '../styles/index.scss' // eslint-disable-line no-unused-vars
 
+import Debug from './Debug'
 import Network from './network'
 import Settings from './Settings'
-import TestInterface from './TestInterface'
+import View from './View'
 
+const debug = new Debug()
 const settings = new Settings()
+const view = new View()
 
 const network = new Network({
   onOpen: () => {
-    console.log('open')
+    view.changeConnectionState(false, true)
   },
   onClose: () => {
-    console.log('close')
+    view.changeConnectionState(false, false)
   },
-  onOpenRemote: peer => {
-    console.log('open', peer)
+  onOpenRemote: peerId => {
+    view.addRemotePeer(peerId)
   },
-  onCloseRemote: peer => {
-    console.log('close', peer)
+  onCloseRemote: peerId => {
+    view.removeRemotePeer(peerId)
   },
-  onSyncTick: () => {
-    console.log('tick', new Date().getTime())
+  onSyncTick: offset => {
+    view.updateOffset(offset)
+    view.tick()
   },
-  onReceive: (peer, data) => {
-    console.log('receive', peer, data)
-  },
+  // onReceive: (peer, data) => {
+  //   console.log('receive', peer, data)
+  // },
   onError: err => {
-    console.log(err)
+    view.addErrorMessage(err.message)
   },
+})
+
+// Initialize
+window.addEventListener('load', () => {
+  view.changeConnectionState(false, false)
+  view.updateSettings(settings.getConfiguration())
 })
 
 // Expose some interfaces to the view
@@ -35,10 +45,14 @@ window.automaton = window.automaton || {
   network: {
     connect: (event) => {
       event.preventDefault()
+
+      view.changeConnectionState(true, false)
       network.connect(settings.getConfiguration())
     },
     disconnect: (event) => {
       event.preventDefault()
+
+      view.changeConnectionState(true, true)
       network.disconnect()
     },
     send: (data) => {
@@ -51,5 +65,13 @@ window.automaton = window.automaton || {
       settings.update(id, value)
     },
   },
-  test: new TestInterface(),
+  debug,
 }
+
+// Main keyboard control strokes
+window.addEventListener('keydown', (event) => {
+  const { keyCode, metaKey } = event
+  if (metaKey) {
+    view.changeView(keyCode - 49)
+  }
+})
