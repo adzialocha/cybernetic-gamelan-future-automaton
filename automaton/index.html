@@ -4,5 +4,49 @@
   <title>Cybernetic Gamelan Future Automaton</title>
 </head>
 <body>
+  <div class="view" id="main-view">
+  </div>
+  <div class="view" id="settings-view">
+    <h1>Settings</h1>
+    <h2>Network</h2>
+    <form onchange="automaton.settings.update(event)">
+      <h3>Server</h3>
+      <div class="form-group">
+        <label for="serverHost">Host</label>
+        <input type="text" id="serverHost" />
+      </div>
+      <div class="form-group">
+        <label for="serverKey">Key</label>
+        <input type="text" id="serverKey" />
+      </div>
+      <div class="form-group">
+        <label for="serverPort">Port</label>
+        <input type="text" id="serverPort" />
+      </div>
+      <hr />
+      <h3>Client</h3>
+      <div class="form-group">
+        <label for="clientsNumber">Total peers number</label>
+        <input type="text" id="clientsNumber" />
+      </div>
+      <div class="form-group">
+        <label for="peerId">Your peer ID</label>
+        <input type="text" id="peerId" />
+      </div>
+      <hr />
+      <button
+        onclick="automaton.network.connect(event)"
+        id="connect-button"
+      >
+        Connect
+      </button>
+      <button
+        onclick="automaton.network.disconnect(event)"
+        id="disconnect-button"
+      >
+        Disconnect
+      </button>
+    </form>
+  </div>
 </body>
 </html>

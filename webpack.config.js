@@ -5,7 +5,10 @@ const path = require('path')
 const webpack = require('webpack')
 
 const SERVER_PORT = 9000
-// const APP_DEPENDENCIES = []
+const APP_DEPENDENCIES = [
+  'peerjs',
+  'timesync',
+]
 
 const getPath = (filePath) => path.resolve(__dirname, filePath)
 
@@ -18,7 +21,7 @@ module.exports = {
     automaton: [
       getPath('./automaton/scripts/index.js'),
     ],
-    // lib: APP_DEPENDENCIES,
+    lib: APP_DEPENDENCIES,
   },
   output: {
     path: getPath('./dist'),
@@ -71,11 +74,11 @@ module.exports = {
     port: SERVER_PORT,
   },
   plugins: [
-    // new webpack.optimize.CommonsChunkPlugin({
-    //   name: 'lib',
-    //   fileName: 'lib.[hash].js',
-    //   minChunks: Infinity,
-    // }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'lib',
+      fileName: 'lib.[hash].js',
+      minChunks: Infinity,
+    }),
     new webpack.optimize.AggressiveMergingPlugin({}),
     new webpack.optimize.OccurrenceOrderPlugin(true),
     new HtmlWebpackPlugin({

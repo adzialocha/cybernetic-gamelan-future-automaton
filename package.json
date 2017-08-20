@@ -46,6 +46,8 @@
     "webpack-dev-server": "^2.7.1"
   },
   "dependencies": {
-    "normalize.css": "^7.0.0"
+    "normalize.css": "^7.0.0",
+    "peerjs": "^0.3.14",
+    "timesync": "^0.4.1"
   }
 }
