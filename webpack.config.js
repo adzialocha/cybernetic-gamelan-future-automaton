@@ -5,10 +5,15 @@ const path = require('path')
 const webpack = require('webpack')
 
 const SERVER_PORT = 9000
+
 const APP_DEPENDENCIES = [
   'peerjs',
   'timesync',
 ]
+
+const DIST_FOLDER = 'docs'
+const SRC_FOLDER = 'automaton'
+const VENDOR_FOLDER_NAME = 'lib'
 
 const getPath = (filePath) => path.resolve(__dirname, filePath)
 
@@ -18,23 +23,20 @@ const extractSassPlugin = new ExtractTextPlugin({
 
 module.exports = {
   entry: {
-    automaton: [
-      getPath('./automaton/scripts/index.js'),
+    [SRC_FOLDER]: [
+      getPath(`./${SRC_FOLDER}/scripts/index.js`),
     ],
-    lib: APP_DEPENDENCIES,
+    [VENDOR_FOLDER_NAME]: APP_DEPENDENCIES,
   },
   output: {
-    path: getPath('./dist'),
+    path: getPath(`./${DIST_FOLDER}`),
     filename: '[name].bundle.js',
-    sourceMapFilename: '[name].bundle.map',
   },
   module: {
     rules: [
       {
         test: /\.js$/,
-        include: [
-          getPath('./src'),
-        ],
+        include: getPath(`./${SRC_FOLDER}`),
         loader: 'babel-loader',
       },
       {
@@ -46,6 +48,10 @@ module.exports = {
         use: extractSassPlugin.extract({
           use: [{
             loader: 'css-loader',
+            options: {
+              minimize: true,
+              sourceMap: true,
+            },
           }, {
             loader: 'sass-loader',
           }],
@@ -70,14 +76,17 @@ module.exports = {
   devtool: 'source-map',
   devServer: {
     compress: true,
-    contentBase: getPath('./src/assets'),
     port: SERVER_PORT,
   },
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({
-      name: 'lib',
-      fileName: 'lib.[hash].js',
+      name: VENDOR_FOLDER_NAME,
+      fileName: '[name].[hash].js',
       minChunks: Infinity,
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      sourceMap: true,
+      compress: process.env.NODE_ENV === 'production',
     }),
     new webpack.optimize.AggressiveMergingPlugin({}),
     new webpack.optimize.OccurrenceOrderPlugin(true),
@@ -85,7 +94,7 @@ module.exports = {
       filename: 'index.html',
       hash: true,
       inject: 'body',
-      template: getPath('./automaton/index.html'),
+      template: getPath(`./${SRC_FOLDER}/index.html`),
       minify: {
         collapseWhitespace: true,
         minifyJS: true,

@@ -46,8 +46,9 @@ window.automaton = window.automaton || {
     connect: (event) => {
       event.preventDefault()
 
-      view.changeConnectionState(true, false)
-      network.connect(settings.getConfiguration())
+      if (network.connect(settings.getConfiguration())) {
+        view.changeConnectionState(true, false)
+      }
     },
     disconnect: (event) => {
       event.preventDefault()

@@ -20,5 +20,5 @@ npm run lint
 ## Deployment
 
 ```
-npm run webpack
+npm run build
 ```

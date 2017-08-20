@@ -47,7 +47,10 @@ export default class Network {
 
   connect(configuration) {
     if (this.peer && this.peer.open) {
-      throw new Error('Connection is already open')
+      this.options.onError(
+        new Error('Connection is already open')
+      )
+      return false
     }
 
     const {
@@ -60,7 +63,10 @@ export default class Network {
     const serverPort = parseInt(configuration.serverPort, 10)
 
     if (peerId < 1 || peerId > clientsNumber) {
-      throw new Error('Invalid peer id')
+      this.options.onError(
+        new Error('Invalid peer id')
+      )
+      return false
     }
 
     this.peers = getAllPeers(clientsNumber, peerId)
@@ -189,6 +195,8 @@ export default class Network {
         }
       }, this.options.syncTickFrequency
     )
+
+    return true
   }
 
   disconnect(isForced = false) {
