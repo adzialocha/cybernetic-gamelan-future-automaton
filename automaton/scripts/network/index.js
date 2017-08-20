@@ -29,7 +29,7 @@ const defaultOptions = {
   onReceive: () => {},
   onSyncTick: () => {},
   syncInterval: 5000,
-  syncTickFrequency: 10,
+  syncTickFrequency: 1,
 }
 
 export default class Network {

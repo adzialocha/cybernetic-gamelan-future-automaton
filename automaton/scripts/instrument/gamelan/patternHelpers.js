@@ -1,39 +1,31 @@
-const DURATIONS = {
-  '.': 16,
-  '_': 8,
-  '-': 4,
-  '/': 2,
-  '#': 1,
-}
+const HOLD_NOTE_CHAR = '-'
+const PAUSE_CHAR = '.'
 
-const MINUTE_IN_MS = 60000
-const PAUSE_SYMBOL = '*'
+export function convertPattern(pattern, settings, noteMaterial) {
+  const { octave, velocity } = settings
+  const notes = pattern.toLowerCase().replace(/\s/g, '').split('')
 
-function bpmToMs(bpm, duration) {
-  return (MINUTE_IN_MS / bpm) * (1 / duration) * 4
-}
-
-export function symbolsToPattern(notePattern, durationPattern, settings, noteMaterial) {
-  if (notePattern.length !== durationPattern.length) {
-    throw new Error('Notes and duration string need the same length')
+  if (notes.length === 0) {
+    throw new Error('Pattern is empty')
   }
 
-  const { octave, bpm, velocity } = settings
-  const notes = notePattern.split('')
-  const durations = durationPattern.split('')
+  let previousNote = null
 
-  return notes.map((noteSymbol, index) => {
-    const durationSymbol = durations[index]
-
-    if (!Object.keys(DURATIONS).includes(durationSymbol)) {
-      throw new Error('Unknown duration symbol')
-    }
-
-    const duration = bpmToMs(bpm, DURATIONS[durationSymbol])
+  return notes.map(noteChar => {
     let note = null
+    let isHolding = false
 
-    if (noteSymbol !== PAUSE_SYMBOL) {
-      const noteNumber = parseInt(noteSymbol, 10)
+    if (noteChar === HOLD_NOTE_CHAR) {
+      if (!previousNote) {
+        throw new Error('Invalid syntax for holding note')
+      }
+
+      note = previousNote
+      isHolding = true
+    } else if (noteChar === PAUSE_CHAR) {
+      previousNote = null
+    } else {
+      const noteNumber = parseInt(noteChar, 10)
 
       if (
         isNaN(noteNumber) ||
@@ -43,13 +35,14 @@ export function symbolsToPattern(notePattern, durationPattern, settings, noteMat
         throw new Error('Unknown note symbol')
       }
 
-      note = noteMaterial[noteNumber - 1] + (12 * octave)
+      note = noteMaterial[noteNumber - 1] + (12 * (octave || 0))
+      previousNote = note
     }
 
     return {
+      isHolding,
       note,
-      duration,
-      velocity,
+      velocity: note ? velocity : 0.0,
     }
   })
 }
