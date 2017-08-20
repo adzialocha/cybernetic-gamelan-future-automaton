@@ -120,6 +120,7 @@ export default class Network {
       host: serverHost,
       key: serverKey,
       port: serverPort,
+      secure: window.location.protocol === 'https:',
     })
 
     this.peer.on('open', () => {
