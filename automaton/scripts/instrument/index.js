@@ -1,12 +1,13 @@
 import Sequencer from './sequencer'
 import SynthesizerInterface from './SynthesizerInterface'
-import { stringToSequencerPattern } from './patternHelpers'
+import { convertString } from './patternHelpers'
 
 const MS_PER_SECOND = 1000
 const SECONDS_PER_MINUTE = 60
 const SMALLEST_BAR_DIVIDE = 16 // 16th note
 
 const defaultOptions = {
+  baseBpm: 120,
   noteMaterial: [],
 }
 
@@ -23,7 +24,7 @@ export default class Instrument {
     this.tickTimeout = null
 
     this.settings = {
-      bpm: 120,
+      bpm: this.options.baseBpm,
       octave: 0,
       patternString: '',
       velocity: 1.0,
@@ -57,19 +58,22 @@ export default class Instrument {
     this.settings.patternString = patternString
 
     // Translate string to sequencer pattern
-    const sequencerPattern = stringToSequencerPattern(
+    const result = convertString(
       this.settings.patternString,
       this.settings.octave,
       this.settings.velocity,
       this.options.noteMaterial
     )
 
-    if (!sequencerPattern) {
+    if (!result) {
       return false
     }
 
+    const newBpm = this.options.baseBpm * Math.pow(2, result.bpmLevel)
+    this.changeBpm(newBpm)
+
     // Give new pattern to sequencer when no problem occurred
-    this.sequencer.changePattern(sequencerPattern)
+    this.sequencer.changePattern(result.pattern)
 
     return true
   }

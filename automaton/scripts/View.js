@@ -97,6 +97,8 @@ export default class View {
 
     const nextViewId = VIEW_IDS[viewIndex]
     document.getElementById(nextViewId).classList.add('view--active')
+
+    this.patternElem.blur()
   }
 
   changePattern(pattern) {
