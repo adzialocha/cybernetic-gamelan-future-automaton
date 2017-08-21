@@ -5,6 +5,14 @@
 </head>
 <body>
   <div class="view" id="main-view">
+    <div class="space">
+      <input
+        class="space__input"
+        id="pattern"
+        onkeyup="automaton.onChangePattern(event)"
+        onkeydown="automaton.onKeyDownPattern(event)"
+      />
+    </div>
   </div>
   <div class="view" id="settings-view">
     <div class="settings">

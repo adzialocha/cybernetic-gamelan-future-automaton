@@ -1,7 +1,6 @@
-import { ALGORITHMS } from './constants'
+import { ALGORITHMS } from './algorithms'
 
 import {
-  calculateFixedFrequency,
   calculatePhaseIncrement,
   calculateRatioFrequency,
   convertOperatorSettings,
@@ -77,29 +76,15 @@ export default class Synthesizer {
     this.velocity = velocity
 
     this.operators.forEach(operator => {
-      let frequency
+      const frequency = calculateRatioFrequency(
+        operator.coarse,
+        operator.fine
+      )
 
-      if (operator.isFixed) {
-        frequency = calculateFixedFrequency(
-          operator.coarse,
-          operator.fine
-        )
-
-        operator._phaseIncrement = calculatePhaseIncrement(
-          frequency,
-          this.sampleRate
-        )
-      } else {
-        frequency = calculateRatioFrequency(
-          operator.coarse,
-          operator.fine
-        )
-
-        operator._phaseIncrement = calculatePhaseIncrement(
-          440 * Math.pow(2.0, (note - 69) / 12.0),
-          this.sampleRate
-        ) * frequency
-      }
+      operator._phaseIncrement = calculatePhaseIncrement(
+        note,
+        this.sampleRate
+      ) * frequency
 
       operator._phase = 0.0
       operator._output = 0.0

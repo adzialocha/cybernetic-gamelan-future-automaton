@@ -1,10 +1,18 @@
 import Gamelan from './gamelan'
 import SynthesizerInterface from './SynthesizerInterface'
-
-const DEFAULT_BPM = 120
+import { PRESETS } from './presets'
 
 const MS_PER_SECOND = 1000
 const SECONDS_PER_MINUTE = 60
+
+const SMALLEST_BAR_DIVIDE = 16 // 16th note
+
+const defaultOptions = {
+  bpm: 120,
+  noteMaterial: [],
+  preset: PRESETS.BELL,
+  onPatternBegin: () => {},
+}
 
 function bpmToMs(minuteMs = 60000, bpm, duration) {
   return (minuteMs / bpm) * (1 / duration) * 4
@@ -12,31 +20,38 @@ function bpmToMs(minuteMs = 60000, bpm, duration) {
 
 export default class Instrument {
   constructor(options = {}) {
-    const { noteMaterial, preset } = options
+    this.options = Object.assign({}, defaultOptions, options)
 
+    this.lastTickSyncAt = null
+    this.stepFrequency = null
     this.tickTimeout = null
-    this.sixteenthFrequency = null
-    this.lastTickAt = null
-    this.bpm = DEFAULT_BPM
 
     this.synthesizerInterface = new SynthesizerInterface({
-      preset,
+      preset: this.options.preset,
     })
 
     this.gamelan = new Gamelan({
-      noteMaterial,
-      synthesizerInterface: this.synthesizerInterface,
-    })
+      noteMaterial: this.options.noteMaterial,
+      onPatternBegin: () => {
+        this.options.onPatternBegin()
+      },
+    }, this.synthesizerInterface)
+  }
+
+  isRunning() {
+    return this.gamelan.isRunning
   }
 
   changePreset(preset) {
     this.synthesizerInterface.changePreset(preset)
   }
 
-  changePattern(pattern, settings) {
-    this.bpm = settings.bpm || DEFAULT_BPM
+  changePattern(pattern, settings = {}) {
+    if (settings.bpm) {
+      this.options.bpm = settings.bpm
+    }
 
-    this.gamelan.changePattern(
+    return this.gamelan.changePattern(
       pattern,
       settings
     )
@@ -46,24 +61,32 @@ export default class Instrument {
     this.tickTimeout = setTimeout(() => {
       this.gamelan.step()
       this.step()
-    }, this.sixteenthFrequency)
+    }, this.stepFrequency)
   }
 
-  tick() {
+  syncTick() {
     // Calculate a minute in our synced network
     const now = new Date().getTime()
     const elasticSecond = (
-      this.lastTickAt ? now - this.lastTickAt.getTime() : MS_PER_SECOND
+      this.lastTickSyncAt ? now - this.lastTickSyncAt.getTime() : MS_PER_SECOND
     )
     const elasticMinute = SECONDS_PER_MINUTE * elasticSecond
 
     // .. and generate 16th note ticks
-    this.sixteenthFrequency = bpmToMs(elasticMinute, this.bpm, 16)
-    this.lastTickAt = new Date()
+    this.stepFrequency = bpmToMs(
+      elasticMinute,
+      this.options.bpm,
+      SMALLEST_BAR_DIVIDE
+    )
+    this.lastTickSyncAt = new Date()
 
     if (!this.tickTimeout) {
       this.step()
     }
+  }
+
+  syncPattern() {
+    this.gamelan.resetCurrentStep()
   }
 
   start() {
@@ -73,7 +96,11 @@ export default class Instrument {
   stop() {
     this.gamelan.stop()
 
-    clearInterval(this.tickTimeout)
+    clearTimeout(this.tickTimeout)
+
     this.tickTimeout = null
+    this.lastTickSyncAt = null
+    this.lastPatternSyncAt = null
+    this.stepFrequency = null
   }
 }

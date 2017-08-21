@@ -6,7 +6,7 @@
 
   background-color: $gray;
 
-  transition: background .2s linear;
+  transition: background .2s ease-out;
 }
 
 .tick--active {

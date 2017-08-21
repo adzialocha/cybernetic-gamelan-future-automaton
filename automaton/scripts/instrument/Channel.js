@@ -1,3 +1,5 @@
+const BUFFER_SIZE = 1024
+
 export default class Channel {
   constructor(audioInterface, synthesizer, note) {
     this.audioInterface = audioInterface
@@ -13,7 +15,7 @@ export default class Channel {
     }
 
     const { context, compressorNode } = this.audioInterface
-    this.scriptProcessorNode = context.createScriptProcessor()
+    this.scriptProcessorNode = context.createScriptProcessor(BUFFER_SIZE, 1, 2)
 
     const bufferSourceNode = context.createBufferSource()
     bufferSourceNode.start(0)

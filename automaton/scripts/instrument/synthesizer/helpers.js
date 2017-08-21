@@ -1,5 +1,3 @@
-import { FIXED_FREQUENCY_TABLE } from './constants'
-
 export function calculatePhaseIncrement(frequency, sampleRate) {
   return 2 * Math.PI * frequency / sampleRate
 }
@@ -14,17 +12,6 @@ export function calculateRatioFrequency(coarse, fine) {
   ratio += (fine >= 1.0) ? 0.99 : fine
 
   return ratio
-}
-
-export function calculateFixedFrequency(coarse, fine) {
-  const rate = Math.pow(10, Math.floor(coarse * 3))
-  let base = Math.floor(fine * 100)
-
-  if (base > 99) {
-    base = 99
-  }
-
-  return FIXED_FREQUENCY_TABLE[base] * rate
 }
 
 export function convertOperatorSettings(setting, sampleRate) {
@@ -78,7 +65,6 @@ export function convertOperatorSettings(setting, sampleRate) {
     })
 
     operators.push({
-      isFixed: setting.isFixed[i],
       isVelocitySensitive: setting.isVelocitySensitive[i],
       coarse: setting.coarse[i],
       fine: setting.fine[i],

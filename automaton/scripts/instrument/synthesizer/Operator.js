@@ -7,7 +7,6 @@ export default class Operator {
     this.coarse = 0.0
     this.fine = 0.0
 
-    this.isFixed = false
     this.isVelocitySensitive = false
 
     this._output = 0.0

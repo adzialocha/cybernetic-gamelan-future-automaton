@@ -1,42 +1,39 @@
-const HOLD_NOTE_CHAR = '-'
-const PAUSE_CHAR = '.'
+const HOLD_NOTE_CHAR = '='
+const NOTES_CHAR = [',', '.', '-', '#', '+']
+const PAUSE_CHAR = '_'
 
 export function convertPattern(pattern, settings, noteMaterial) {
   const { octave, velocity } = settings
   const notes = pattern.toLowerCase().replace(/\s/g, '').split('')
 
   if (notes.length === 0) {
-    throw new Error('Pattern is empty')
+    return false
   }
 
   let previousNote = null
+  let isError = false
 
-  return notes.map(noteChar => {
+  const result = notes.map(noteChar => {
     let note = null
     let isHolding = false
 
     if (noteChar === HOLD_NOTE_CHAR) {
       if (!previousNote) {
-        throw new Error('Invalid syntax for holding note')
+        isError = true
+        return false
       }
 
       note = previousNote
       isHolding = true
     } else if (noteChar === PAUSE_CHAR) {
       previousNote = null
-    } else {
-      const noteNumber = parseInt(noteChar, 10)
-
-      if (
-        isNaN(noteNumber) ||
-        noteNumber < 1 ||
-        noteNumber > noteMaterial.length
-      ) {
-        throw new Error('Unknown note symbol')
-      }
-
-      note = noteMaterial[noteNumber - 1] + (12 * (octave || 0))
+    } else if (NOTES_CHAR.includes(noteChar)) {
+      const noteNumber = NOTES_CHAR.indexOf(noteChar)
+      note = noteMaterial[noteNumber] + (12 * (octave || 0))
       previousNote = note
+    } else {
+      isError = true
+      return false
     }
 
     return {
@@ -45,4 +42,10 @@ export function convertPattern(pattern, settings, noteMaterial) {
       velocity: note ? velocity : 0.0,
     }
   })
+
+  if (isError) {
+    return false
+  }
+
+  return result
 }

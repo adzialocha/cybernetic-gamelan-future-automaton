@@ -15,11 +15,18 @@ export default class View {
     this.disconnectButtonElem = document.getElementById('disconnect-button')
     this.errorMessagesElem = document.getElementById('error-messages')
     this.offsetMonitorElem = document.getElementById('offset-monitor')
+    this.patternElem = document.getElementById('pattern')
     this.tickElem = document.getElementById('tick')
 
     this.errorMessages = []
 
+    this.committedPattern = null
+
     this.changeView(VIEW_IDS.indexOf(INITIAL_VIEW))
+  }
+
+  getCurrentView() {
+    return document.querySelector('.view--active').id
   }
 
   changeConnectionState(isLoading, isConnected) {
@@ -90,6 +97,39 @@ export default class View {
 
     const nextViewId = VIEW_IDS[viewIndex]
     document.getElementById(nextViewId).classList.add('view--active')
+  }
+
+  changePattern(pattern) {
+    const isPatternDirty = (
+      this.committedPattern && this.committedPattern !== pattern
+    )
+
+    if (!this.committedPattern) {
+      this.committedPattern = pattern
+    }
+
+    this.patternElem.value = pattern
+
+    if (isPatternDirty) {
+      this.patternElem.classList.add('space__input--dirty')
+    } else {
+      this.patternElem.classList.remove('space__input--dirty')
+    }
+  }
+
+  focusPattern() {
+    this.patternElem.focus()
+  }
+
+  commitPattern(pattern) {
+    this.patternElem.classList.remove('space__input--dirty')
+    this.patternElem.classList.add('space__input--commit')
+
+    setTimeout(() => {
+      this.patternElem.classList.remove('space__input--commit')
+    }, 500)
+
+    this.committedPattern = pattern
   }
 
   tick() {

@@ -5,18 +5,22 @@ const defaultSettings = {
   octave: 0,
 }
 
+const defaultOptions = {
+  noteMaterial: [],
+  onPatternBegin: () => {},
+}
+
 export default class Gamelan {
-  constructor(options) {
-    const { noteMaterial, synthesizerInterface } = options
-
-    this.noteMaterial = noteMaterial
-    this.synthesizerInterface = synthesizerInterface
-
+  constructor(options, synthesizerInterface) {
+    this.options = Object.assign({}, defaultOptions, options)
     this.settings = defaultSettings
 
-    this.currentPartIndex = 0
-    this.currentPart = null
-    this.previousPart = null
+    this.synthesizerInterface = synthesizerInterface
+
+    this.currentStep = null
+    this.currentStepIndex = 0
+    this.previousStep = null
+
     this.pattern = []
 
     this.isRunning = false
@@ -31,13 +35,17 @@ export default class Gamelan {
       return
     }
 
+    if (this.currentStepIndex === 0) {
+      this.options.onPatternBegin()
+    }
+
     const {
       isHolding,
       note,
       velocity,
-    } = this.pattern[this.currentPartIndex]
+    } = this.pattern[this.currentStepIndex]
 
-    const previousNote = this.previousPart && this.previousPart.note
+    const previousNote = this.previousStep && this.previousStep.note
 
     if (previousNote && (previousNote !== note || !isHolding)) {
       this.synthesizerInterface.noteOff(previousNote)
@@ -50,12 +58,12 @@ export default class Gamelan {
       )
     }
 
-    this.previousPart = this.pattern[this.currentPartIndex]
+    this.previousStep = this.pattern[this.currentStepIndex]
 
-    this.currentPartIndex += 1
+    this.currentStepIndex += 1
 
-    if (this.currentPartIndex >= this.pattern.length - 1) {
-      this.currentPartIndex = 0
+    if (this.currentStepIndex > this.pattern.length - 1) {
+      this.currentStepIndex = 0
     }
   }
 
@@ -64,31 +72,43 @@ export default class Gamelan {
       throw new Error('Gamelan is already running')
     }
 
-    this.currentPartIndex = 0
     this.isRunning = true
   }
 
   stop() {
-    if (!this.isRunning) {
-      throw new Error('Gamelan is already stopped')
-    }
-
-    this.synthesizerInterface.allNotesOff()
     this.isRunning = false
+    this.resetCurrentStep()
+  }
+
+  resetCurrentStep() {
+    this.currentStepIndex = 0
+    this.previousStep = null
+    this.synthesizerInterface.allNotesOff()
   }
 
   changePattern(pattern, settings = {}) {
     this.settings = Object.assign({}, this.settings, settings)
 
-    this.pattern = convertPattern(
+    const convertedPattern = convertPattern(
       pattern,
       this.settings,
-      this.noteMaterial
+      this.options.noteMaterial
     )
 
+    if (!convertedPattern) {
+      return false
+    }
+
+    this.pattern = convertedPattern
+
     if (this.isRunning) {
-      this.currentPartIndex = 0
+      if (this.currentStepIndex > this.pattern.length - 1) {
+        this.currentStepIndex = 0
+      }
+      this.previousStep = null
       this.synthesizerInterface.allNotesOff()
     }
+
+    return true
   }
 }

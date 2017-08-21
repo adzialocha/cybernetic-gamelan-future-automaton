@@ -20,7 +20,14 @@ function getAllPeers(clientsNumber, ownId) {
   return peers
 }
 
+function getOpenConnection(connections) {
+  return connections && connections.filter(remoteConnection => {
+    return remoteConnection.open
+  })[0]
+}
+
 const defaultOptions = {
+  onAllOnline: () => {},
   onClose: () => {},
   onCloseRemote: () => {},
   onError: () => {},
@@ -28,7 +35,8 @@ const defaultOptions = {
   onOpenRemote: () => {},
   onReceive: () => {},
   onSyncTick: () => {},
-  syncInterval: 5000,
+  syncInterval: 500,
+  syncStepsDelay: 100,
   syncTickFrequency: 1,
 }
 
@@ -43,6 +51,15 @@ export default class Network {
     this.sync = null
     this.syncInterval = null
     this.syncTickInterval = null
+  }
+
+  isAlone() {
+    return this.peers.filter(id => {
+      if (getOpenConnection(this.peer.connections[id])) {
+        return true
+      }
+      return false
+    }).length === 0
   }
 
   connect(configuration) {
@@ -87,6 +104,18 @@ export default class Network {
       connection
         .on('open', () => {
           this.options.onOpenRemote(connection.peer)
+
+          const onlinePeers = this.peers
+            .filter(id => {
+              if (getOpenConnection(this.peer.connections[id])) {
+                return true
+              }
+              return false
+            })
+
+          if (onlinePeers.length === this.peers.length) {
+            this.options.onAllOnline()
+          }
         })
         .on('data', data => {
           if (data.jsonrpc) {
@@ -151,7 +180,7 @@ export default class Network {
 
     // Time synchronization between peers
     this.sync = createTimesync({
-      delay: 100,
+      delay: this.options.syncStepsDelay,
       interval: this.options.syncInterval,
       peers: [],
       timeout: 10000,
@@ -221,10 +250,7 @@ export default class Network {
   }
 
   send(id, data) {
-    const all = this.peer.connections[id]
-    const connection = all && all.filter(remoteConnection => {
-      return remoteConnection.open
-    })[0]
+    const connection = getOpenConnection(this.peer.connections[id])
 
     if (connection) {
       connection.send(data)

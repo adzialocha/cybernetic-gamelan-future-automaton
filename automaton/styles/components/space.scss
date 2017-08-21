@@ -1,0 +1,41 @@
+.space {
+  position: relative;
+
+  height: 100%;
+}
+
+.space__input {
+  position: absolute;
+
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  padding: 20px;
+
+  border: 0;
+
+  color: $white;
+
+  background-color: transparent;
+
+  font-size: $font-size-xxl;
+
+  outline: 0;
+
+  transition: color .5s linear;
+
+  &::selection {
+    color: $black;
+
+    background: $white;
+  }
+}
+
+.space__input--dirty {
+  color: $red;
+}
+
+.space__input--commit {
+  color: $green;
+}
