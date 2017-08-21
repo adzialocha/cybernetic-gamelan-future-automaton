@@ -8,50 +8,19 @@ import Network from './network'
 import Settings from './Settings'
 import View from './View'
 
-const ALONE_START_DELAY = 1000
-
-let isMaster = false
-
+const api = new API()
+const composition = new Composition()
 const settings = new Settings()
 const view = new View()
-
-const api = new API({
-  onPatternBeginReceived: peer => {
-    if (!composition.instrument.isRunning()) {
-      // Start playing when receiving the beginning of a pattern
-      composition.instrument.start()
-    } else {
-      // ... otherwise take it to synchronize to master
-      composition.instrument.syncPattern(peer)
-    }
-  },
-})
-
-const composition = new Composition({
-  onPatternBegin: () => {
-    if (isMaster) {
-      // Send the beginning of pattern to synchronize
-      api.sendPatternBegin()
-    }
-  },
-})
 
 const network = new Network({
   onOpen: () => {
     view.changeConnectionState(false, true)
-
-    setTimeout(() => {
-      if (network.isAlone()) {
-        // Start to play when being first player
-        isMaster = true
-        composition.instrument.start()
-      }
-    }, ALONE_START_DELAY)
+    composition.start()
   },
   onClose: () => {
-    isMaster = false
     view.changeConnectionState(false, false)
-    composition.instrument.stop()
+    composition.stop()
   },
   onOpenRemote: peerId => {
     view.addRemotePeer(peerId)

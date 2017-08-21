@@ -32,12 +32,7 @@ export default class Instrument {
     }
 
     this.synthesizerInterface = new SynthesizerInterface()
-
-    this.sequencer = new Sequencer({
-      onPatternBegin: () => {
-        this.options.onPatternBegin()
-      },
-    }, this.synthesizerInterface)
+    this.sequencer = new Sequencer(this.synthesizerInterface)
   }
 
   isRunning() {
@@ -108,10 +103,6 @@ export default class Instrument {
     if (!this.tickTimeout) {
       this.step()
     }
-  }
-
-  syncPattern() {
-    // this.sequencer.resetCurrentStep()
   }
 
   start() {

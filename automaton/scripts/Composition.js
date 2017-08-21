@@ -9,9 +9,7 @@ const INITIAL_BPM = 80
 const INITIAL_PRESET = PRESETS.BELL
 const INITIAL_VELOCITY = 0.25
 
-const defaultOptions = {
-  onPatternBegin: () => {},
-}
+const defaultOptions = {}
 
 export default class Composition {
   constructor(options) {
@@ -19,9 +17,6 @@ export default class Composition {
 
     this.instrument = new Instrument({
       noteMaterial: NOTE_MATERIAL,
-      onPatternBegin: () => {
-        this.options.onPatternBegin()
-      },
     })
 
     this.instrument.changePreset(INITIAL_PRESET)

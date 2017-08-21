@@ -1,11 +1,5 @@
-const defaultOptions = {
-  onPatternBegin: () => {},
-}
-
 export default class Sequencer {
-  constructor(options, synthesizerInterface) {
-    this.options = Object.assign({}, defaultOptions, options)
-
+  constructor(synthesizerInterface) {
     this.synthesizerInterface = synthesizerInterface
 
     this.currentStep = null
@@ -24,10 +18,6 @@ export default class Sequencer {
 
     if (this.pattern.length === 0) {
       return
-    }
-
-    if (this.currentStepIndex === 0) {
-      this.options.onPatternBegin()
     }
 
     const {
@@ -64,10 +54,7 @@ export default class Sequencer {
 
   stop() {
     this.isRunning = false
-    this.resetCurrentStep()
-  }
 
-  resetCurrentStep() {
     this.currentStepIndex = 0
     this.previousStep = null
     this.synthesizerInterface.allNotesOff()
