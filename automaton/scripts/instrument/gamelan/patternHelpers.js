@@ -1,10 +1,10 @@
-const HOLD_NOTE_CHAR = '='
+const HOLD_NOTE_CHAR = '_'
 const NOTES_CHAR = [',', '.', '-', '#', '+']
-const PAUSE_CHAR = '_'
+const PAUSE_CHAR = ' '
 
 export function convertPattern(pattern, settings, noteMaterial) {
   const { octave, velocity } = settings
-  const notes = pattern.toLowerCase().replace(/\s/g, '').split('')
+  const notes = pattern.toLowerCase().split('')
 
   if (notes.length === 0) {
     return false

@@ -2,45 +2,36 @@
 
 import styles from '../styles/index.scss' // eslint-disable-line no-unused-vars
 
-import CommunicationInterface from './network/CommunicationInterface'
-import Instrument from './instrument'
+import API from './network/API'
+import Composition from './Composition'
 import Network from './network'
 import Settings from './Settings'
 import View from './View'
 
-import { PELOG, pickFromScale } from './instrument/gamelan/scales'
-
 const ALONE_START_DELAY = 1000
-
-const NOTE_MATERIAL = pickFromScale([6, 1, 2, 4, 5], PELOG)
-
-const INITIAL_PATTERN = ',.-#+,.-#++#-.,'
-const INITIAL_BPM = 80
-const INITIAL_VELOCITY = 0.25
 
 let isMaster = false
 
 const settings = new Settings()
 const view = new View()
 
-view.changePattern(INITIAL_PATTERN)
-
-const instrument = new Instrument({
-  bpm: INITIAL_BPM,
-  noteMaterial: NOTE_MATERIAL,
-  onPatternBegin: () => {
-    if (isMaster) {
-      communication.sendPatternBegin()
+const api = new API({
+  onPatternBeginReceived: peer => {
+    if (!composition.instrument.isRunning()) {
+      // Start playing when receiving the beginning of a pattern
+      composition.instrument.start()
+    } else {
+      // ... otherwise take it to synchronize to master
+      composition.instrument.syncPattern(peer)
     }
   },
 })
 
-const communication = new CommunicationInterface({
-  onPatternBeginReceived: peer => {
-    if (!instrument.isRunning()) {
-      instrument.start()
-    } else {
-      instrument.syncPattern(peer)
+const composition = new Composition({
+  onPatternBegin: () => {
+    if (isMaster) {
+      // Send the beginning of pattern to synchronize
+      api.sendPatternBegin()
     }
   },
 })
@@ -51,15 +42,16 @@ const network = new Network({
 
     setTimeout(() => {
       if (network.isAlone()) {
+        // Start to play when being first player
         isMaster = true
-        instrument.start()
+        composition.instrument.start()
       }
     }, ALONE_START_DELAY)
   },
   onClose: () => {
     isMaster = false
     view.changeConnectionState(false, false)
-    instrument.stop()
+    composition.instrument.stop()
   },
   onOpenRemote: peerId => {
     view.addRemotePeer(peerId)
@@ -71,26 +63,23 @@ const network = new Network({
     view.updateOffset(offset)
     view.tick()
 
-    instrument.syncTick()
+    composition.instrument.syncTick()
   },
   onReceive: (peer, data) => {
-    communication.receive(peer, data)
+    api.receive(peer, data)
   },
   onError: err => {
     view.addErrorMessage(err.message)
   },
 })
 
-communication.setNetwork(network)
+api.setNetwork(network)
 
 // Initialize
 window.addEventListener('load', () => {
   view.changeConnectionState(false, false)
   view.updateSettings(settings.getConfiguration())
-
-  instrument.changePattern(INITIAL_PATTERN, {
-    velocity: INITIAL_VELOCITY,
-  })
+  view.changePattern(composition.getCurrentPattern())
 })
 
 // Expose some interfaces to the view
@@ -129,7 +118,7 @@ window.automaton = window.automaton || {
 
       const value = event.target.value
 
-      if (instrument.changePattern(value)) {
+      if (composition.instrument.changePattern(value)) {
         view.commitPattern(value)
       }
     }
@@ -141,10 +130,13 @@ window.automaton = window.automaton || {
 // Main keyboard control strokes
 window.addEventListener('keydown', (event) => {
   const { keyCode, shiftKey } = event
+
+  // Press shift + number
   if (shiftKey) {
     view.changeView(keyCode - 49)
   }
 
+  // Press enter
   if (keyCode === 13) {
     if (view.getCurrentView() === 'main-view') {
       view.focusPattern()
