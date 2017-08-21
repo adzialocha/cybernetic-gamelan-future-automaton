@@ -1,6 +1,5 @@
 const defaultOptions = {
-  onPatternBeginReceived: () => {},
-  onStartReceived: () => {},
+  // onStartReceived: () => {},
 }
 
 export default class CommunicationInterface {
@@ -30,25 +29,14 @@ export default class CommunicationInterface {
       return
     }
 
-    switch (data.type) {
-    case 'START':
-      this.options.onStartReceived()
-      break
-    case 'PATTERN_BEGIN':
-      this.options.onPatternBeginReceived(peer)
-      break
-    }
+    // switch (data.type) {
+    // case 'START':
+    //   this.options.onStartReceived()
+    //   break
+    // }
   }
 
   setNetwork(network) {
     this.network = network
-  }
-
-  sendStartSignal() {
-    this.send('START')
-  }
-
-  sendPatternBegin() {
-    this.send('PATTERN_BEGIN')
   }
 }

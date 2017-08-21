@@ -67,9 +67,6 @@ window.automaton = window.automaton || {
       view.changeConnectionState(true, true)
       network.disconnect()
     },
-    send: (data) => {
-      network.sendToAll(data)
-    },
   },
   settings: {
     update: event => {
@@ -77,7 +74,7 @@ window.automaton = window.automaton || {
       settings.update(id, value)
     },
   },
-  onChangePattern: event => {
+  onKeyUpPattern: event => {
     view.changePattern(event.target.value)
   },
   onKeyDownPattern: event => {
@@ -91,8 +88,6 @@ window.automaton = window.automaton || {
         view.commitPattern(value)
       }
     }
-
-    return true
   },
 }
 

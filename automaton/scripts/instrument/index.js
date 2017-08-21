@@ -4,12 +4,10 @@ import { stringToSequencerPattern } from './patternHelpers'
 
 const MS_PER_SECOND = 1000
 const SECONDS_PER_MINUTE = 60
-
 const SMALLEST_BAR_DIVIDE = 16 // 16th note
 
 const defaultOptions = {
   noteMaterial: [],
-  onPatternBegin: () => {},
 }
 
 function bpmToMs(minuteMs = 60000, bpm, duration) {

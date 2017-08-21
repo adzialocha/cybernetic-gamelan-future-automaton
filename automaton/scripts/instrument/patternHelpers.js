@@ -6,7 +6,7 @@ export function stringToSequencerPattern(patternString, octave, velocity, noteMa
   const notes = patternString.toLowerCase().split('')
 
   if (notes.length === 0) {
-    return false
+    return []
   }
 
   let previousNote = null
