@@ -1,19 +1,10 @@
-import { convertPattern } from './patternHelpers'
-
-const defaultSettings = {
-  velocity: 1.0,
-  octave: 0,
-}
-
 const defaultOptions = {
-  noteMaterial: [],
   onPatternBegin: () => {},
 }
 
-export default class Gamelan {
+export default class Sequencer {
   constructor(options, synthesizerInterface) {
     this.options = Object.assign({}, defaultOptions, options)
-    this.settings = defaultSettings
 
     this.synthesizerInterface = synthesizerInterface
 
@@ -68,10 +59,6 @@ export default class Gamelan {
   }
 
   start() {
-    if (this.isRunning) {
-      throw new Error('Gamelan is already running')
-    }
-
     this.isRunning = true
   }
 
@@ -86,20 +73,8 @@ export default class Gamelan {
     this.synthesizerInterface.allNotesOff()
   }
 
-  changePattern(pattern, settings = {}) {
-    this.settings = Object.assign({}, this.settings, settings)
-
-    const convertedPattern = convertPattern(
-      pattern,
-      this.settings,
-      this.options.noteMaterial
-    )
-
-    if (!convertedPattern) {
-      return false
-    }
-
-    this.pattern = convertedPattern
+  changePattern(pattern) {
+    this.pattern = pattern
 
     if (this.isRunning) {
       if (this.currentStepIndex > this.pattern.length - 1) {
@@ -108,7 +83,5 @@ export default class Gamelan {
       this.previousStep = null
       this.synthesizerInterface.allNotesOff()
     }
-
-    return true
   }
 }

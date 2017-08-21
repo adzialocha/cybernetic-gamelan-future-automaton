@@ -1,10 +1,9 @@
-const HOLD_NOTE_CHAR = '_'
-const NOTES_CHAR = [',', '.', '-', '#', '+']
+const HOLD_NOTE_CHAR = '*'
+const NOTES_CHAR = ['.', '-', '_', ':', '/']
 const PAUSE_CHAR = ' '
 
-export function convertPattern(pattern, settings, noteMaterial) {
-  const { octave, velocity } = settings
-  const notes = pattern.toLowerCase().split('')
+export function stringToSequencerPattern(patternString, octave, velocity, noteMaterial) {
+  const notes = patternString.toLowerCase().split('')
 
   if (notes.length === 0) {
     return false

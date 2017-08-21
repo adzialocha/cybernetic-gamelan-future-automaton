@@ -1,6 +1,6 @@
-import Gamelan from './gamelan'
+import Sequencer from './sequencer'
 import SynthesizerInterface from './SynthesizerInterface'
-import { PRESETS } from './presets'
+import { stringToSequencerPattern } from './patternHelpers'
 
 const MS_PER_SECOND = 1000
 const SECONDS_PER_MINUTE = 60
@@ -8,9 +8,7 @@ const SECONDS_PER_MINUTE = 60
 const SMALLEST_BAR_DIVIDE = 16 // 16th note
 
 const defaultOptions = {
-  bpm: 120,
   noteMaterial: [],
-  preset: PRESETS.BELL,
   onPatternBegin: () => {},
 }
 
@@ -26,12 +24,16 @@ export default class Instrument {
     this.stepFrequency = null
     this.tickTimeout = null
 
-    this.synthesizerInterface = new SynthesizerInterface({
-      preset: this.options.preset,
-    })
+    this.settings = {
+      bpm: 120,
+      octave: 0,
+      patternString: '',
+      velocity: 1.0,
+    }
 
-    this.gamelan = new Gamelan({
-      noteMaterial: this.options.noteMaterial,
+    this.synthesizerInterface = new SynthesizerInterface()
+
+    this.sequencer = new Sequencer({
       onPatternBegin: () => {
         this.options.onPatternBegin()
       },
@@ -39,27 +41,50 @@ export default class Instrument {
   }
 
   isRunning() {
-    return this.gamelan.isRunning
+    return this.sequencer.isRunning
   }
 
   changePreset(preset) {
     this.synthesizerInterface.changePreset(preset)
   }
 
-  changePattern(pattern, settings = {}) {
-    if (settings.bpm) {
-      this.options.bpm = settings.bpm
+  changeBpm(bpm) {
+    this.settings.bpm = bpm
+  }
+
+  changeOctave(octave) {
+    this.settings.octave = octave
+  }
+
+  changeVelocity(velocity) {
+    this.settings.velocity = velocity
+  }
+
+  changePattern(patternString) {
+    this.settings.patternString = patternString
+
+    // Translate string to sequencer pattern
+    const sequencerPattern = stringToSequencerPattern(
+      this.settings.patternString,
+      this.settings.octave,
+      this.settings.velocity,
+      this.options.noteMaterial
+    )
+
+    if (!sequencerPattern) {
+      return false
     }
 
-    return this.gamelan.changePattern(
-      pattern,
-      settings
-    )
+    // Give new pattern to sequencer when no problem occurred
+    this.sequencer.changePattern(sequencerPattern)
+
+    return true
   }
 
   step() {
+    this.sequencer.step()
+
     this.tickTimeout = setTimeout(() => {
-      this.gamelan.step()
       this.step()
     }, this.stepFrequency)
   }
@@ -75,7 +100,7 @@ export default class Instrument {
     // .. and generate 16th note ticks
     this.stepFrequency = bpmToMs(
       elasticMinute,
-      this.options.bpm,
+      this.settings.bpm,
       SMALLEST_BAR_DIVIDE
     )
     this.lastTickSyncAt = new Date()
@@ -86,15 +111,15 @@ export default class Instrument {
   }
 
   syncPattern() {
-    this.gamelan.resetCurrentStep()
+    // this.sequencer.resetCurrentStep()
   }
 
   start() {
-    this.gamelan.start()
+    this.sequencer.start()
   }
 
   stop() {
-    this.gamelan.stop()
+    this.sequencer.stop()
 
     clearTimeout(this.tickTimeout)
 
