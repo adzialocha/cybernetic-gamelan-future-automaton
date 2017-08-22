@@ -10,7 +10,8 @@
     "lint": "npm run lint:js && npm run lint:scss",
     "lint:js": "eslint automaton/scripts; exit 0",
     "lint:scss": "sass-lint -c .sass-lint.yml 'automaton/styles/*.scss' -v -q",
-    "serve": "webpack-dev-server --host 0.0.0.0",
+    "serve": "webpack-dev-server",
+    "serve:test": "webpack-dev-server --host 0.0.0.0",
     "start": "npm run serve",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -39,7 +40,6 @@
     "html-loader": "^0.5.1",
     "html-webpack-plugin": "^2.30.1",
     "node-sass": "^4.5.3",
-    "normalize.css": "^7.0.0",
     "rimraf": "^2.6.1",
     "sass-lint": "^1.10.2",
     "sass-loader": "^6.0.6",
@@ -48,6 +48,7 @@
     "webpack-dev-server": "^2.7.1"
   },
   "dependencies": {
+    "normalize.css": "^7.0.0",
     "peerjs": "^0.3.14",
     "three": "^0.87.1",
     "timesync": "^0.4.1"

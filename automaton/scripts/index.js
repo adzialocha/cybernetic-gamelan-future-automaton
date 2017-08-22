@@ -7,11 +7,18 @@ import Composition from './Composition'
 import Network from './network'
 import Settings from './Settings'
 import View from './View'
+import Visuals from './visuals'
 
 const api = new API()
 const composition = new Composition()
 const settings = new Settings()
 const view = new View()
+const visuals = new Visuals({
+  canvas: view.getRendererCanvas(),
+  devicePixelRatio: window.devicePixelRatio,
+  initialHeight: window.innerHeight,
+  initialWidth: window.innerWidth,
+})
 
 const network = new Network({
   onOpen: () => {
@@ -50,6 +57,11 @@ window.addEventListener('load', () => {
   view.updateSettings(settings.getConfiguration())
   view.changePattern(composition.getCurrentPattern())
 })
+
+// Resize rendered when window size was changed
+window.addEventListener('resize', () => {
+  visuals.resize(window.innerWidth, window.innerHeight)
+}, false)
 
 // Expose some interfaces to the view
 window.automaton = window.automaton || {

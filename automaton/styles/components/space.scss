@@ -2,6 +2,13 @@
   position: relative;
 
   height: 100%;
+
+  cursor: none;
+}
+
+.space__renderer {
+  width: 100%;
+  height: 100%;
 }
 
 .space__input {
