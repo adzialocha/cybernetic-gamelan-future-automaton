@@ -14,8 +14,8 @@ export const PRESETS = {
       [{ x: 0.004, y: 0.461 }, { x: 0.281, y: 0.814 }, { x: 0.715, y: 0.814 }],
     ],
   },
-  CHIME: {
-    name: 'CHIME',
+  GLOCKENSPIEL: {
+    name: 'GLOCKENSPIEL',
     algorithmId: 5,
     coarse: [0.28, 0.07, 0.66, 0.05],
     feedback: 0.3,
@@ -83,7 +83,7 @@ export const PRESETS = {
     isLoop: [false, false, false, false],
     isVelocitySensitive: [true, false, false, true],
     envelopes: [
-      [{ x: 0.05, y: 0.547 }, { x: 0.314, y: 0.994 }, { x: 0.752, y: 0.994 }],
+      [{ x: 0, y: 0.547 }, { x: 0.314, y: 0.994 }, { x: 0.752, y: 0.994 }],
       [{ x: 0, y: 0.735 }, { x: 0.423, y: 0.788 }, { x: 0.847, y: 0.788 }],
       [{ x: 0.01, y: 0.488 }, { x: 0.058, y: 0.794 }, { x: 0.73, y: 0.794 }],
       [{ x: 0, y: 0.665 }, { x: 0.069, y: 0.818 }, { x: 0.734, y: 0.818 }],
