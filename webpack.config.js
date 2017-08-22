@@ -4,13 +4,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const path = require('path')
 const webpack = require('webpack')
 
+const pkg = require('./package.json')
+
 const SERVER_PORT = 9000
-
-const APP_DEPENDENCIES = [
-  'peerjs',
-  'timesync',
-]
-
 const DIST_FOLDER = 'docs'
 const SRC_FOLDER = 'automaton'
 const VENDOR_FOLDER_NAME = 'lib'
@@ -23,10 +19,8 @@ const extractSassPlugin = new ExtractTextPlugin({
 
 module.exports = {
   entry: {
-    [SRC_FOLDER]: [
-      getPath(`./${SRC_FOLDER}/scripts/index.js`),
-    ],
-    [VENDOR_FOLDER_NAME]: APP_DEPENDENCIES,
+    [SRC_FOLDER]: getPath(`./${SRC_FOLDER}/scripts/index.js`),
+    [VENDOR_FOLDER_NAME]: Object.keys(pkg.dependencies),
   },
   output: {
     path: getPath(`./${DIST_FOLDER}`),
