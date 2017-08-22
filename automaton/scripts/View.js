@@ -18,6 +18,7 @@ export default class View {
       offsetMonitor: document.getElementById('offset-monitor'),
       pattern: document.getElementById('pattern'),
       rendererCanvas: document.getElementById('renderer-canvas'),
+      space: document.getElementById('space'),
       tick: document.getElementById('tick'),
     }
 
@@ -47,6 +48,16 @@ export default class View {
     document.getElementById(nextViewId).classList.add('view--active')
 
     this.elements.pattern.blur()
+  }
+
+  changeSpaceState(isPointerLocked) {
+    this.elements.pattern.disabled = !isPointerLocked
+
+    if (isPointerLocked) {
+      this.elements.space.classList.add('space--active')
+    } else {
+      this.elements.space.classList.remove('space--active')
+    }
   }
 
   // Settings
@@ -156,5 +167,6 @@ export default class View {
     }, 500)
 
     this.elements.committedPattern = pattern
+    this.elements.pattern.blur()
   }
 }

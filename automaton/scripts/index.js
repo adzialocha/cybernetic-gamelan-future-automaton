@@ -20,13 +20,19 @@ const visuals = new Visuals({
   initialWidth: window.innerWidth,
 })
 
+view.changeSpaceState(true)
+
 const network = new Network({
   onOpen: () => {
     view.changeConnectionState(false, true)
+    view.changeSpaceState(true)
+
     composition.start()
   },
   onClose: () => {
     view.changeConnectionState(false, false)
+    view.changeSpaceState(false)
+
     composition.stop()
   },
   onOpenRemote: peerId => {
@@ -107,15 +113,54 @@ window.automaton = window.automaton || {
 window.addEventListener('keydown', (event) => {
   const { keyCode, shiftKey } = event
 
-  // Press shift + number
   if (shiftKey) {
+    // Press shift + number
     view.changeView(keyCode - 49)
+    return
   }
 
-  // Press enter
-  if (keyCode === 13) {
+  switch (keyCode) {
+  case 13:
     if (view.getCurrentView() === 'main-view') {
       view.focusPattern()
     }
+    break
+  case 38: // Arrow-Up
+  case 87: // W
+    visuals.move({ forward: true })
+    break
+  case 37: // Arrow-Left
+  case 65: // A
+    visuals.move({ left: true })
+    break
+  case 40: // Arrow-Down
+  case 83: // S
+    visuals.move({ backward: true })
+    break
+  case 39: // Arrow-Right
+  case 68: // D
+    visuals.move({ right: true })
+    break
+  }
+})
+
+window.addEventListener('keyup', (event) => {
+  switch (event.keyCode) {
+  case 38: // Arrow-Up
+  case 87: // W
+    visuals.move({ forward: false })
+    break
+  case 37: // Arrow-Left
+  case 65: // A
+    visuals.move({ left: false })
+    break
+  case 40: // Arrow-Down
+  case 83: // S
+    visuals.move({ backward: false })
+    break
+  case 39: // Arrow-Right
+  case 68: // D
+    visuals.move({ right: false })
+    break
   }
 })

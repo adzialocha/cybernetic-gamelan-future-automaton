@@ -3,12 +3,32 @@
 
   height: 100%;
 
+  cursor: crosshair;
+}
+
+.space--active {
+  .space__renderer {
+    opacity: 1;
+  }
+
+  .space__input {
+    display: block;
+  }
+
+  .space__button {
+    display: none;
+  }
+
   cursor: none;
 }
 
 .space__renderer {
   width: 100%;
   height: 100%;
+
+  opacity: 0;
+
+  transition: opacity 1s linear;
 }
 
 .space__input {
@@ -17,6 +37,8 @@
   right: 0;
   bottom: 0;
   left: 0;
+
+  display: none;
 
   padding: 20px;
 
@@ -46,4 +68,13 @@
 
 .space__input--commit {
   color: $green;
+}
+
+.space__button {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
 }
