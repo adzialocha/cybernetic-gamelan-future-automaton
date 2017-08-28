@@ -6,7 +6,11 @@ const LOCAL_PORT = 9090
 
 const app = express()
 
-app.set('port', process.env.NODE_ENV === 'production' ? 80 : LOCAL_PORT)
+app.set(
+  'port',
+  process.env.NODE_ENV === 'production' ? process.env.PORT : LOCAL_PORT
+)
+
 app.use(express.static(path.join(__dirname, '..', 'dist')))
 
 const server = app.listen(app.get('port'), () => {
