@@ -60,7 +60,6 @@ export default class Instrument {
     // Translate string to sequencer pattern
     const result = convertString(
       this.settings.patternString,
-      this.settings.octave,
       this.settings.velocity,
       this.options.noteMaterial
     )
@@ -69,6 +68,7 @@ export default class Instrument {
       return false
     }
 
+    // Change BPM
     const newBpm = this.options.baseBpm * Math.pow(2, result.bpmLevel)
     this.changeBpm(newBpm)
 

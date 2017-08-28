@@ -9,16 +9,7 @@ const BASE_BPM = 80
 const PRESET = PRESETS.BELL
 const VELOCITY = 0.25
 
-const POSSIBLE_OCTAVES = [
-  0,
-  1,
-]
-
 const defaultOptions = {}
-
-function pickRandom(collection) {
-  return collection[Math.floor(Math.random() * collection.length)]
-}
 
 export default class Composition {
   constructor(options) {
@@ -31,8 +22,6 @@ export default class Composition {
 
     this.instrument.changePreset(PRESET)
     this.instrument.changeVelocity(VELOCITY)
-
-    this.interval = null
   }
 
   getCurrentPattern() {
@@ -41,20 +30,9 @@ export default class Composition {
 
   start() {
     this.instrument.start()
-
-    // For testing
-    this.interval = setInterval(() => {
-      if (Math.random() < 0.5) {
-        return
-      }
-
-      this.instrument.changeOctave(pickRandom(POSSIBLE_OCTAVES))
-    }, 10000)
   }
 
   stop() {
     this.instrument.stop()
-
-    clearInterval(this.interval)
   }
 }

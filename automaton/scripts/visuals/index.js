@@ -103,27 +103,27 @@ export default class Visuals {
       mesh.position.z = Math.random() * 15 * size
     }
 
-    for (let i = 0; i < 100; i += 1) {
-      generateRandomObject(
-        new Color(0x000000),
-        new Color(0xffe68c),
-        50.0,
-      )
+    // for (let i = 0; i < 100; i += 1) {
+    //   generateRandomObject(
+    //     new Color(0x000000),
+    //     new Color(0xffe68c),
+    //     50.0,
+    //   )
 
-      generateRandomObject(
-        new Color(0xffffff),
-        new Color(0x4c8da6),
-        1.0,
-        10
-      )
+    //   generateRandomObject(
+    //     new Color(0xffffff),
+    //     new Color(0x4c8da6),
+    //     1.0,
+    //     10
+    //   )
 
-      generateRandomObject(
-        new Color(0x4c8da6),
-        new Color(0xd8c571),
-        25.0,
-        10
-      )
-    }
+    //   generateRandomObject(
+    //     new Color(0x4c8da6),
+    //     new Color(0xd8c571),
+    //     25.0,
+    //     10
+    //   )
+    // }
 
     // Prepare light scenery
     const light = new HemisphereLight(0xeeeeff, 0x777788, 0.75)
