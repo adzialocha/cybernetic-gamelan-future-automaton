@@ -2,7 +2,11 @@
   "name": "cybernetic-gamelan-future-automaton",
   "version": "0.1.0",
   "description": "For laptop ensemble",
-  "main": "src/index.html",
+  "main": "automaton/index.html",
+  "engines": {
+    "node": "~8.1.4",
+    "npm": "~5.3.0"
+  },
   "scripts": {
     "build": "cross-env NODE_ENV=production npm run clean:dist && webpack",
     "clean": "npm run clean:dist && rimraf node_modules",
@@ -26,6 +30,7 @@
   "bugs": {
     "url": "https://github.com/adzialocha/cybernetic-gamelan-future-automaton/issues"
   },
+  "private": true,
   "homepage": "https://github.com/adzialocha/cybernetic-gamelan-future-automaton#readme",
   "devDependencies": {
     "babel-core": "^6.26.0",
