@@ -61,14 +61,8 @@ export default class Sequencer {
   }
 
   changePattern(pattern) {
+    this.stop()
     this.pattern = pattern
-
-    if (this.isRunning) {
-      if (this.currentStepIndex > this.pattern.length - 1) {
-        this.currentStepIndex = 0
-      }
-      this.previousStep = null
-      this.synthesizerInterface.allNotesOff()
-    }
+    this.start()
   }
 }

@@ -8,7 +8,7 @@ import {
 
 import Operator from './Operator'
 
-const DEFAULT_SAMPLE_RATE = 16000
+const DEFAULT_SAMPLE_RATE = 44100
 
 export default class Synthesizer {
   constructor(options = {}) {
@@ -31,8 +31,8 @@ export default class Synthesizer {
     this.changePreset(options.preset)
   }
 
-  generateAudio(left, right) {
-    const numSamples = left.length
+  generateAudio(data) {
+    const numSamples = data.length
     const algorithm = ALGORITHMS[this.algorithmId]
 
     for (let sampleIndex = 0; sampleIndex < numSamples; sampleIndex += 1) {
@@ -64,7 +64,7 @@ export default class Synthesizer {
         mainOutput += operator._output * algorithm[4][op]
       }
 
-      right[sampleIndex] = left[sampleIndex] = mainOutput
+      data[sampleIndex] = mainOutput
 
       this.operators.forEach(operator => {
         operator.next()

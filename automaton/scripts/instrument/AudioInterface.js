@@ -1,23 +1,23 @@
-import impulseUrl from '../../assets/impulse.wav'
+// import impulseUrl from '../../assets/impulse.wav'
 
-function getImpulse(context) {
-  return new Promise((resolve, reject) => {
-    const ajaxRequest = new XMLHttpRequest()
-    ajaxRequest.open('GET', impulseUrl, true)
-    ajaxRequest.responseType = 'arraybuffer'
+// function getImpulse(context) {
+//   return new Promise((resolve, reject) => {
+//     const ajaxRequest = new XMLHttpRequest()
+//     ajaxRequest.open('GET', impulseUrl, true)
+//     ajaxRequest.responseType = 'arraybuffer'
 
-    ajaxRequest.onload = () => {
-      const impulseData = ajaxRequest.response
-      context.decodeAudioData(impulseData, buffer => {
-        resolve(buffer)
-      }, (err) => {
-        reject(err)
-      })
-    }
+//     ajaxRequest.onload = () => {
+//       const impulseData = ajaxRequest.response
+//       context.decodeAudioData(impulseData, buffer => {
+//         resolve(buffer)
+//       }, (err) => {
+//         reject(err)
+//       })
+//     }
 
-    ajaxRequest.send()
-  })
-}
+//     ajaxRequest.send()
+//   })
+// }
 
 export default class AudioInterface {
   constructor() {
@@ -25,14 +25,14 @@ export default class AudioInterface {
     this.context = new AudioContext()
 
     // Reverb
-    this.convolverNode = this.context.createConvolver()
-    this.convolverNode.loop = true
-    this.convolverNode.normalize = true
+    // this.convolverNode = this.context.createConvolver()
+    // this.convolverNode.loop = true
+    // this.convolverNode.normalize = true
 
-    getImpulse(this.context)
-      .then(buffer => {
-        this.convolverNode.buffer = buffer
-      })
+    // getImpulse(this.context)
+    //   .then(buffer => {
+    //     this.convolverNode.buffer = buffer
+    //   })
 
     // Compressor
     this.compressorNode = this.context.createDynamicsCompressor()

@@ -1,46 +1,47 @@
-const BUFFER_SIZE = 1024
+const BUFFER_SIZE = 2048
 
 export default class Channel {
   constructor(audioInterface, synthesizer, note) {
-    this.audioInterface = audioInterface
-    this.isRunning = false
+    this.isPlaying = false
     this.note = note
-    this.scriptProcessorNode = null
     this.synthesizer = synthesizer
-  }
 
-  start() {
-    if (this.isRunning) {
-      throw new Error('Channel was already started')
-    }
-
-    const { context, compressorNode } = this.audioInterface
-    this.scriptProcessorNode = context.createScriptProcessor(BUFFER_SIZE, 1, 2)
+    const { context, compressorNode } = audioInterface
+    const scriptProcessorNode = context.createScriptProcessor(BUFFER_SIZE, 1, 1)
 
     const bufferSourceNode = context.createBufferSource()
     bufferSourceNode.start(0)
 
     // Connect audio nodes
-    bufferSourceNode.connect(this.scriptProcessorNode)
-    this.scriptProcessorNode.connect(compressorNode)
+    bufferSourceNode.connect(scriptProcessorNode)
+    scriptProcessorNode.connect(compressorNode)
 
     // Start FM synthesis
-    this.scriptProcessorNode.onaudioprocess = (event) => {
-      const left = event.outputBuffer.getChannelData(0)
-      const right = event.outputBuffer.getChannelData(1)
-
-      this.synthesizer.generateAudio(left, right)
+    scriptProcessorNode.onaudioprocess = (event) => {
+      this.synthesizer.generateAudio(event.outputBuffer.getChannelData(0))
     }
-
-    this.isRunning = true
   }
 
-  stop() {
-    if (!this.isRunning) {
+  noteOn(note, velocity) {
+    if (this.isPlaying) {
+      throw new Error('Channel was already started')
+    }
+
+    this.isPlaying = true
+    this.note = note
+    this.synthesizer.noteOn(note, velocity)
+  }
+
+  noteOff() {
+    if (!this.isPlaying) {
       throw new Error('Channel was already stopped')
     }
 
-    this.scriptProcessorNode.disconnect()
-    this.isRunning = false
+    this.note = null
+
+    this.synthesizer.noteOff()
+      .then(() => {
+        this.isPlaying = false
+      })
   }
 }
