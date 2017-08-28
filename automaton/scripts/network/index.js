@@ -73,6 +73,7 @@ export default class Network {
     const {
       serverHost,
       serverKey,
+      serverPath,
     } = configuration
 
     const peerId = parseInt(configuration.peerId, 10)
@@ -145,12 +146,18 @@ export default class Network {
         })
     }
 
-    this.peer = new Peer(getPeerString(peerId), {
+    const serverOptions = {
       host: serverHost,
-      key: serverKey,
+      path: serverPath,
       port: serverPort,
       secure: window.location.protocol === 'https:',
-    })
+    }
+
+    if (serverKey) {
+      serverOptions.key = serverKey
+    }
+
+    this.peer = new Peer(getPeerString(peerId), serverOptions)
 
     this.peer.on('open', () => {
       connectToPeers()

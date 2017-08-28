@@ -5,7 +5,7 @@ const path = require('path')
 const webpack = require('webpack')
 
 const SERVER_PORT = 9000
-const DIST_FOLDER = 'docs'
+const DIST_FOLDER = 'dist'
 const SRC_FOLDER = 'automaton'
 const VENDOR_FOLDER_NAME = 'lib'
 

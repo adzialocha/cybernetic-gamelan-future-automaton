@@ -13,7 +13,7 @@ npm install
 ## Development
 
 ```
-npm start
+npm run serve
 npm run lint
 ```
 
@@ -21,4 +21,5 @@ npm run lint
 
 ```
 npm run build
+npm start
 ```

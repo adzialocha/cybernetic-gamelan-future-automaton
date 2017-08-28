@@ -14,6 +14,7 @@ const defaultConfiguration = {
   peerId: 1,
   serverHost: '0.peerjs.com',
   serverKey: 'gs5wl7sq2cblnmi',
+  serverPath: '/',
   serverPort: 9000,
 }
 

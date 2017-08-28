@@ -10,9 +10,11 @@
     "lint": "npm run lint:js && npm run lint:scss",
     "lint:js": "eslint automaton/scripts; exit 0",
     "lint:scss": "sass-lint -c .sass-lint.yml 'automaton/styles/*.scss' -v -q",
-    "serve": "webpack-dev-server",
-    "serve:test": "webpack-dev-server --host 0.0.0.0",
-    "start": "npm run serve",
+    "postinstall": "npm run build",
+    "serve": "webpack-dev-server --host 0.0.0.0",
+    "serve:express": "cross-env NODE_ENV=development node server/index.js",
+    "serve:express:production": "node server/index.js",
+    "start": "npm run serve:express:production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -48,7 +50,9 @@
     "webpack-dev-server": "^2.7.1"
   },
   "dependencies": {
+    "express": "^4.15.4",
     "normalize.css": "^7.0.0",
+    "peer": "^0.2.8",
     "peerjs": "^0.3.14",
     "three": "^0.87.1",
     "timesync": "^0.4.1"
