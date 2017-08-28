@@ -34,15 +34,11 @@ export default class AudioInterface {
     //     this.convolverNode.buffer = buffer
     //   })
 
-    // Compressor
-    this.compressorNode = this.context.createDynamicsCompressor()
-
     // Gain
     this.currentVolume = 0.5
     this.gainNode = this.context.createGain()
     this.gainNode.gain.value = this.currentVolume
 
-    this.compressorNode.connect(this.gainNode)
     // this.convolverNode.connect(this.gainNode)
     this.gainNode.connect(this.context.destination)
   }

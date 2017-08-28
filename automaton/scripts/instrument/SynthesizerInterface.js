@@ -8,6 +8,7 @@ const DEFAULT_NOTE = 72
 const DEFAULT_VELOCITY = 1.0
 
 const CHANNELS_COUNT = 20
+const BUFFER_SIZE = 1024
 
 export default class SynthesizerInterface {
   constructor() {
@@ -25,6 +26,25 @@ export default class SynthesizerInterface {
       // Create a channel for audio
       const channel = new Channel(this.audio, synthesizer)
       this.channels.push(channel)
+    }
+
+    const { context, gainNode } = this.audio
+    const scriptProcessorNode = context.createScriptProcessor(BUFFER_SIZE, 1, 1)
+
+    // Connect audio nodes
+    scriptProcessorNode.connect(gainNode)
+
+    // Start FM synthesis
+    scriptProcessorNode.onaudioprocess = (event) => {
+      const buffer = new Float32Array(BUFFER_SIZE)
+
+      this.channels.forEach(channel => {
+        if (channel.isPlaying) {
+          channel.synthesizer.generateAudio(buffer)
+        }
+      })
+
+      event.outputBuffer.copyToChannel(buffer, 0, 0)
     }
   }
 

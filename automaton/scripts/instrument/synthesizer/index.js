@@ -31,8 +31,8 @@ export default class Synthesizer {
     this.changePreset(options.preset)
   }
 
-  generateAudio(data) {
-    const numSamples = data.length
+  generateAudio(buffer) {
+    const numSamples = buffer.length
     const algorithm = ALGORITHMS[this.algorithmId]
 
     for (let sampleIndex = 0; sampleIndex < numSamples; sampleIndex += 1) {
@@ -64,7 +64,7 @@ export default class Synthesizer {
         mainOutput += operator._output * algorithm[4][op]
       }
 
-      data[sampleIndex] = mainOutput
+      buffer[sampleIndex] += mainOutput
 
       this.operators.forEach(operator => {
         operator.next()
