@@ -5,6 +5,9 @@ const PAUSE_CHAR = ' '
 const BPM_UP = '>'
 const BPM_DOWN = '<'
 
+const MAX_BPM_LEVEL = 1
+const MIN_BPM_LEVEL = -3
+
 function stringToSequencerPattern(patternString, octave = 0, velocity, noteMaterial) {
   const notes = patternString.toLowerCase().split('')
 
@@ -66,6 +69,11 @@ function extractBpmLevel(string) {
 
 export function convertString(string, octave, velocity, noteMaterial) {
   const bpmLevel = extractBpmLevel(string)
+
+  if (bpmLevel > MAX_BPM_LEVEL || bpmLevel < MIN_BPM_LEVEL) {
+    return false
+  }
+
   const pattern = stringToSequencerPattern(
     string.replace(/(<|>)/g, ''),
     octave,
