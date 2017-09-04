@@ -20,10 +20,15 @@ export default class View {
       rendererCanvas: document.getElementById('renderer-canvas'),
       space: document.getElementById('space'),
       tick: document.getElementById('tick'),
+      wordsOptions: document.getElementById('words-options'),
+      wordsSelection: document.getElementById('words-selection'),
     }
 
     this.errorMessages = []
     this.committedPattern = null
+
+    this.words = []
+    this.selectedWords = []
 
     // Open initial view
     this.changeView(VIEW_IDS.indexOf(INITIAL_VIEW))
@@ -131,6 +136,56 @@ export default class View {
 
   getRendererCanvas() {
     return this.elements.rendererCanvas
+  }
+
+  // Words
+
+  updateWords() {
+    this.elements.wordsOptions.innerHTML = ''
+
+    this.words.forEach(item => {
+      const wordElem = document.createElement('div')
+      wordElem.classList.add('words__item')
+      wordElem.innerText = `${item.id} ${item.word}`
+
+      this.elements.wordsOptions.appendChild(wordElem)
+    })
+
+    this.elements.wordsSelection.innerHTML = ''
+
+    this.selectedWords.forEach(item => {
+      const wordElem = document.createElement('div')
+      wordElem.classList.add('words__item')
+      wordElem.innerText = item.word
+
+      this.elements.wordsSelection.appendChild(wordElem)
+    })
+  }
+
+  showWords(words) {
+    this.words = words.map((word, index) => {
+      return {
+        id: index + 1,
+        word,
+      }
+    })
+
+    this.updateWords()
+  }
+
+  selectWord(id) {
+    const index = this.words.findIndex(item => {
+      return item.id === id
+    })
+
+    if (index === -1) {
+      return
+    }
+
+    this.selectedWords.push(this.words[index])
+    this.words.splice(index, 1)
+
+    this.updateWords()
   }
 
   // Pattern

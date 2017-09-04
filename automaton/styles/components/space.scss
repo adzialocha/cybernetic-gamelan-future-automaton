@@ -40,6 +40,8 @@
 
   display: none;
 
+  width: 100%;
+
   padding: 20px;
 
   border: 0;
@@ -70,7 +72,7 @@
   color: $green;
 }
 
-.space__button {
+.space__words {
   position: absolute;
 
   top: 50%;

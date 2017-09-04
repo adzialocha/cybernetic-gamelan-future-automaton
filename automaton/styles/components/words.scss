@@ -1,0 +1,18 @@
+.words {
+  font-size: $font-size-xl;
+}
+
+.words__selection {
+  width: 80%;
+
+  .words__item {
+    display: inline;
+  }
+}
+
+// .words__options {
+// }
+
+.words__item {
+  margin: 20px;
+}

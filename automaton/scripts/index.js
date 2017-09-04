@@ -8,6 +8,10 @@ import Network from './network'
 import Settings from './Settings'
 import View from './View'
 import Visuals from './visuals'
+import Words from './words'
+
+const INPUT_VALID_CHARS = '._-/:<>^°'
+const INPUT_VALID_KEY_CODES = [8, 13, 37, 39]
 
 const api = new API()
 const composition = new Composition()
@@ -19,8 +23,10 @@ const visuals = new Visuals({
   initialHeight: window.innerHeight,
   initialWidth: window.innerWidth,
 })
+const words = new Words()
 
 view.changeSpaceState(true)
+view.showWords(words.suggest())
 
 const network = new Network({
   onOpen: () => {
@@ -96,7 +102,18 @@ window.automaton = window.automaton || {
     view.changePattern(event.target.value)
   },
   onKeyDownPattern: event => {
-    if (event.keyCode === 13) {
+    const { keyCode, key } = event
+
+    if (
+      !INPUT_VALID_KEY_CODES.includes(keyCode) &&
+      !INPUT_VALID_CHARS.includes(key)
+    ) {
+      event.preventDefault()
+      event.stopPropagation()
+      return
+    }
+
+    if (keyCode === 13) {
       event.preventDefault()
       event.stopPropagation()
 
@@ -113,9 +130,17 @@ window.automaton = window.automaton || {
 window.addEventListener('keydown', (event) => {
   const { keyCode, shiftKey } = event
 
-  if (shiftKey) {
-    // Press shift + number
-    view.changeView(keyCode - 49)
+  // Press number
+  if (keyCode >= 49 && keyCode <= 57) {
+    const number = keyCode - 49
+
+    if (shiftKey) {
+      // Press shift + number
+      view.changeView(number)
+    } else {
+      view.selectWord(number + 1)
+    }
+
     return
   }
 
