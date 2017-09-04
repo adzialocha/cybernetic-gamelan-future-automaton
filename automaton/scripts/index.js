@@ -8,7 +8,7 @@ import Network from './network'
 import Settings from './Settings'
 import View from './View'
 import Visuals from './visuals'
-import Words from './words'
+// import Words from './words'
 
 const INPUT_VALID_CHARS = '._-/:<>^°'
 const INPUT_VALID_KEY_CODES = [8, 13, 37, 39]
@@ -23,23 +23,16 @@ const visuals = new Visuals({
   initialHeight: window.innerHeight,
   initialWidth: window.innerWidth,
 })
-const words = new Words()
 
-view.changeSpaceState(true)
-view.showWords(words.suggest())
+// const words = new Words()
+// view.showWords(words.suggest())
 
 const network = new Network({
   onOpen: () => {
     view.changeConnectionState(false, true)
-    view.changeSpaceState(true)
-
-    composition.start()
   },
   onClose: () => {
     view.changeConnectionState(false, false)
-    view.changeSpaceState(false)
-
-    composition.stop()
   },
   onOpenRemote: peerId => {
     view.addRemotePeer(peerId)
@@ -75,6 +68,19 @@ window.addEventListener('resize', () => {
   visuals.resize(window.innerWidth, window.innerHeight)
 }, false)
 
+// Pointer lock state changed
+document.addEventListener('pointerlockchange', () => {
+  const isPointerLocked = document.pointerLockElement === document.body
+
+  view.changeSpaceState(isPointerLocked)
+
+  if (isPointerLocked) {
+    composition.start()
+  } else {
+    composition.stop()
+  }
+}, false)
+
 // Expose some interfaces to the view
 window.automaton = window.automaton || {
   network: {
@@ -97,6 +103,24 @@ window.automaton = window.automaton || {
       const { id, value } = event.target
       settings.update(id, value)
     },
+  },
+  start: () => {
+    const element = document.body
+
+    element.requestPointerLock = (
+      element.requestPointerLock ||
+      element.mozRequestPointerLock ||
+      element.webkitRequestPointerLock
+    )
+
+    element.requestFullScreen = (
+      element.requestFullScreen ||
+      element.mozRequestFullScreen ||
+      element.webkitRequestFullScreen
+    )
+
+    element.requestPointerLock()
+    // element.requestFullScreen()
   },
   onKeyUpPattern: event => {
     view.changePattern(event.target.value)
@@ -189,3 +213,7 @@ window.addEventListener('keyup', (event) => {
     break
   }
 })
+
+window.addEventListener('contextmenu', event => {
+  event.preventDefault()
+}, false)

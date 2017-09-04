@@ -15,7 +15,7 @@
     display: block;
   }
 
-  .space__button {
+  .space__start {
     display: none;
   }
 
@@ -73,6 +73,15 @@
 }
 
 .space__words {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+}
+
+.space__start {
   position: absolute;
 
   top: 50%;
