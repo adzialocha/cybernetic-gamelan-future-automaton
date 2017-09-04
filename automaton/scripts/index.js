@@ -69,8 +69,9 @@ window.addEventListener('resize', () => {
 }, false)
 
 // Pointer lock state changed
-document.addEventListener('pointerlockchange', () => {
-  const isPointerLocked = document.pointerLockElement === document.body
+function onPointerLockChange() {
+  const element = document.pointerLockElement || document.mozPointerLockElement
+  const isPointerLocked = element === document.body
 
   view.changeSpaceState(isPointerLocked)
 
@@ -79,7 +80,13 @@ document.addEventListener('pointerlockchange', () => {
   } else {
     composition.stop()
   }
-}, false)
+}
+
+if ('onpointerlockchange' in document) {
+  document.addEventListener('pointerlockchange', onPointerLockChange, false)
+} else if ('onmozpointerlockchange' in document) {
+  document.addEventListener('mozpointerlockchange', onPointerLockChange, false)
+}
 
 // Expose some interfaces to the view
 window.automaton = window.automaton || {
@@ -120,7 +127,7 @@ window.automaton = window.automaton || {
     )
 
     element.requestPointerLock()
-    // element.requestFullScreen()
+    element.requestFullScreen()
   },
   onKeyUpPattern: event => {
     view.changePattern(event.target.value)

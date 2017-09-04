@@ -5,8 +5,8 @@ import {
 } from 'three'
 
 const PI_2 = Math.PI / 2
-const MOVE_SPEED = 200.0
-const STOP_SPEED = 50.0
+const MOVE_SPEED = 10.0
+const STOP_SPEED = 10.0
 
 export default class PointerLockControls {
   constructor(camera) {
