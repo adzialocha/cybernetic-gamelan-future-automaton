@@ -1,17 +1,29 @@
-.words {
-  font-size: $font-size-xl;
-}
+// .words {
+// }
 
 .words__selection {
   width: 80%;
+
+  opacity: 1;
+
+  font-size: $font-size-xxl;
+
+  transition: opacity 100ms linear;
 
   .words__item {
     display: inline;
   }
 }
 
-// .words__options {
-// }
+.words__selection--final {
+  opacity: 0;
+
+  transition-duration: 20s;
+}
+
+.words__options {
+  font-size: $font-size-xl;
+}
 
 .words__item {
   margin: 20px;

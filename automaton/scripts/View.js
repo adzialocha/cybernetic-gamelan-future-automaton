@@ -7,6 +7,8 @@ const VIEW_IDS = [
 
 const INITIAL_VIEW = 'main-view'
 
+const WORDS_FADE_DURATION = 20000
+
 export default class View {
   constructor() {
     this.elements = {
@@ -29,6 +31,7 @@ export default class View {
 
     this.words = []
     this.selectedWords = []
+    this.wordsTimeout = null
 
     // Open initial view
     this.changeView(VIEW_IDS.indexOf(INITIAL_VIEW))
@@ -143,47 +146,54 @@ export default class View {
   updateWords() {
     this.elements.wordsOptions.innerHTML = ''
 
-    this.words.forEach(item => {
+    this.words.forEach(word => {
       const wordElem = document.createElement('div')
       wordElem.classList.add('words__item')
-      wordElem.innerText = `${item.id} ${item.word}`
+      wordElem.innerText = word
 
       this.elements.wordsOptions.appendChild(wordElem)
     })
 
     this.elements.wordsSelection.innerHTML = ''
 
-    this.selectedWords.forEach(item => {
+    this.selectedWords.forEach(word => {
       const wordElem = document.createElement('div')
       wordElem.classList.add('words__item')
-      wordElem.innerText = item.word
+      wordElem.innerText = word
 
       this.elements.wordsSelection.appendChild(wordElem)
     })
   }
 
   showWords(words) {
-    this.words = words.map((word, index) => {
-      return {
-        id: index + 1,
-        word,
-      }
-    })
+    this.selectedWords = []
+    this.words = words
+
+    if (this.wordsTimeout) {
+      clearTimeout(this.wordsTimeout)
+      this.wordsTimeout = null
+    }
+
+    this.elements.wordsSelection.classList.remove('words__selection--final')
 
     this.updateWords()
   }
 
-  selectWord(id) {
-    const index = this.words.findIndex(item => {
-      return item.id === id
-    })
-
-    if (index === -1) {
+  selectWord(index) {
+    if (index > this.words.length - 1) {
       return
     }
 
     this.selectedWords.push(this.words[index])
     this.words.splice(index, 1)
+
+    if (this.words.length === 0) {
+      this.elements.wordsSelection.classList.add('words__selection--final')
+
+      this.wordsTimeout = setTimeout(() => {
+        this.selectedWords = []
+      }, WORDS_FADE_DURATION)
+    }
 
     this.updateWords()
   }

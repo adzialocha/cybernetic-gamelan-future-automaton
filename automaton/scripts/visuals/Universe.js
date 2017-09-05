@@ -1,11 +1,15 @@
 import {
+  BoxGeometry,
   DoubleSide,
+  IcosahedronGeometry,
+  LineBasicMaterial,
+  LineSegments,
   Mesh,
   MeshPhongMaterial,
   Object3D,
   PointLight,
-  Vector3,
   SphereBufferGeometry,
+  Vector3,
 } from 'three'
 
 import deepAssign from 'deep-assign'
@@ -22,20 +26,6 @@ import {
 
 import { getColor } from './colors'
 
-const defaultOptions = {
-  collections: [],
-  landscapes: [],
-  lightsColor: 'WHITE',
-  lightsCount: 5,
-  lightsDistance: 200.0,
-  lightsSpeed: 3,
-  lightsStrength: 0.8,
-  sphereColor: 'CREAM',
-  sphereFactor: 0.2,
-  sphereSegments: 32,
-  sphereSize: 150.0,
-}
-
 function drawGeometryLines(geometry, color) {
   return new LineSegments(
     geometry,
@@ -45,9 +35,35 @@ function drawGeometryLines(geometry, color) {
   )
 }
 
+function getGeometry(name, attributes) {
+  switch (name) {
+  case 'BoxGeometry':
+    return new BoxGeometry(...attributes)
+  case 'IcosahedronGeometry':
+    return new IcosahedronGeometry(...attributes)
+  }
+
+  return null
+}
+
 export default class Universe extends Object3D {
   constructor(options) {
     super()
+
+    const defaultOptions = {
+      collections: [],
+      landscapes: [],
+      lightsColor: 'WHITE',
+      lightsCount: 5,
+      lightsDistance: 200.0,
+      lightsSpeed: 3,
+      lightsStrength: 1.0,
+      sphereColor: 'CREAM',
+      sphereFactor: 0.2,
+      sphereHasWireframes: false,
+      sphereSegments: 32,
+      sphereSize: 150.0,
+    }
 
     this.options = deepAssign({}, defaultOptions, options)
 
@@ -62,6 +78,7 @@ export default class Universe extends Object3D {
     const material = new MeshPhongMaterial({
       color: getColor(this.options.sphereColor),
       side: DoubleSide,
+      wireframe: this.options.sphereHasWireframes,
     })
 
     this.sphere = new Mesh(geometry, material)
@@ -108,7 +125,7 @@ export default class Universe extends Object3D {
         new MeshPhongMaterial({
           color: getColor(collection.meshColor),
           specular: getColor(collection.meshSpecular),
-          wireframes: collection.hasWireframes,
+          wireframe: collection.hasWireframes,
         }),
         this.options.sphereSize,
         collection.factor
@@ -120,7 +137,7 @@ export default class Universe extends Object3D {
         this.add(
           drawGeometryLines(
             mesh.geometry,
-            getColor(collection.lineColor)
+            getColor(collection.linesColor)
           )
         )
       }

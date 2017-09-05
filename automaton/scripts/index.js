@@ -1,6 +1,6 @@
 /* eslint-disable no-use-before-define */
 
-import styles from '../styles/index.scss' // eslint-disable-line no-unused-vars
+import '../styles/index.scss'
 
 import API from './network/API'
 import Composition from './Composition'
@@ -8,7 +8,7 @@ import Network from './network'
 import Settings from './Settings'
 import View from './View'
 import Visuals from './visuals'
-// import Words from './words'
+import Words from './words'
 
 const IS_DEBUG_MODE = true
 
@@ -25,10 +25,12 @@ const visuals = new Visuals({
   initialHeight: window.innerHeight,
   initialWidth: window.innerWidth,
   isDebugMode: IS_DEBUG_MODE,
+  onUniverseEntered: () => {
+    view.showWords(words.suggest())
+  },
 })
 
-// const words = new Words()
-// view.showWords(words.suggest())
+const words = new Words()
 
 const network = new Network({
   onOpen: () => {
@@ -80,6 +82,7 @@ function onPointerLockChange() {
   visuals.isEnabled = isPointerLocked
 
   if (isPointerLocked) {
+    words.reset()
     composition.start()
   } else {
     composition.stop()
@@ -176,7 +179,7 @@ window.addEventListener('keydown', (event) => {
       // Press shift + number
       view.changeView(number)
     } else {
-      view.selectWord(number + 1)
+      view.selectWord(number)
     }
 
     return

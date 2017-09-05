@@ -19,6 +19,10 @@
     display: none;
   }
 
+  .space__words {
+    display: block;
+  }
+
   cursor: none;
 }
 
@@ -77,6 +81,8 @@
 
   top: 50%;
   left: 50%;
+
+  display: none;
 
   transform: translate(-50%, -50%);
 }

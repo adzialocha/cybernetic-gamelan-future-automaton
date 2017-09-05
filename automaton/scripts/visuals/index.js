@@ -21,7 +21,7 @@ import galaxy from './galaxy.json'
 
 const FOG_FAR_DISTANCE = 800
 const HEMISPHERE_LIGHT_INTENSITY = 0.08
-const POINT_LIGHT_DISTANCE = 2500
+const POINT_LIGHT_DISTANCE = 500
 
 const defaultOptions = {
   canvas: null,
@@ -108,7 +108,7 @@ export default class Visuals {
 
     const pointLight = new PointLight(
       getColor('WHITE'),
-      0.25,
+      0.8,
       POINT_LIGHT_DISTANCE,
       2
     )

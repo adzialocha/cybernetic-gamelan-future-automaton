@@ -1,8 +1,6 @@
 import {
   BufferGeometry,
   Geometry,
-  LineBasicMaterial,
-  LineSegments,
   Mesh,
   Vector3,
 } from 'three'
@@ -52,7 +50,7 @@ export function randomlyPositionObject(object, sphereSize) {
     randomRangePercentage(),
   )
 
-  const scale = randomRange(25, 300) / 100.0
+  const scale = randomRange(25, 500) / 100.0
 
   object.scale.set(
     scale, scale, scale

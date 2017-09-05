@@ -24,7 +24,7 @@ export default class Landscape extends PlaneBufferGeometry {
     const vertices = this.attributes.position.array
 
     for (let i = 0, j = 0, l = vertices.length; i < l; i += 1, j += 3) {
-      vertices[j + 2] = math.eval(this.options.fn, { i })
+      vertices[j + 2] = math.eval(options.fn, { i })
     }
   }
 }
