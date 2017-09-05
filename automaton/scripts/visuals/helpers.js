@@ -39,15 +39,6 @@ export function mergeRandomlyPlacedObjects(count, baseGeometry, material, sphere
   )
 }
 
-export function drawGeometryLines(geometry, color) {
-  return new LineSegments(
-    geometry,
-    new LineBasicMaterial({
-      color,
-    })
-  )
-}
-
 export function randomlyPositionObject(object, sphereSize) {
   object.position.set(
     randomRangeWithNegative(sphereSize),

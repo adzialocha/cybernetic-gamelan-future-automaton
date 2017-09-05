@@ -1,14 +1,14 @@
 import {
   DoubleSide,
-  BoxGeometry,
   Mesh,
   MeshPhongMaterial,
   Object3D,
   PointLight,
   Vector3,
   SphereBufferGeometry,
-  IcosahedronGeometry,
 } from 'three'
+
+import deepAssign from 'deep-assign'
 
 import Landscape from './Landscape'
 
@@ -17,39 +17,50 @@ import {
   randomizeBufferGeometryVertices,
   randomlyPositionObject,
   randomRangePercentage,
-  drawGeometryLines,
   randomRange,
 } from './helpers'
 
-import {
-  CREAM,
-  DARK_BLUE,
-  DARKER_BLUE,
-  GREEN,
-  LIGHT_GRAY,
-  WHITE,
-} from './colors'
+import { getColor } from './colors'
 
 const defaultOptions = {
+  collections: [],
+  landscapes: [],
+  lightsColor: 'WHITE',
   lightsCount: 5,
+  lightsDistance: 200.0,
   lightsSpeed: 3,
-  lightsStrength: 200.0,
-  sphereColor: CREAM,
+  lightsStrength: 0.8,
+  sphereColor: 'CREAM',
+  sphereFactor: 0.2,
+  sphereSegments: 32,
   sphereSize: 150.0,
+}
+
+function drawGeometryLines(geometry, color) {
+  return new LineSegments(
+    geometry,
+    new LineBasicMaterial({
+      color,
+    })
+  )
 }
 
 export default class Universe extends Object3D {
   constructor(options) {
     super()
 
-    this.options = Object.assign({}, defaultOptions, options)
+    this.options = deepAssign({}, defaultOptions, options)
 
     // Main sphere
-    const geometry = new SphereBufferGeometry(this.options.sphereSize, 32, 32)
-    randomizeBufferGeometryVertices(geometry, 0.2)
+    const geometry = new SphereBufferGeometry(
+      this.options.sphereSize,
+      this.options.sphereSegments,
+      this.options.sphereSegments
+    )
+    randomizeBufferGeometryVertices(geometry, this.options.sphereFactor)
 
     const material = new MeshPhongMaterial({
-      color: this.options.sphereColor,
+      color: getColor(this.options.sphereColor),
       side: DoubleSide,
     })
 
@@ -62,7 +73,13 @@ export default class Universe extends Object3D {
     this.lightsRadius = []
 
     for (let i = 0; i < this.options.lightsCount; i += 1) {
-      const light = new PointLight(WHITE, 0.8, this.options.lightsStrength, 2)
+      const light = new PointLight(
+        getColor(this.options.lightsColor),
+        this.options.lightsStrength,
+        this.options.lightsDistance,
+        2
+      )
+
       randomlyPositionObject(light, this.options.sphereSize)
 
       this.lightsAngle.push(
@@ -74,8 +91,8 @@ export default class Universe extends Object3D {
       )
 
       const radius = randomRange(10, this.options.sphereSize / 2)
-      this.lightsRadius.push(new Vector3(radius, radius + 10, radius - 10))
 
+      this.lightsRadius.push(new Vector3(radius, radius + 10, radius - 10))
       this.lights.push(light)
     }
 
@@ -83,36 +100,59 @@ export default class Universe extends Object3D {
       this.add(light)
     })
 
-    const smallObjects = mergeRandomlyPlacedObjects(
-      1000,
-      new BoxGeometry(2, 2, 2),
-      new MeshPhongMaterial({
-        color: GREEN,
-        specular: WHITE,
-      }),
-      this.options.sphereSize,
-      0.8
-    )
+    // Add objects to scenery
+    this.options.collections.forEach(collection => {
+      const mesh = mergeRandomlyPlacedObjects(
+        collection.count,
+        getGeometry(collection.geometry, collection.attributes),
+        new MeshPhongMaterial({
+          color: getColor(collection.meshColor),
+          specular: getColor(collection.meshSpecular),
+          wireframes: collection.hasWireframes,
+        }),
+        this.options.sphereSize,
+        collection.factor
+      )
 
-    this.add(smallObjects)
-    this.add(drawGeometryLines(smallObjects.geometry, WHITE))
+      this.add(mesh)
 
-    const mediumObjects = mergeRandomlyPlacedObjects(
-      350,
-      new IcosahedronGeometry(8, 2),
-      new MeshPhongMaterial({
-        color: DARK_BLUE,
-        specular: DARKER_BLUE,
-      }),
-      this.options.sphereSize,
-    )
+      if (collection.hasLines) {
+        this.add(
+          drawGeometryLines(
+            mesh.geometry,
+            getColor(collection.lineColor)
+          )
+        )
+      }
+    })
 
-    this.add(mediumObjects)
-    this.add(drawGeometryLines(mediumObjects.geometry, DARKER_BLUE))
+    // Add landscapes to scenery
+    this.options.landscapes.forEach(landscape => {
+      const { size, segments, fn } = landscape
 
-    // Place landscape
-    const landscape = new Landscape()
-    this.add(drawGeometryLines(landscape, LIGHT_GRAY))
+      const mesh = drawGeometryLines(
+        new Landscape({
+          fn,
+          segments,
+          size,
+        }),
+        getColor(landscape.color)
+      )
+
+      mesh.position.set(
+        landscape.position.x,
+        landscape.position.y,
+        landscape.position.z,
+      )
+
+      mesh.rotation.set(
+        landscape.rotation.x,
+        landscape.rotation.y,
+        landscape.rotation.z,
+      )
+
+      this.add(mesh)
+    })
   }
 
   update(clock) {

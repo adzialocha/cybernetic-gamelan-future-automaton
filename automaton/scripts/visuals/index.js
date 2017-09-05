@@ -3,6 +3,7 @@ import {
   Fog,
   HemisphereLight,
   PerspectiveCamera,
+  PointLight,
   Raycaster,
   Scene,
   Vector3,
@@ -14,12 +15,13 @@ import Stats from 'stats.js'
 import PointerLockControls from './PointerLockControls'
 import Universe from './Universe'
 
-import { WHITE, DARK_GRAY } from './colors'
+import { getColor } from './colors'
 
 import galaxy from './galaxy.json'
 
+const FOG_FAR_DISTANCE = 800
 const HEMISPHERE_LIGHT_INTENSITY = 0.08
-const FOG_FAR_DISTANCE = 500
+const POINT_LIGHT_DISTANCE = 2500
 
 const defaultOptions = {
   canvas: null,
@@ -65,8 +67,8 @@ export default class Visuals {
 
     // Prepare scene
     this.scene = new Scene()
-    this.scene.background = DARK_GRAY
-    // this.scene.fog = new Fog(DARK_GRAY, 0, FOG_FAR_DISTANCE)
+    this.scene.background = getColor('DARK_GRAY')
+    this.scene.fog = new Fog(getColor('DARK_GRAY'), 0, FOG_FAR_DISTANCE)
 
     // Prepare movement controller
     this.controls = new PointerLockControls(
@@ -98,8 +100,21 @@ export default class Visuals {
     })
 
     // Prepare light scenery
-    const light = new HemisphereLight(WHITE, WHITE, HEMISPHERE_LIGHT_INTENSITY)
-    this.scene.add(light)
+    const hemisphereLight = new HemisphereLight(
+      getColor('WHITE'),
+      getColor('WHITE'),
+      HEMISPHERE_LIGHT_INTENSITY
+    )
+
+    const pointLight = new PointLight(
+      getColor('WHITE'),
+      0.25,
+      POINT_LIGHT_DISTANCE,
+      2
+    )
+
+    this.scene.add(pointLight)
+    this.scene.add(hemisphereLight)
 
     // Raycaster for collision detection
     this.raycaster = new Raycaster(

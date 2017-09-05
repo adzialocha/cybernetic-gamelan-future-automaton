@@ -55,7 +55,9 @@
     "webpack-dev-server": "^2.7.1"
   },
   "dependencies": {
+    "deep-assign": "^2.0.0",
     "express": "^4.15.4",
+    "mathjs": "^3.16.3",
     "normalize.css": "^7.0.0",
     "peer": "^0.2.8",
     "peerjs": "^0.3.14",
