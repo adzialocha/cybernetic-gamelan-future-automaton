@@ -10,7 +10,7 @@ import View from './View'
 import Visuals from './visuals'
 import Words from './words'
 
-const IS_DEBUG_MODE = true
+const IS_DEBUG_MODE = false
 
 const INPUT_VALID_CHARS = '._-/:<>^°'
 const INPUT_VALID_KEY_CODES = [8, 13, 37, 39]
@@ -106,6 +106,7 @@ function onUniverseChange() {
   // Change pattern and synth sound
   const pattern = composition.nextPreset()
   view.changePattern(pattern)
+  view.commitPattern(pattern)
 
   // Start words
   view.startWords(words.suggest())
