@@ -33,7 +33,7 @@ import {
 const defaultOptions = {
   lightsCount: 5,
   lightsSpeed: 3,
-  lightsStrength: 250.0,
+  lightsStrength: 200.0,
   sphereColor: CREAM,
   sphereSize: 150.0,
 }

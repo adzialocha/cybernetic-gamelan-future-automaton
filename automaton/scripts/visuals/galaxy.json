@@ -1,0 +1,22 @@
+[
+  {
+    "name": "test",
+    "position": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "sphereSize": 150
+  },
+  {
+    "name": "test2",
+    "position": {
+      "x": 500,
+      "y": 500,
+      "z": 0
+    },
+    "sphereSize": 500,
+    "lightsStrength": 500,
+    "lightsCount": 20
+  }
+]

@@ -10,6 +10,8 @@ import View from './View'
 import Visuals from './visuals'
 // import Words from './words'
 
+const IS_DEBUG_MODE = true
+
 const INPUT_VALID_CHARS = '._-/:<>^°'
 const INPUT_VALID_KEY_CODES = [8, 13, 37, 39]
 
@@ -22,6 +24,7 @@ const visuals = new Visuals({
   devicePixelRatio: window.devicePixelRatio,
   initialHeight: window.innerHeight,
   initialWidth: window.innerWidth,
+  isDebugMode: IS_DEBUG_MODE,
 })
 
 // const words = new Words()
@@ -128,7 +131,10 @@ window.automaton = window.automaton || {
     )
 
     element.requestPointerLock()
-    // element.requestFullScreen()
+
+    if (!IS_DEBUG_MODE) {
+      element.requestFullScreen()
+    }
   },
   onKeyUpPattern: event => {
     view.changePattern(event.target.value)

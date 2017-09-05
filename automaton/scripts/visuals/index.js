@@ -16,8 +16,10 @@ import Universe from './Universe'
 
 import { WHITE, DARK_GRAY } from './colors'
 
+import galaxy from './galaxy.json'
+
 const HEMISPHERE_LIGHT_INTENSITY = 0.08
-const FOG_FAR_DISTANCE = 350
+const FOG_FAR_DISTANCE = 500
 
 const defaultOptions = {
   canvas: null,
@@ -64,7 +66,7 @@ export default class Visuals {
     // Prepare scene
     this.scene = new Scene()
     this.scene.background = DARK_GRAY
-    this.scene.fog = new Fog(DARK_GRAY, 0, FOG_FAR_DISTANCE)
+    // this.scene.fog = new Fog(DARK_GRAY, 0, FOG_FAR_DISTANCE)
 
     // Prepare movement controller
     this.controls = new PointerLockControls(
@@ -74,19 +76,25 @@ export default class Visuals {
 
     this.scene.add(this.controls.yawObject)
 
-    // Universes
-    this.universeSpheres = []
-    this.universes = []
+    // Generate universes from galaxy file
     this.currentUniverse = null
 
-    const universe = new Universe(150.0)
-    universe.position.set(0, 0, 0)
+    this.universes = []
+    this.universeSpheres = []
 
-    this.universeSpheres.push(universe.sphere)
-    this.universes.push(universe)
+    galaxy.forEach(setting => {
+      const universe = new Universe(setting)
 
-    this.universes.forEach(object => {
-      this.scene.add(object)
+      universe.position.set(
+        setting.position.x,
+        setting.position.y,
+        setting.position.z
+      )
+
+      this.universeSpheres.push(universe.sphere)
+      this.universes.push(universe)
+
+      this.scene.add(universe)
     })
 
     // Prepare light scenery
@@ -149,6 +157,9 @@ export default class Visuals {
   }
 
   resize(width, height) {
+    this.camera.aspect = width / height
+    this.camera.updateProjectionMatrix()
+
     this.renderer.setSize(width, height)
   }
 }
