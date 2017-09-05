@@ -26,7 +26,7 @@ const visuals = new Visuals({
   initialWidth: window.innerWidth,
   isDebugMode: IS_DEBUG_MODE,
   onUniverseEntered: () => {
-    view.showWords(words.suggest())
+    view.startWords(words.suggest())
   },
 })
 
@@ -179,7 +179,8 @@ window.addEventListener('keydown', (event) => {
       // Press shift + number
       view.changeView(number)
     } else {
-      view.selectWord(number)
+      // Select a word
+      view.selectWord(number, words.suggest())
     }
 
     return

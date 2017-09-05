@@ -80,11 +80,12 @@
   position: absolute;
 
   top: 50%;
-  left: 50%;
+  right: 0;
+  left: 0;
 
   display: none;
 
-  transform: translate(-50%, -50%);
+  transform: translate(0, -50%);
 }
 
 .space__start {
@@ -94,4 +95,6 @@
   left: 50%;
 
   transform: translate(-50%, -50%);
+
+  user-select: none;
 }

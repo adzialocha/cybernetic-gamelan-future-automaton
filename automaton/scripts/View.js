@@ -8,6 +8,7 @@ const VIEW_IDS = [
 const INITIAL_VIEW = 'main-view'
 
 const WORDS_FADE_DURATION = 20000
+const MAX_WORDS_COUNT = 5
 
 export default class View {
   constructor() {
@@ -165,7 +166,7 @@ export default class View {
     })
   }
 
-  showWords(words) {
+  startWords(words) {
     this.selectedWords = []
     this.words = words
 
@@ -179,20 +180,22 @@ export default class View {
     this.updateWords()
   }
 
-  selectWord(index) {
+  selectWord(index, words) {
     if (index > this.words.length - 1) {
       return
     }
 
     this.selectedWords.push(this.words[index])
-    this.words.splice(index, 1)
 
-    if (this.words.length === 0) {
+    if (this.selectedWords.length === MAX_WORDS_COUNT) {
       this.elements.wordsSelection.classList.add('words__selection--final')
+      this.words = []
 
       this.wordsTimeout = setTimeout(() => {
         this.selectedWords = []
       }, WORDS_FADE_DURATION)
+    } else {
+      this.words = words
     }
 
     this.updateWords()

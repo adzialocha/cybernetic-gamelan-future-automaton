@@ -1,5 +1,7 @@
 import database from './database.json'
 
+const DEFAULT_WORDS_COUNT = 5
+
 export default class Words {
   constructor() {
     this.reset()
@@ -9,7 +11,7 @@ export default class Words {
     this.words = database
   }
 
-  suggest(count = 5) {
+  suggest(count = DEFAULT_WORDS_COUNT) {
     const words = []
 
     for (let i = 0; i < count; i += 1) {

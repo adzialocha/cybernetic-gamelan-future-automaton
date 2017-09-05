@@ -1,30 +1,35 @@
-// .words {
-// }
+$_words-fade-duration: 20s;
+
+.words {
+  line-height: 1;
+
+  text-align: center;
+}
 
 .words__selection {
-  width: 80%;
-
   opacity: 1;
 
   font-size: $font-size-xxl;
 
-  transition: opacity 100ms linear;
-
-  .words__item {
-    display: inline;
-  }
+  transition: opacity 10ms linear;
 }
 
 .words__selection--final {
   opacity: 0;
 
-  transition-duration: 20s;
+  transition-duration: $_words-fade-duration;
 }
 
 .words__options {
+  padding-top: 80px;
+
   font-size: $font-size-xl;
+
+  user-select: none;
 }
 
 .words__item {
-  margin: 20px;
+  display: inline-block;
+
+  margin: 10px;
 }
