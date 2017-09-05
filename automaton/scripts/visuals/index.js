@@ -1,6 +1,5 @@
 import {
   Clock,
-  Color,
   Fog,
   HemisphereLight,
   PerspectiveCamera,
@@ -10,22 +9,37 @@ import {
   WebGLRenderer,
 } from 'three'
 
-import Universe from './Universe'
+import Stats from 'stats.js'
 
 import PointerLockControls from './PointerLockControls'
+import Universe from './Universe'
+
+import { WHITE, DARK_GRAY } from './colors'
+
+const HEMISPHERE_LIGHT_INTENSITY = 0.08
+const FOG_FAR_DISTANCE = 350
 
 const defaultOptions = {
   canvas: null,
   devicePixelRatio: 0,
   initialHeight: 0,
   initialWidth: 0,
+  isDebugMode: false,
+  onUniverseEntered: () => {},
 }
 
 export default class Visuals {
   constructor(options) {
     this.options = Object.assign({}, defaultOptions, options)
 
+    this.isEnabled = false
     this.clock = new Clock()
+
+    if (this.options.isDebugMode) {
+      this.stats = new Stats()
+      this.stats.showPanel(0)
+      document.body.appendChild(this.stats.dom)
+    }
 
     // Prepare renderer
     this.renderer = new WebGLRenderer({
@@ -36,6 +50,7 @@ export default class Visuals {
       this.options.initialWidth,
       this.options.initialHeight
     )
+
     this.renderer.setPixelRatio(this.options.devicePixelRatio)
 
     // Prepare camera
@@ -43,16 +58,19 @@ export default class Visuals {
       75,
       this.options.initialWidth / this.options.initialHeight,
       1,
-      2500
+      20000
     )
-
-    // Prepare movement controller
-    this.controls = new PointerLockControls(this.camera)
 
     // Prepare scene
     this.scene = new Scene()
-    this.scene.background = new Color(0x111111)
-    this.scene.fog = new Fog(0x000000, 50, 300)
+    this.scene.background = DARK_GRAY
+    this.scene.fog = new Fog(DARK_GRAY, 0, FOG_FAR_DISTANCE)
+
+    // Prepare movement controller
+    this.controls = new PointerLockControls(
+      this.camera,
+      this.options.isDebugMode
+    )
 
     this.scene.add(this.controls.yawObject)
 
@@ -63,6 +81,7 @@ export default class Visuals {
 
     const universe = new Universe(150.0)
     universe.position.set(0, 0, 0)
+
     this.universeSpheres.push(universe.sphere)
     this.universes.push(universe)
 
@@ -71,8 +90,7 @@ export default class Visuals {
     })
 
     // Prepare light scenery
-    const light = new HemisphereLight(0xeeeeff, 0xffffff, 0.05)
-    light.position.set(0.5, 1, 0.75)
+    const light = new HemisphereLight(WHITE, WHITE, HEMISPHERE_LIGHT_INTENSITY)
     this.scene.add(light)
 
     // Raycaster for collision detection
@@ -87,34 +105,47 @@ export default class Visuals {
     this.animate()
   }
 
-  move(directions) {
-    this.controls.move(directions)
-  }
-
   animate() {
+    if (this.options.isDebugMode) {
+      this.stats.begin()
+    }
+
+    if (this.isEnabled) {
+      // Update controls
+      this.controls.update(this.clock.getDelta())
+
+      // Update universes
+      this.universes.forEach(universe => {
+        universe.update(this.clock)
+      })
+
+      // Check for intersections
+      this.raycaster.ray.origin.copy(this.controls.yawObject.position)
+
+      const intersections = this.raycaster.intersectObjects(
+        this.universeSpheres
+      )
+
+      if (intersections.length > 0) {
+        const uuid = intersections[0].object.uuid
+
+        if (uuid !== this.currentUniverse) {
+          this.currentUniverse = uuid
+          this.options.onUniverseEntered(uuid)
+        }
+      }
+
+      // Renderer loop
+      this.renderer.render(this.scene, this.camera)
+    }
+
+    if (this.options.isDebugMode) {
+      this.stats.end()
+    }
+
     requestAnimationFrame(() => {
       this.animate()
     })
-
-    this.controls.update(this.clock.getDelta())
-
-    this.universes.forEach(universe => {
-      universe.update(this.clock)
-    })
-
-    this.raycaster.ray.origin.copy(this.controls.yawObject.position)
-    const intersections = this.raycaster.intersectObjects(this.universeSpheres)
-
-    if (intersections.length > 0) {
-      const uuid = intersections[0].object.uuid
-
-      if (uuid !== this.currentUniverse) {
-        this.currentUniverse = uuid
-        console.log('Entered new universe')
-      }
-    }
-
-    this.renderer.render(this.scene, this.camera)
   }
 
   resize(width, height) {

@@ -74,6 +74,7 @@ function onPointerLockChange() {
   const isPointerLocked = element === document.body
 
   view.changeSpaceState(isPointerLocked)
+  visuals.isEnabled = isPointerLocked
 
   if (isPointerLocked) {
     composition.start()
@@ -127,7 +128,7 @@ window.automaton = window.automaton || {
     )
 
     element.requestPointerLock()
-    element.requestFullScreen()
+    // element.requestFullScreen()
   },
   onKeyUpPattern: event => {
     view.changePattern(event.target.value)
@@ -183,19 +184,19 @@ window.addEventListener('keydown', (event) => {
     break
   case 38: // Arrow-Up
   case 87: // W
-    visuals.move({ forward: true })
+    visuals.controls.move({ forward: true })
     break
   case 37: // Arrow-Left
   case 65: // A
-    visuals.move({ left: true })
+    visuals.controls.move({ left: true })
     break
   case 40: // Arrow-Down
   case 83: // S
-    visuals.move({ backward: true })
+    visuals.controls.move({ backward: true })
     break
   case 39: // Arrow-Right
   case 68: // D
-    visuals.move({ right: true })
+    visuals.controls.move({ right: true })
     break
   }
 })
@@ -204,19 +205,19 @@ window.addEventListener('keyup', (event) => {
   switch (event.keyCode) {
   case 38: // Arrow-Up
   case 87: // W
-    visuals.move({ forward: false })
+    visuals.controls.move({ forward: false })
     break
   case 37: // Arrow-Left
   case 65: // A
-    visuals.move({ left: false })
+    visuals.controls.move({ left: false })
     break
   case 40: // Arrow-Down
   case 83: // S
-    visuals.move({ backward: false })
+    visuals.controls.move({ backward: false })
     break
   case 39: // Arrow-Right
   case 68: // D
-    visuals.move({ right: false })
+    visuals.controls.move({ right: false })
     break
   }
 })

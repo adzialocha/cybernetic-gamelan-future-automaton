@@ -1,86 +1,130 @@
 import {
-  Color,
   DoubleSide,
+  BoxGeometry,
   Mesh,
   MeshPhongMaterial,
   Object3D,
   PointLight,
-  SphereGeometry,
+  Vector3,
+  SphereBufferGeometry,
+  IcosahedronGeometry,
 } from 'three'
 
 import Landscape from './Landscape'
-import MediumObject from './MediumObject'
-import SmallObject from './SmallObject'
 
-import { randomRange, randomizeGeometryVertices } from './helpers'
+import {
+  mergeRandomlyPlacedObjects,
+  randomizeBufferGeometryVertices,
+  randomlyPositionObject,
+  randomRangePercentage,
+  drawGeometryLines,
+  randomRange,
+} from './helpers'
+
+import {
+  CREAM,
+  DARK_BLUE,
+  DARKER_BLUE,
+  GREEN,
+  LIGHT_GRAY,
+  WHITE,
+} from './colors'
+
+const defaultOptions = {
+  lightsCount: 5,
+  lightsSpeed: 3,
+  lightsStrength: 250.0,
+  sphereColor: CREAM,
+  sphereSize: 150.0,
+}
 
 export default class Universe extends Object3D {
-  constructor(size = 150.0) {
+  constructor(options) {
     super()
 
+    this.options = Object.assign({}, defaultOptions, options)
+
     // Main sphere
-    const geometry = new SphereGeometry(size, 32, 32)
-    geometry.vertices = randomizeGeometryVertices(geometry.vertices, 0.2)
+    const geometry = new SphereBufferGeometry(this.options.sphereSize, 32, 32)
+    randomizeBufferGeometryVertices(geometry, 0.2)
 
     const material = new MeshPhongMaterial({
-      color: 0xf8eed8,
+      color: this.options.sphereColor,
       side: DoubleSide,
     })
 
     this.sphere = new Mesh(geometry, material)
     this.add(this.sphere)
 
-    // Center light
+    // Add lights to scenery
     this.lights = []
-    for (let i = 0; i < 5; i += 1) {
-      const light = new PointLight(new Color(0xffffff), 1, 200.0, 2)
+    this.lightsAngle = []
+    this.lightsRadius = []
 
-      light.position.set(
-        Math.random() * size,
-        Math.random() * size,
-        Math.random() * size
+    for (let i = 0; i < this.options.lightsCount; i += 1) {
+      const light = new PointLight(WHITE, 0.8, this.options.lightsStrength, 2)
+      randomlyPositionObject(light, this.options.sphereSize)
+
+      this.lightsAngle.push(
+        new Vector3(
+          randomRangePercentage(0.3, 0.8),
+          randomRangePercentage(0.3, 0.8),
+          randomRangePercentage(0.3, 0.8)
+        )
       )
 
-      this.add(light)
+      const radius = randomRange(10, this.options.sphereSize / 2)
+      this.lightsRadius.push(new Vector3(radius, radius + 10, radius - 10))
+
       this.lights.push(light)
     }
 
-    // Place small objects
-    for (let i = 0; i < 1000; i += 1) {
-      const object = new SmallObject(Math.random())
-      object.position.set(
-        randomRange(size),
-        randomRange(size),
-        randomRange(size),
-      )
+    this.lights.forEach(light => {
+      this.add(light)
+    })
 
-      this.add(object)
-    }
+    const smallObjects = mergeRandomlyPlacedObjects(
+      1000,
+      new BoxGeometry(2, 2, 2),
+      new MeshPhongMaterial({
+        color: GREEN,
+        specular: WHITE,
+      }),
+      this.options.sphereSize,
+      0.8
+    )
 
-    // Place medium objects
-    for (let i = 0; i < 500; i += 1) {
-      const object = new MediumObject(Math.random())
-      object.position.set(
-        randomRange(size),
-        randomRange(size),
-        randomRange(size),
-      )
+    this.add(smallObjects)
+    this.add(drawGeometryLines(smallObjects.geometry, WHITE))
 
-      this.add(object)
-    }
+    const mediumObjects = mergeRandomlyPlacedObjects(
+      350,
+      new IcosahedronGeometry(8, 2),
+      new MeshPhongMaterial({
+        color: DARK_BLUE,
+        specular: DARKER_BLUE,
+      }),
+      this.options.sphereSize,
+    )
+
+    this.add(mediumObjects)
+    this.add(drawGeometryLines(mediumObjects.geometry, DARKER_BLUE))
 
     // Place landscape
     const landscape = new Landscape()
-    this.add(landscape)
+    this.add(drawGeometryLines(landscape, LIGHT_GRAY))
   }
 
   update(clock) {
-    const time = clock.elapsedTime / 3
+    const time = clock.elapsedTime / this.options.lightsSpeed
 
-    this.lights.forEach(light => {
-      light.position.x = Math.sin(time * 0.7) * 30
-      light.position.y = Math.cos(time * 0.5) * 40
-      light.position.z = Math.cos(time * 0.3) * 30
+    this.lights.forEach((light, index) => {
+      const angle = this.lightsAngle[index]
+      const radius = this.lightsRadius[index]
+
+      light.position.x = Math.sin(time * angle.x) * radius.x
+      light.position.y = Math.cos(time * angle.y) * radius.y
+      light.position.z = Math.cos(time * angle.z) * radius.z
     })
   }
 }

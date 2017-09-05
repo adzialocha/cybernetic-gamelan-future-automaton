@@ -6,11 +6,12 @@ import {
 
 const PI_2 = Math.PI / 2
 const MOVE_SPEED = 10.0
-const STOP_SPEED = 10.0
+const STOP_SPEED = 1.0
 
 export default class PointerLockControls {
-  constructor(camera) {
+  constructor(camera, isDebugMode) {
     this.enabled = true
+    this.isDebugMode = isDebugMode
 
     camera.rotation.set(0, 0, 0)
 
@@ -72,6 +73,7 @@ export default class PointerLockControls {
 
     const { x, y, z } = this.velocity
     const { forward, backward, left, right } = this.directions
+    const moveSpeed = this.isDebugMode ? 100.0 : MOVE_SPEED
 
     if (forward || backward) {
       let lat = ThreeMath.radToDeg(
@@ -82,16 +84,16 @@ export default class PointerLockControls {
       const phi = ThreeMath.degToRad(90 - lat)
       const theta = ThreeMath.degToRad(forward ? -90 : 90)
 
-      this.velocity.y = y + MOVE_SPEED * Math.cos(phi) * delta
-      this.velocity.z = z + MOVE_SPEED * Math.sin(phi) * Math.sin(theta) * delta
+      this.velocity.y = y + moveSpeed * Math.cos(phi) * delta
+      this.velocity.z = z + moveSpeed * Math.sin(phi) * Math.sin(theta) * delta
     }
 
     if (left) {
-      this.velocity.x -= MOVE_SPEED * delta
+      this.velocity.x -= moveSpeed * delta
     }
 
     if (right) {
-      this.velocity.x += MOVE_SPEED * delta
+      this.velocity.x += moveSpeed * delta
     }
 
     this.velocity.x -= x * STOP_SPEED * delta

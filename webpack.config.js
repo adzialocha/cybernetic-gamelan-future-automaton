@@ -11,8 +11,9 @@ const VENDOR_FOLDER_NAME = 'lib'
 
 const APP_DEPENDENCIES = [
   'peerjs',
-  'timesync',
+  'stats.js',
   'three',
+  'timesync',
 ]
 
 const getPath = (filePath) => path.resolve(__dirname, filePath)
