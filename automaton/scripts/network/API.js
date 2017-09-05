@@ -1,5 +1,5 @@
 const defaultOptions = {
-  // onStartReceived: () => {},
+  onUniverseEnterReceived: () => {},
 }
 
 export default class CommunicationInterface {
@@ -24,16 +24,20 @@ export default class CommunicationInterface {
     this.network.sendToAll(payload)
   }
 
+  sendUniverseEntered() {
+    this.send('UNIVERSE_ENTER')
+  }
+
   receive(peer, data) {
     if (!data.type) {
       return
     }
 
-    // switch (data.type) {
-    // case 'START':
-    //   this.options.onStartReceived()
-    //   break
-    // }
+    switch (data.type) {
+    case 'UNIVERSE_ENTER':
+      this.options.onUniverseEnterReceived()
+      break
+    }
   }
 
   setNetwork(network) {

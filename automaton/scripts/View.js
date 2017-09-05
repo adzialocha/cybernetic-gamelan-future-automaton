@@ -142,6 +142,10 @@ export default class View {
     return this.elements.rendererCanvas
   }
 
+  flash() {
+    // @TODO
+  }
+
   // Words
 
   updateWords() {

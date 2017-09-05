@@ -15,10 +15,17 @@ const IS_DEBUG_MODE = true
 const INPUT_VALID_CHARS = '._-/:<>^°'
 const INPUT_VALID_KEY_CODES = [8, 13, 37, 39]
 
-const api = new API()
 const composition = new Composition()
 const settings = new Settings()
 const view = new View()
+const words = new Words()
+
+const api = new API({
+  onUniverseEnterReceived: () => {
+    onUniverseChange()
+  },
+})
+
 const visuals = new Visuals({
   canvas: view.getRendererCanvas(),
   devicePixelRatio: window.devicePixelRatio,
@@ -26,11 +33,10 @@ const visuals = new Visuals({
   initialWidth: window.innerWidth,
   isDebugMode: IS_DEBUG_MODE,
   onUniverseEntered: () => {
-    view.startWords(words.suggest())
+    api.sendUniverseEntered()
+    onUniverseChange()
   },
 })
-
-const words = new Words()
 
 const network = new Network({
   onOpen: () => {
@@ -93,6 +99,19 @@ if ('onpointerlockchange' in document) {
   document.addEventListener('pointerlockchange', onPointerLockChange, false)
 } else if ('onmozpointerlockchange' in document) {
   document.addEventListener('mozpointerlockchange', onPointerLockChange, false)
+}
+
+// Universe change
+function onUniverseChange() {
+  // Change pattern and synth sound
+  const pattern = composition.nextPreset()
+  view.changePattern(pattern)
+
+  // Start words
+  view.startWords(words.suggest())
+
+  // Show a flash as signal
+  view.flash()
 }
 
 // Expose some interfaces to the view
