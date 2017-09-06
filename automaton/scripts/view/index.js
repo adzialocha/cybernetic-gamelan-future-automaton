@@ -1,3 +1,5 @@
+import Settings from './Settings'
+
 const ERROR_MESSAGES_LIMIT = 3
 
 const VIEW_IDS = [
@@ -5,7 +7,7 @@ const VIEW_IDS = [
   'settings-view',
 ]
 
-const INITIAL_VIEW = 'main-view'
+const MAIN_VIEW_ID = 'main-view'
 
 const WORDS_FADE_DURATION = 20000
 const MAX_WORDS_COUNT = 5
@@ -14,6 +16,7 @@ export default class View {
   constructor() {
     this.elements = {
       allFormInputs: document.querySelectorAll('form input'),
+      body: document.body,
       connectButton: document.getElementById('connect-button'),
       connectedPeers: document.getElementById('connected-peers'),
       disconnectButton: document.getElementById('disconnect-button'),
@@ -34,14 +37,52 @@ export default class View {
     this.selectedWords = []
     this.wordsTimeout = null
 
+    // Settings
+    this.settings = new Settings()
+
     // Open initial view
-    this.changeView(VIEW_IDS.indexOf(INITIAL_VIEW))
+    this.changeView(VIEW_IDS.indexOf(MAIN_VIEW_ID))
+  }
+
+  // Setup
+
+  requestPointerLock() {
+    this.elements.body.requestPointerLock = (
+      this.elements.body.requestPointerLock ||
+      this.elements.body.mozRequestPointerLock ||
+      this.elements.body.webkitRequestPointerLock
+    )
+
+    this.elements.body.requestPointerLock()
+  }
+
+  exitPointerLock() {
+    document.exitPointerLock = (
+      document.exitPointerLock ||
+      document.mozExitPointerLock ||
+      document.webkitExitPointerLock
+    )
+
+    document.exitPointerLock()
+  }
+
+  requestFullScreen() {
+    this.elements.body.requestFullScreen = (
+      this.elements.body.requestFullScreen ||
+      this.elements.body.mozRequestFullScreen ||
+      this.elements.body.webkitRequestFullScreen
+    )
+
+    this.elements.body.requestFullScreen()
   }
 
   // View navigation
 
-  getCurrentView() {
-    return document.querySelector('.view--active').id
+  isMainViewActive() {
+    return document
+      .getElementById(MAIN_VIEW_ID)
+      .classList
+      .contains('view--active')
   }
 
   changeView(viewIndex) {
@@ -49,6 +90,7 @@ export default class View {
       return
     }
 
+    // Change view
     VIEW_IDS.forEach(viewId => {
       document.getElementById(viewId).classList.remove('view--active')
     })
@@ -56,7 +98,11 @@ export default class View {
     const nextViewId = VIEW_IDS[viewIndex]
     document.getElementById(nextViewId).classList.add('view--active')
 
-    this.elements.pattern.blur()
+    // Release from pointer lock and pattern when leaving main screen
+    if (!this.isMainViewActive()) {
+      this.elements.pattern.blur()
+      this.exitPointerLock()
+    }
   }
 
   changeSpaceState(isPointerLocked) {
@@ -80,7 +126,17 @@ export default class View {
     }
   }
 
-  updateSettings(configuration) {
+  getSettings() {
+    return this.settings.getConfiguration()
+  }
+
+  updateSetting(id, value) {
+    return this.settings.update(id, value)
+  }
+
+  loadAllSettings() {
+    const configuration = this.settings.getConfiguration()
+
     Object.keys(configuration).forEach(id => {
       const inputent = document.getElementById(id)
       if (inputent) {
@@ -179,8 +235,6 @@ export default class View {
       this.wordsTimeout = null
     }
 
-    this.elements.wordsSelection.classList.remove('words__selection--final')
-
     this.updateWords()
   }
 
@@ -192,7 +246,6 @@ export default class View {
     this.selectedWords.push(this.words[index])
 
     if (this.selectedWords.length === MAX_WORDS_COUNT) {
-      this.elements.wordsSelection.classList.add('words__selection--final')
       this.words = []
 
       this.wordsTimeout = setTimeout(() => {
@@ -239,6 +292,27 @@ export default class View {
     }, 500)
 
     this.elements.committedPattern = pattern
+
     this.elements.pattern.blur()
+  }
+
+  // Reset
+
+  reset() {
+    // Reset pattern
+    this.changePattern('')
+    this.commitPattern('')
+
+    // Reset words
+    this.words = []
+    this.selectedWords = []
+
+    if (this.wordsTimeout) {
+      clearTimeout(this.wordsTimeout)
+    }
+
+    this.wordsTimeout = null
+
+    this.updateWords()
   }
 }

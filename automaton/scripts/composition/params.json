@@ -1,0 +1,57 @@
+{
+  "instrument": {
+    "baseBpm": 80,
+    "scale": "PELOG",
+    "notes": [6, 1, 2, 4, 5],
+    "pattern": {
+      "holdNoteChar": "*",
+      "notesChar": [".", "-", "_", ":", "/"],
+      "pauseChar": " ",
+      "bpmUp": ">",
+      "bpmDown": "<",
+      "maxBpmLevel": 1,
+      "minBpmLevel": -3,
+      "octaveUp": "^",
+      "octaveDown": "°",
+      "maxOctaveLevel": 1,
+      "minOctaveLevel": -1
+    },
+    "initialPresetIndex": 0,
+    "presets": [{
+      "synthesizerPreset": "BELL",
+      "velocity": 0.25,
+      "volume": 0.5,
+      "patterns": [
+        "_/:-",
+        ":-_-"
+      ]
+    }, {
+      "synthesizerPreset": "GLOCKENSPIEL",
+      "velocity": 0.25,
+      "volume": 0.5,
+      "patterns": [
+        "_/:-",
+        ":-_-"
+      ]
+    }, {
+      "synthesizerPreset": "SPACE",
+      "velocity": 0.25,
+      "volume": 0.5,
+      "patterns": [
+        "_/:-",
+        ":-_-"
+      ]
+    }, {
+      "synthesizerPreset": "PING",
+      "velocity": 0.25,
+      "volume": 0.5,
+      "patterns": [
+        "_/:-",
+        ":-_-"
+      ]
+    }]
+  },
+  "words": {
+    "count": 5
+  }
+}

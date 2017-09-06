@@ -18,6 +18,11 @@ export const PELOG = [
   533.9372457958401,
 ]
 
+export const SCALES = {
+  SLENDRO,
+  PELOG,
+}
+
 export function pickFromScale(picks, scale) {
   return picks.map(pick => {
     return scale[pick]

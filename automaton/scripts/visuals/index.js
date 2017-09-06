@@ -10,14 +10,13 @@ import {
   WebGLRenderer,
 } from 'three'
 
+import deepAssign from 'deep-assign'
 import Stats from 'stats.js'
 
 import PointerLockControls from './PointerLockControls'
 import Universe from './Universe'
 
 import { getColor } from './colors'
-
-import galaxy from './galaxy.json'
 
 const FOG_FAR_DISTANCE = 800
 const HEMISPHERE_LIGHT_INTENSITY = 0.08
@@ -26,6 +25,7 @@ const POINT_LIGHT_DISTANCE = 500
 const defaultOptions = {
   canvas: null,
   devicePixelRatio: 0,
+  galaxy: [],
   initialHeight: 0,
   initialWidth: 0,
   isDebugMode: false,
@@ -34,7 +34,7 @@ const defaultOptions = {
 
 export default class Visuals {
   constructor(options) {
-    this.options = Object.assign({}, defaultOptions, options)
+    this.options = deepAssign({}, defaultOptions, options)
 
     this.isEnabled = false
     this.clock = new Clock()
@@ -84,7 +84,7 @@ export default class Visuals {
     this.universes = []
     this.universeSpheres = []
 
-    galaxy.forEach(setting => {
+    this.options.galaxy.forEach(setting => {
       const universe = new Universe(setting)
 
       universe.position.set(
@@ -176,5 +176,9 @@ export default class Visuals {
     this.camera.updateProjectionMatrix()
 
     this.renderer.setSize(width, height)
+  }
+
+  reset() {
+    this.controls.yawObject.position.set(0, 0, 0)
   }
 }

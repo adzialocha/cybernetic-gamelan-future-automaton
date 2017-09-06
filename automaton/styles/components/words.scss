@@ -1,5 +1,3 @@
-$_words-fade-duration: 20s;
-
 .words {
   line-height: 1;
 
@@ -7,17 +5,7 @@ $_words-fade-duration: 20s;
 }
 
 .words__selection {
-  opacity: 1;
-
   font-size: $font-size-xxl;
-
-  transition: opacity 10ms linear;
-}
-
-.words__selection--final {
-  opacity: 0;
-
-  transition-duration: $_words-fade-duration;
 }
 
 .words__options {

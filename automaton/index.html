@@ -14,7 +14,7 @@
         </div>
       </div>
       <button
-        onclick="automaton.start()"
+        onclick="automaton.onPointerLockRequested()"
         class="space__start"
       >
         Start
@@ -23,6 +23,8 @@
         class="space__input"
         id="pattern"
         maxlength="9"
+        onblur="automaton.onBlurPattern(event)"
+        onfocus="automaton.onFocusPattern(event)"
         onkeydown="automaton.onKeyDownPattern(event)"
         onkeyup="automaton.onKeyUpPattern(event)"
       />
@@ -58,6 +60,12 @@
               <div class="status__field-value" id="error-messages"></div>
             </div>
           </div>
+          <hr />
+          <button
+            onclick="automaton.onFullScreenRequested()"
+          >
+            Request fullscreen
+          </button>
         </div>
       </section>
       <section class="settings__section">

@@ -5,6 +5,12 @@
   + .status__field {
     margin-top: 10px;
   }
+
+  &:last-child {
+    .status__field-value {
+      border-bottom: 0;
+    }
+  }
 }
 
 .status__field-label {

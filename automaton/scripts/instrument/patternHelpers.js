@@ -1,20 +1,4 @@
-const HOLD_NOTE_CHAR = '*'
-const NOTES_CHAR = ['.', '-', '_', ':', '/']
-const PAUSE_CHAR = ' '
-
-const BPM_UP = '>'
-const BPM_DOWN = '<'
-
-const MAX_BPM_LEVEL = 1
-const MIN_BPM_LEVEL = -3
-
-const OCTAVE_UP = '^'
-const OCTAVE_DOWN = '°'
-
-const MAX_OCTAVE_LEVEL = 1
-const MIN_OCTAVE_LEVEL = -1
-
-function stringToSequencerPattern(patternString, octave = 0, velocity, noteMaterial) {
+function stringToSequencerPattern(settings, patternString, octave = 0, velocity, noteMaterial) {
   const notes = patternString.toLowerCase().split('')
 
   if (notes.length === 0) {
@@ -28,7 +12,7 @@ function stringToSequencerPattern(patternString, octave = 0, velocity, noteMater
     let note = null
     let isHolding = false
 
-    if (noteChar === HOLD_NOTE_CHAR) {
+    if (noteChar === settings.holdNoteChar) {
       if (!previousNote) {
         isError = true
         return false
@@ -36,10 +20,10 @@ function stringToSequencerPattern(patternString, octave = 0, velocity, noteMater
 
       note = previousNote
       isHolding = true
-    } else if (noteChar === PAUSE_CHAR) {
+    } else if (noteChar === settings.pauseChar) {
       previousNote = null
-    } else if (NOTES_CHAR.includes(noteChar)) {
-      const noteNumber = NOTES_CHAR.indexOf(noteChar)
+    } else if (settings.notesChar.includes(noteChar)) {
+      const noteNumber = settings.notesChar.indexOf(noteChar)
       note = noteMaterial[noteNumber] * Math.pow(2, octave)
       previousNote = note
     } else {
@@ -66,34 +50,49 @@ function countCharInString(string, char) {
   return (string.match(regex) || []).length
 }
 
-function extractBpmLevel(string) {
-  const up = countCharInString(string, BPM_UP)
-  const down = countCharInString(string, BPM_DOWN)
+function extractBpmLevel(string, upCount, downCount) {
+  const up = countCharInString(string, upCount)
+  const down = countCharInString(string, downCount)
 
   return up - down
 }
 
-function extractOctaveLevel(string) {
-  const up = countCharInString(string, OCTAVE_UP)
-  const down = countCharInString(string, OCTAVE_DOWN)
+function extractOctaveLevel(string, upCount, downCount) {
+  const up = countCharInString(string, upCount)
+  const down = countCharInString(string, downCount)
 
   return up - down
 }
 
-export function convertString(string, velocity, noteMaterial) {
-  const bpmLevel = extractBpmLevel(string)
+export function convertString(settings, string, velocity, noteMaterial) {
+  const bpmLevel = extractBpmLevel(
+    string,
+    settings.bpmUp,
+    settings.bpmDown,
+  )
 
-  if (bpmLevel > MAX_BPM_LEVEL || bpmLevel < MIN_BPM_LEVEL) {
+  if (
+    bpmLevel > settings.maxBpmLevel ||
+    bpmLevel < settings.minBpmLevel
+  ) {
     return false
   }
 
-  const octaveLevel = extractOctaveLevel(string)
+  const octaveLevel = extractOctaveLevel(
+    string,
+    settings.octaveUp,
+    settings.octaveDown,
+  )
 
-  if (octaveLevel > MAX_OCTAVE_LEVEL || octaveLevel < MIN_OCTAVE_LEVEL) {
+  if (
+    octaveLevel > settings.maxOctaveLevel ||
+    octaveLevel < settings.minOctaveLevel
+  ) {
     return false
   }
 
   const pattern = stringToSequencerPattern(
+    settings,
     string.replace(/(<|>|\^|°)/g, ''),
     octaveLevel,
     velocity,

@@ -1,3 +1,5 @@
+import deepAssign from 'deep-assign'
+
 import Sequencer from './sequencer'
 import SynthesizerInterface from './SynthesizerInterface'
 import { convertString } from './patternHelpers'
@@ -9,6 +11,19 @@ const SMALLEST_BAR_DIVIDE = 16 // 16th note
 const defaultOptions = {
   baseBpm: 120,
   noteMaterial: [],
+  patternSettings: {
+    holdNoteChar: '*',
+    notesChar: ['.', '-', '_', ':', '/'],
+    pauseChar: ' ',
+    bpmUp: '>',
+    bpmDown: '<',
+    maxBpmLevel: 1,
+    minBpmLevel: -3,
+    octaveUp: '^',
+    octaveDown: '°',
+    maxOctaveLevel: 1,
+    minOctaveLevel: -1,
+  },
 }
 
 function bpmToMs(minuteMs = 60000, bpm, duration) {
@@ -17,7 +32,7 @@ function bpmToMs(minuteMs = 60000, bpm, duration) {
 
 export default class Instrument {
   constructor(options = {}) {
-    this.options = Object.assign({}, defaultOptions, options)
+    this.options = deepAssign({}, defaultOptions, options)
 
     this.lastTickSyncAt = null
     this.stepFrequency = null
@@ -59,6 +74,7 @@ export default class Instrument {
 
     // Translate string to sequencer pattern
     const result = convertString(
+      this.options.patternSettings,
       this.settings.patternString,
       this.settings.velocity,
       this.options.noteMaterial

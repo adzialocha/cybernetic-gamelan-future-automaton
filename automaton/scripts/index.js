@@ -1,24 +1,32 @@
-/* eslint-disable no-use-before-define */
-
 import '../styles/index.scss'
 
 import API from './network/API'
-import Composition from './Composition'
+import Composition from './composition'
 import Network from './network'
-import Settings from './Settings'
-import View from './View'
+import View from './view'
 import Visuals from './visuals'
-import Words from './words'
 
+const INPUT_VALID_KEY_CODES = [8, 13, 37, 39]
 const IS_DEBUG_MODE = false
 
-const INPUT_VALID_CHARS = '._-/:<>^°'
-const INPUT_VALID_KEY_CODES = [8, 13, 37, 39]
-
 const composition = new Composition()
-const settings = new Settings()
 const view = new View()
-const words = new Words()
+
+let isPatternFocussed = false
+
+// Someone or me entered universe
+function onUniverseChange() {
+  // Change pattern and synth sound
+  const pattern = composition.nextPreset()
+  view.changePattern(pattern)
+  view.commitPattern(pattern)
+
+  // Start words
+  view.startWords(composition.getWords())
+
+  // Show a flash as signal
+  view.flash()
+}
 
 const api = new API({
   onUniverseEnterReceived: () => {
@@ -27,6 +35,7 @@ const api = new API({
 })
 
 const visuals = new Visuals({
+  galaxy: composition.getGalaxy(),
   canvas: view.getRendererCanvas(),
   devicePixelRatio: window.devicePixelRatio,
   initialHeight: window.innerHeight,
@@ -69,8 +78,8 @@ api.setNetwork(network)
 
 // Initialize
 window.addEventListener('load', () => {
+  view.loadAllSettings()
   view.changeConnectionState(false, false)
-  view.updateSettings(settings.getConfiguration())
   view.changePattern(composition.getCurrentPattern())
 })
 
@@ -88,7 +97,6 @@ function onPointerLockChange() {
   visuals.isEnabled = isPointerLocked
 
   if (isPointerLocked) {
-    words.reset()
     composition.start()
   } else {
     composition.stop()
@@ -101,27 +109,13 @@ if ('onpointerlockchange' in document) {
   document.addEventListener('mozpointerlockchange', onPointerLockChange, false)
 }
 
-// Universe change
-function onUniverseChange() {
-  // Change pattern and synth sound
-  const pattern = composition.nextPreset()
-  view.changePattern(pattern)
-  view.commitPattern(pattern)
-
-  // Start words
-  view.startWords(words.suggest())
-
-  // Show a flash as signal
-  view.flash()
-}
-
 // Expose some interfaces to the view
 window.automaton = window.automaton || {
   network: {
     connect: event => {
       event.preventDefault()
 
-      if (network.connect(settings.getConfiguration())) {
+      if (network.connect(view.getSettings())) {
         view.changeConnectionState(true, false)
       }
     },
@@ -135,31 +129,34 @@ window.automaton = window.automaton || {
   settings: {
     update: event => {
       const { id, value } = event.target
-      settings.update(id, value)
+      view.updateSetting(id, value)
     },
   },
-  start: () => {
-    const element = document.body
-
-    element.requestPointerLock = (
-      element.requestPointerLock ||
-      element.mozRequestPointerLock ||
-      element.webkitRequestPointerLock
-    )
-
-    element.requestFullScreen = (
-      element.requestFullScreen ||
-      element.mozRequestFullScreen ||
-      element.webkitRequestFullScreen
-    )
-
-    element.requestPointerLock()
-
-    if (!IS_DEBUG_MODE) {
-      element.requestFullScreen()
-    }
+  onPointerLockRequested: () => {
+    view.requestPointerLock()
+  },
+  onFullScreenRequested: () => {
+    view.requestFullScreen()
+  },
+  onBlurPattern: () => {
+    isPatternFocussed = false
+    return true
+  },
+  onFocusPattern: () => {
+    isPatternFocussed = true
+    return true
   },
   onKeyUpPattern: event => {
+    const { keyCode, key } = event
+
+    if (
+      !INPUT_VALID_KEY_CODES.includes(keyCode) &&
+      !composition.getValidPatternCharacters().includes(key)
+    ) {
+      event.preventDefault()
+      return
+    }
+
     view.changePattern(event.target.value)
   },
   onKeyDownPattern: event => {
@@ -167,21 +164,20 @@ window.automaton = window.automaton || {
 
     if (
       !INPUT_VALID_KEY_CODES.includes(keyCode) &&
-      !INPUT_VALID_CHARS.includes(key)
+      !composition.getValidPatternCharacters().includes(key)
     ) {
       event.preventDefault()
-      event.stopPropagation()
       return
     }
 
     if (keyCode === 13) {
-      event.preventDefault()
-      event.stopPropagation()
-
       const value = event.target.value
 
       if (composition.instrument.changePattern(value)) {
         view.commitPattern(value)
+
+        event.preventDefault()
+        event.stopPropagation()
       }
     }
   },
@@ -189,7 +185,25 @@ window.automaton = window.automaton || {
 
 // Main keyboard control strokes
 window.addEventListener('keydown', (event) => {
-  const { keyCode, shiftKey } = event
+  const { keyCode, shiftKey, metaKey } = event
+
+  // Block everything to avoid browser keys
+  if (!isPatternFocussed && view.isMainViewActive()) {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
+  // Reset button (Cmd + R)
+  if (metaKey && keyCode === 82) {
+    view.reset()
+    composition.reset()
+    visuals.reset()
+  }
+
+  // Reset only view (Cmd + V)
+  if (metaKey && keyCode === 86) {
+    visuals.reset()
+  }
 
   // Press number
   if (keyCode >= 49 && keyCode <= 57) {
@@ -200,7 +214,7 @@ window.addEventListener('keydown', (event) => {
       view.changeView(number)
     } else {
       // Select a word
-      view.selectWord(number, words.suggest())
+      view.selectWord(number, composition.getWords())
     }
 
     return
@@ -208,7 +222,7 @@ window.addEventListener('keydown', (event) => {
 
   switch (keyCode) {
   case 13:
-    if (view.getCurrentView() === 'main-view') {
+    if (!isPatternFocussed && view.isMainViewActive()) {
       view.focusPattern()
     }
     break
