@@ -7,6 +7,7 @@ import { convertString } from './patternHelpers'
 const MS_PER_SECOND = 1000
 const SECONDS_PER_MINUTE = 60
 const SMALLEST_BAR_DIVIDE = 16 // 16th note
+const VARIANCE_TRESHOLD = 100
 
 const defaultOptions = {
   baseBpm: 120,
@@ -105,9 +106,14 @@ export default class Instrument {
   syncTick() {
     // Calculate a minute in our synced network
     const now = new Date().getTime()
-    const elasticSecond = (
+    let elasticSecond = (
       this.lastTickSyncAt ? now - this.lastTickSyncAt.getTime() : MS_PER_SECOND
     )
+
+    if (Math.abs(elasticSecond) - MS_PER_SECOND > VARIANCE_TRESHOLD) {
+      elasticSecond = MS_PER_SECOND
+    }
+
     const elasticMinute = SECONDS_PER_MINUTE * elasticSecond
 
     // .. and generate 16th note ticks
