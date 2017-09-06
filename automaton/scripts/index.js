@@ -139,6 +139,9 @@ window.automaton = window.automaton || {
       const { id, value } = event.target
       view.updateSetting(id, value)
     },
+    reset: () => {
+      view.resetSettings()
+    },
   },
   onPointerLockRequested: () => {
     view.requestPointerLock()

@@ -24,6 +24,7 @@ export default class View {
       offsetMonitor: document.getElementById('offset-monitor'),
       pattern: document.getElementById('pattern'),
       rendererCanvas: document.getElementById('renderer-canvas'),
+      resetSettings: document.getElementById('reset-settings'),
       space: document.getElementById('space'),
       tick: document.getElementById('tick'),
       wordsOptions: document.getElementById('words-options'),
@@ -121,9 +122,16 @@ export default class View {
     this.elements.connectButton.disabled = isLoading || isConnected
     this.elements.disconnectButton.disabled = isLoading || !isConnected
 
+    this.elements.resetSettings.disabled = isLoading || isConnected
+
     for (let i = 0; i < this.elements.allFormInputs.length; i++) {
       this.elements.allFormInputs[i].disabled = isLoading || isConnected
     }
+  }
+
+  resetSettings() {
+    this.settings.reset()
+    this.loadAllSettings()
   }
 
   getSettings() {

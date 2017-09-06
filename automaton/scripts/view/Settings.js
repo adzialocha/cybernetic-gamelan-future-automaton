@@ -9,6 +9,10 @@ function saveToStorage(configuration) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(configuration))
 }
 
+function resetStorage() {
+  window.localStorage.setItem(STORAGE_KEY, null)
+}
+
 const defaultConfiguration = {
   clientsNumber: 4,
   peerId: 1,
@@ -34,5 +38,10 @@ export default class Settings {
 
   getConfiguration() {
     return this.configuration
+  }
+
+  reset() {
+    this.configuration = Object.assign({}, defaultConfiguration)
+    resetStorage()
   }
 }
