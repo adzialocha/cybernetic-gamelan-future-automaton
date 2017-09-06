@@ -1,19 +1,22 @@
 import Settings from './Settings'
 
 const ERROR_MESSAGES_LIMIT = 3
+const MAIN_VIEW_ID = 'main-view'
 
 const VIEW_IDS = [
   'main-view',
   'settings-view',
 ]
 
-const MAIN_VIEW_ID = 'main-view'
-
-const WORDS_FADE_DURATION = 20000
-const MAX_WORDS_COUNT = 5
+const defaultOptions = {
+  wordsCount: 5,
+  wordsFadeDuration: 20000,
+}
 
 export default class View {
-  constructor() {
+  constructor(options) {
+    this.options = Object.assign({}, defaultOptions, options)
+
     this.elements = {
       allFormInputs: document.querySelectorAll('form input'),
       body: document.body,
@@ -37,6 +40,9 @@ export default class View {
     this.words = []
     this.selectedWords = []
     this.wordsTimeout = null
+
+    // First message
+    this.addErrorMessage('Ready')
 
     // Settings
     this.settings = new Settings()
@@ -253,12 +259,13 @@ export default class View {
 
     this.selectedWords.push(this.words[index])
 
-    if (this.selectedWords.length === MAX_WORDS_COUNT) {
+    if (this.selectedWords.length === this.options.wordsCount) {
       this.words = []
 
       this.wordsTimeout = setTimeout(() => {
         this.selectedWords = []
-      }, WORDS_FADE_DURATION)
+        this.updateWords()
+      }, this.options.wordsFadeDuration)
     } else {
       this.words = words
     }

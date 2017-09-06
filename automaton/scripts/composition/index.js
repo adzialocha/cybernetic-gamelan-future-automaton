@@ -57,6 +57,10 @@ export default class Composition {
     return selectedWords
   }
 
+  getWordsCount() {
+    return params.words.count
+  }
+
   getGalaxy() {
     return galaxy
   }

@@ -18,7 +18,10 @@ const INPUT_VALID_KEY_CODES = [
 const IS_DEBUG_MODE = false
 
 const composition = new Composition()
-const view = new View()
+
+const view = new View({
+  wordsCount: composition.getWordsCount(),
+})
 
 let isPatternFocussed = false
 
@@ -49,11 +52,12 @@ const visuals = new Visuals({
   initialHeight: window.innerHeight,
   initialWidth: window.innerWidth,
   isDebugMode: IS_DEBUG_MODE,
-  onUniverseEntered: () => {
-    communication.sendUniverseEntered()
-    onUniverseChange()
-  },
 })
+
+visuals.options.onUniverseEntered = () => {
+  communication.sendUniverseEntered()
+  onUniverseChange()
+}
 
 const network = new Network({
   onOpen: () => {
