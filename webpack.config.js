@@ -11,6 +11,7 @@ const VENDOR_FOLDER_NAME = 'lib'
 
 const APP_DEPENDENCIES = [
   'deep-assign',
+  'key-code',
   'mathjs',
   'peerjs',
   'stats.js',

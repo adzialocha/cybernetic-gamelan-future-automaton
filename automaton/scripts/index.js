@@ -1,12 +1,20 @@
 import '../styles/index.scss'
 
+import KeyCode from 'key-code'
+
 import API from './network/API'
 import Composition from './composition'
 import Network from './network'
 import View from './view'
 import Visuals from './visuals'
 
-const INPUT_VALID_KEY_CODES = [8, 13, 37, 39]
+const INPUT_VALID_KEY_CODES = [
+  KeyCode.BACKSPACE,
+  KeyCode.ENTER,
+  KeyCode.LEFT,
+  KeyCode.RIGHT,
+]
+
 const IS_DEBUG_MODE = false
 
 const composition = new Composition()
@@ -140,11 +148,9 @@ window.automaton = window.automaton || {
   },
   onBlurPattern: () => {
     isPatternFocussed = false
-    return true
   },
   onFocusPattern: () => {
     isPatternFocussed = true
-    return true
   },
   onKeyUpPattern: event => {
     const { keyCode, key } = event
@@ -170,7 +176,7 @@ window.automaton = window.automaton || {
       return
     }
 
-    if (keyCode === 13) {
+    if (keyCode === KeyCode.ENTER) {
       const value = event.target.value
 
       if (composition.instrument.changePattern(value)) {
@@ -194,20 +200,20 @@ window.addEventListener('keydown', (event) => {
   }
 
   // Reset button (Cmd + R)
-  if (metaKey && keyCode === 82) {
+  if (metaKey && keyCode === KeyCode.R) {
     view.reset()
     composition.reset()
     visuals.reset()
   }
 
   // Reset only view (Cmd + V)
-  if (metaKey && keyCode === 86) {
+  if (metaKey && keyCode === KeyCode.V) {
     visuals.reset()
   }
 
   // Press number
-  if (keyCode >= 49 && keyCode <= 57) {
-    const number = keyCode - 49
+  if (keyCode >= KeyCode.ONE && keyCode <= KeyCode.NINE) {
+    const number = keyCode - KeyCode.ONE
 
     if (shiftKey) {
       // Press shift + number
@@ -221,25 +227,25 @@ window.addEventListener('keydown', (event) => {
   }
 
   switch (keyCode) {
-  case 13:
+  case KeyCode.ENTER:
     if (!isPatternFocussed && view.isMainViewActive()) {
       view.focusPattern()
     }
     break
-  case 38: // Arrow-Up
-  case 87: // W
+  case KeyCode.UP:
+  case KeyCode.W:
     visuals.controls.move({ forward: true })
     break
-  case 37: // Arrow-Left
-  case 65: // A
+  case KeyCode.LEFT:
+  case KeyCode.A:
     visuals.controls.move({ left: true })
     break
-  case 40: // Arrow-Down
-  case 83: // S
+  case KeyCode.DOWN:
+  case KeyCode.S:
     visuals.controls.move({ backward: true })
     break
-  case 39: // Arrow-Right
-  case 68: // D
+  case KeyCode.RIGHT:
+  case KeyCode.D:
     visuals.controls.move({ right: true })
     break
   }
@@ -247,20 +253,20 @@ window.addEventListener('keydown', (event) => {
 
 window.addEventListener('keyup', (event) => {
   switch (event.keyCode) {
-  case 38: // Arrow-Up
-  case 87: // W
+  case KeyCode.UP:
+  case KeyCode.W:
     visuals.controls.move({ forward: false })
     break
-  case 37: // Arrow-Left
-  case 65: // A
+  case KeyCode.LEFT:
+  case KeyCode.A:
     visuals.controls.move({ left: false })
     break
-  case 40: // Arrow-Down
-  case 83: // S
+  case KeyCode.DOWN:
+  case KeyCode.S:
     visuals.controls.move({ backward: false })
     break
-  case 39: // Arrow-Right
-  case 68: // D
+  case KeyCode.RIGHT:
+  case KeyCode.D:
     visuals.controls.move({ right: false })
     break
   }
