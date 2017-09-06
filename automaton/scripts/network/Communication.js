@@ -2,7 +2,7 @@ const defaultOptions = {
   onUniverseEnterReceived: () => {},
 }
 
-export default class CommunicationInterface {
+export default class Communication {
   constructor(options) {
     this.options = Object.assign({}, defaultOptions, options)
     this.network = null

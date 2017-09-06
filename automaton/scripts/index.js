@@ -2,7 +2,7 @@ import '../styles/index.scss'
 
 import KeyCode from 'key-code'
 
-import API from './network/API'
+import Communication from './network/Communication'
 import Composition from './composition'
 import Network from './network'
 import View from './view'
@@ -36,7 +36,7 @@ function onUniverseChange() {
   view.flash()
 }
 
-const api = new API({
+const communication = new Communication({
   onUniverseEnterReceived: () => {
     onUniverseChange()
   },
@@ -50,7 +50,7 @@ const visuals = new Visuals({
   initialWidth: window.innerWidth,
   isDebugMode: IS_DEBUG_MODE,
   onUniverseEntered: () => {
-    api.sendUniverseEntered()
+    communication.sendUniverseEntered()
     onUniverseChange()
   },
 })
@@ -75,14 +75,14 @@ const network = new Network({
     composition.instrument.syncTick()
   },
   onReceive: (peer, data) => {
-    api.receive(peer, data)
+    communication.receive(peer, data)
   },
   onError: err => {
     view.addErrorMessage(err.message)
   },
 })
 
-api.setNetwork(network)
+communication.setNetwork(network)
 
 // Initialize
 window.addEventListener('load', () => {
