@@ -51,7 +51,7 @@
     "feedback": 0.58,
     "fine": [0, 0, 0, 0.5],
     "isLoop": [true, true, true, true],
-    "isVelocitySensitive": [false, false, false, false],
+    "isVelocitySensitive": [true, true, true, false],
     "envelopes": [
       [{ "x": 0.212, "y": 0.253 }, { "x": 0.423, "y": 0.994 }, { "x": 0.752, "y": 0.994 }],
       [{ "x": 0.142, "y": 0.541 }, { "x": 0.281, "y": 0.982 }, { "x": 0.752, "y": 0.982 }],

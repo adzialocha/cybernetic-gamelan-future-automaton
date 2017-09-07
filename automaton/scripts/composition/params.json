@@ -17,39 +17,41 @@
       "minOctaveLevel": -1
     },
     "initialPresetIndex": 0,
-    "presets": [{
-      "synthesizerPreset": "BELL",
-      "velocity": 0.25,
-      "volume": 0.5,
-      "patterns": [
-        "_/:-",
-        ":-_-"
-      ]
-    }, {
-      "synthesizerPreset": "GLOCKENSPIEL",
-      "velocity": 0.25,
-      "volume": 0.5,
-      "patterns": [
-        "_/:-",
-        ":-_-"
-      ]
-    }, {
-      "synthesizerPreset": "SPACE",
-      "velocity": 0.25,
-      "volume": 0.5,
-      "patterns": [
-        "_/:-",
-        ":-_-"
-      ]
-    }, {
-      "synthesizerPreset": "PING",
-      "velocity": 0.25,
-      "volume": 0.5,
-      "patterns": [
-        "_/:-",
-        ":-_-"
-      ]
-    }]
+    "presets": [
+      {
+        "synthesizerPreset": "BELL",
+        "velocity": 0.25,
+        "volume": 0.25,
+        "patterns": [
+          "_/:-",
+          ":-_-"
+        ]
+      }, {
+        "synthesizerPreset": "GLOCKENSPIEL",
+        "velocity": 0.25,
+        "volume": 0.5,
+        "patterns": [
+          "_/:-",
+          ":-_-"
+        ]
+      }, {
+        "synthesizerPreset": "SPACE",
+        "velocity": 0.8,
+        "volume": 1,
+        "patterns": [
+          "_/:-",
+          ":-_-"
+        ]
+      }, {
+        "synthesizerPreset": "PING",
+        "velocity": 0.5,
+        "volume": 1,
+        "patterns": [
+          "_/:-",
+          ":-_-"
+        ]
+      }
+    ]
   },
   "words": {
     "adjectives": 2,

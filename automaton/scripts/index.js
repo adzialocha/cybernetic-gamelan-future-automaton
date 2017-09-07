@@ -15,14 +15,13 @@ const INPUT_VALID_KEY_CODES = [
   KeyCode.RIGHT,
 ]
 
-const IS_DEBUG_MODE = false
-
 const composition = new Composition()
 
 const view = new View({
   wordsCount: composition.getWordsCount(),
 })
 
+const isDebugMode = true
 let isPatternFocussed = false
 
 // Someone or me entered universe
@@ -34,13 +33,9 @@ function onUniverseChange() {
   composition.instrument.changePattern(pattern)
 
   // Start words
-  view.startWords(composition.getWords())
+  // view.startWords(composition.getWords())
 
   // Show a flash as signal
-  view.flash()
-}
-
-window.flash = () => {
   view.flash()
 }
 
@@ -56,7 +51,7 @@ const visuals = new Visuals({
   devicePixelRatio: window.devicePixelRatio,
   initialHeight: window.innerHeight,
   initialWidth: window.innerWidth,
-  isDebugMode: IS_DEBUG_MODE,
+  isDebugMode,
 })
 
 visuals.options.onUniverseEntered = () => {
@@ -228,9 +223,16 @@ window.addEventListener('keydown', (event) => {
       visuals.reset()
     }
 
-    // Generate words (Cmd + W)
-    if (keyCode === KeyCode.M && IS_DEBUG_MODE) {
-      view.startWords(composition.getWords())
+    if (isDebugMode) {
+      // Change universe manually (Cmd + U)
+      if (keyCode === KeyCode.U) {
+        onUniverseChange()
+      }
+
+      // Generate words (Cmd + W)
+      if (keyCode === KeyCode.M) {
+        view.startWords(composition.getWords())
+      }
     }
   }
 

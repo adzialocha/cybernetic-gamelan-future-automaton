@@ -42,11 +42,11 @@ export default class SynthesizerInterface {
       this.channels.push(channel)
     }
 
-    const { context, gainNode } = this.audio
+    const { context, compressorNode } = this.audio
     const scriptProcessorNode = context.createScriptProcessor(BUFFER_SIZE, 1, 1)
 
     // Connect audio nodes
-    scriptProcessorNode.connect(gainNode)
+    scriptProcessorNode.connect(compressorNode)
 
     // Start FM synthesis
     scriptProcessorNode.onaudioprocess = (event) => {
