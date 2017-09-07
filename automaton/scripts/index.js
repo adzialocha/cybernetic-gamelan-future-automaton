@@ -206,16 +206,23 @@ window.addEventListener('keydown', (event) => {
     event.stopPropagation()
   }
 
-  // Reset button (Cmd + R)
-  if (metaKey && keyCode === KeyCode.R) {
-    view.reset()
-    composition.reset()
-    visuals.reset()
-  }
+  if (metaKey) {
+    // Reset button (Cmd + R)
+    if (keyCode === KeyCode.R) {
+      view.reset()
+      composition.reset()
+      visuals.reset()
+    }
 
-  // Reset only view (Cmd + V)
-  if (metaKey && keyCode === KeyCode.V) {
-    visuals.reset()
+    // Reset only view (Cmd + V)
+    if (keyCode === KeyCode.V) {
+      visuals.reset()
+    }
+
+    // Generate words (Cmd + W)
+    if (keyCode === KeyCode.M && IS_DEBUG_MODE) {
+      view.startWords(composition.getWords())
+    }
   }
 
   // Press number

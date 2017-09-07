@@ -6,7 +6,7 @@ import words from './words.json'
 import Instrument from '../instrument'
 import { SCALES, pickFromScale } from '../instrument/scales'
 
-function pickRandomPattern(arr) {
+function pickRandomItem(arr) {
   return arr[Math.floor(Math.random() * arr.length)]
 }
 
@@ -44,14 +44,18 @@ export default class Composition {
 
     this.instrument.synthesizerInterface.audio.changeVolume(preset.volume)
 
-    return pickRandomPattern(preset.patterns)
+    return pickRandomItem(preset.patterns)
   }
 
   getWords() {
     const selectedWords = []
 
-    for (let i = 0; i < params.words.count; i += 1) {
-      selectedWords.push(words[Math.floor(Math.random() * words.length)])
+    for (let i = 0; i < params.words.adjectives; i += 1) {
+      selectedWords.push(pickRandomItem(words.adjectives))
+    }
+
+    for (let i = 0; i < params.words.nouns; i += 1) {
+      selectedWords.push(pickRandomItem(words.nouns))
     }
 
     return selectedWords

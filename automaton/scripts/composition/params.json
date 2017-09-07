@@ -52,6 +52,9 @@
     }]
   },
   "words": {
-    "count": 5
+    "adjectives": 2,
+    "nouns": 3,
+    "links": 1,
+    "count": 3
   }
 }

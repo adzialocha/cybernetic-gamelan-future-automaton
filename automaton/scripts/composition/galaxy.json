@@ -1,6 +1,6 @@
 [
   {
-    "name": "blue",
+    "name": "allobrain",
     "position": {
       "x": -450,
       "y": -450,
@@ -62,7 +62,7 @@
     ]
   },
   {
-    "name": "black-and-white",
+    "name": "core",
     "position": {
       "x": 450,
       "y": -450,
@@ -72,7 +72,7 @@
     "sphereSegments": 16,
     "sphereColor": "WHITE",
     "lightsDistance": 500,
-    "lightsStrength": 250.0,
+    "lightsStrength": 200.0,
     "lightsCount": 2,
     "collections": [
       {
@@ -100,8 +100,8 @@
       {
         "size": 800,
         "segments": 25,
-        "color": "BLACK",
-        "fn": "sin(i)",
+        "color": "WHITE",
+        "fn": "sin(i) * 100",
         "position": {
           "x": 0,
           "y": 0,
@@ -117,7 +117,7 @@
         "size": 800,
         "segments": 25,
         "color": "BLACK",
-        "fn": "0",
+        "fn": "sin(i) * 10",
         "position": {
           "x": 0,
           "y": 0,
@@ -132,30 +132,131 @@
     ]
   },
   {
-    "name": "red",
+    "name": "parametric-planet",
     "position": {
-      "x": -450,
-      "y": 0,
-      "z": 450
+      "x": -550,
+      "y": -150,
+      "z": 550
     },
-    "sphereSize": 200,
-    "sphereSegments": 64,
+    "sphereSize": 250,
+    "sphereSegments": 32,
     "sphereColor": "LIGHT_RED",
-    "lightsCount": 2,
-    "lightsDistance": 150,
-    "lightsSpeed": 5,
-    "collections": []
+    "lightsCount": 4,
+    "lightsDistance": 200,
+    "lightsSpeed": 4,
+    "collections": [
+      {
+        "count": 10,
+        "geometry": "TorusKnotGeometry",
+        "attributes": [20, 4, 40, 8],
+        "meshColor": "LIGHT_RED",
+        "meshSpecular": "WHITE",
+        "hasWireframes": false,
+        "hasLines": false,
+        "factor": 0
+      },
+      {
+        "count": 10,
+        "geometry": "TorusKnotGeometry",
+        "attributes": [10, 3, 80, 16],
+        "meshColor": "LIGHT_RED",
+        "meshSpecular": "WHITE",
+        "hasWireframes": false,
+        "hasLines": true,
+        "factor": 0,
+        "linesColor": "WHITE"
+      },
+      {
+        "count": 3,
+        "geometry": "ParametricGeometry",
+        "attributes": [50, 50],
+        "meshColor": "WHITE",
+        "meshSpecular": "WHITE",
+        "hasWireframes": true,
+        "hasLines": true,
+        "factor": 0.01,
+        "linesColor": "WHITE"
+      },
+      {
+        "count": 5,
+        "geometry": "ParametricGeometry",
+        "attributes": [25, 25],
+        "meshColor": "LIGHT_GRAY",
+        "meshSpecular": "LIGHT_RED",
+        "hasWireframes": false,
+        "hasLines": false,
+        "factor": 0
+      }
+    ]
   },
   {
     "name": "green",
     "position": {
       "x": 0,
-      "y": 450,
-      "z": 450
+      "y": 0,
+      "z": -450
     },
     "sphereSize": 200,
     "sphereSegments": 32,
     "sphereColor": "GREEN",
-    "lightsCount": 2
+    "lightsCount": 3,
+    "lightsDistance": 200,
+    "lightsSpeed": 1,
+    "collections": [
+      {
+        "count": 200,
+        "geometry": "ConeGeometry",
+        "attributes": [5, 20, 32],
+        "meshColor": "WHITE",
+        "meshSpecular": "WHITE",
+        "hasWireframes": true,
+        "hasLines": false,
+        "factor": 0
+      },
+      {
+        "count": 100,
+        "geometry": "ConeGeometry",
+        "attributes": [7, 40, 4],
+        "meshColor": "GREEN",
+        "meshSpecular": "WHITE",
+        "hasWireframes": false,
+        "hasLines": false,
+        "factor": 0.05
+      }
+    ],
+    "landscapes": [
+      {
+        "size": 200,
+        "segments": 5,
+        "color": "WHITE",
+        "fn": "sin(i) * 250",
+        "position": {
+          "x": -100,
+          "y": 0,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      {
+        "size": 100,
+        "segments": 25,
+        "color": "GREEN",
+        "fn": "sin(i) * 100",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "rotation": {
+          "x": 1.0,
+          "y": -1.0,
+          "z": 0
+        }
+      }
+    ]
   }
 ]

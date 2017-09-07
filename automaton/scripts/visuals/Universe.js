@@ -1,5 +1,6 @@
 import {
   BoxGeometry,
+  ConeGeometry,
   DoubleSide,
   IcosahedronGeometry,
   LineBasicMaterial,
@@ -7,14 +8,18 @@ import {
   Mesh,
   MeshPhongMaterial,
   Object3D,
+  ParametricGeometry,
   PointLight,
   SphereBufferGeometry,
+  TorusKnotGeometry,
   Vector3,
 } from 'three'
 
 import deepAssign from 'deep-assign'
 
 import Landscape from './Landscape'
+
+import { mobius3d } from './parametricGeometries'
 
 import {
   mergeRandomlyPlacedObjects,
@@ -41,6 +46,12 @@ function getGeometry(name, attributes) {
     return new BoxGeometry(...attributes)
   case 'IcosahedronGeometry':
     return new IcosahedronGeometry(...attributes)
+  case 'TorusKnotGeometry':
+    return new TorusKnotGeometry(...attributes)
+  case 'ParametricGeometry':
+    return new ParametricGeometry(mobius3d, ...attributes)
+  case 'ConeGeometry':
+    return new ConeGeometry(...attributes)
   }
 
   return null
