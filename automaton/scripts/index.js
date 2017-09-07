@@ -31,6 +31,7 @@ function onUniverseChange() {
   const pattern = composition.nextPreset()
   view.changePattern(pattern)
   view.commitPattern(pattern)
+  composition.instrument.changePattern(pattern)
 
   // Start words
   view.startWords(composition.getWords())
