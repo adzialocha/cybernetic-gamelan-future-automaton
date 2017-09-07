@@ -5,7 +5,7 @@ import {
 } from 'three'
 
 const PI_2 = Math.PI / 2
-const MOVE_SPEED = 10.0
+const MOVE_SPEED = 5.0
 const STOP_SPEED = 1.0
 
 export default class PointerLockControls {
