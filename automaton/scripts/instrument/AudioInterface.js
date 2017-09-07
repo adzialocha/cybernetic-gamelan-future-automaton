@@ -36,9 +36,9 @@ export default class AudioInterface {
 
     // Compressor
     this.compressorNode = this.context.createDynamicsCompressor()
-    this.compressorNode.threshold.value = -10
-    this.compressorNode.knee.value = 40
-    this.compressorNode.ratio.value = 12
+    this.compressorNode.threshold.value = -5
+    this.compressorNode.knee.value = 10
+    this.compressorNode.ratio.value = 20
     this.compressorNode.attack.value = 0
     this.compressorNode.release.value = 0.25
 
