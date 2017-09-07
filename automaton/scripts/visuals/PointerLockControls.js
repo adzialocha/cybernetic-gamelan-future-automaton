@@ -12,14 +12,15 @@ export default class PointerLockControls {
   constructor(camera, isDebugMode) {
     this.enabled = true
     this.isDebugMode = isDebugMode
+    this.camera = camera
 
-    camera.rotation.set(0, 0, 0)
+    this.camera.rotation.set(0, 0, 0)
 
     this.pitchObject = new Object3D()
-    this.pitchObject.add(camera)
+    this.pitchObject.add(this.camera)
 
     this.yawObject = new Object3D()
-    this.yawObject.position.y = 10.0
+    // this.yawObject.position.y = 0
     this.yawObject.add(this.pitchObject)
 
     this.velocity = new Vector3()

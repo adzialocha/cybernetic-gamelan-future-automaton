@@ -9,6 +9,7 @@ import {
   Raycaster,
   Scene,
   SphereBufferGeometry,
+  Vector2,
   Vector3,
   WebGLRenderer,
 } from 'three'
@@ -22,6 +23,7 @@ import Universe from './Universe'
 import { getColor } from './colors'
 
 const FOG_FAR_DISTANCE = 800
+const FPS_LIMIT = 30
 const HEMISPHERE_LIGHT_INTENSITY = 0.08
 const POINT_LIGHT_DISTANCE = 500
 
@@ -97,10 +99,11 @@ export default class Visuals {
       )
 
       const sphere = new Mesh(
-        new SphereBufferGeometry(setting.sphereSize, 8, 8),
+        new SphereBufferGeometry(setting.sphereSize, 16, 16),
         new MeshBasicMaterial({
-          color: getColor('WHITE'),
-          wireframe: true,
+          color: getColor('BLACK'),
+          opacity: 0.5,
+          transparent: true,
         })
       )
 
@@ -136,7 +139,7 @@ export default class Visuals {
 
     // Raycaster for collision detection
     this.raycaster = new Raycaster(
-      new Vector3(),
+      new Vector3(0, 0, 0),
       new Vector3(0, -1, 0),
       0,
       10
@@ -161,7 +164,14 @@ export default class Visuals {
       })
 
       // Check for intersections
-      this.raycaster.ray.origin.copy(this.controls.yawObject.position)
+      this.raycaster.setFromCamera(
+        new Vector2(
+          this.controls.yawObject.rotation.y,
+          this.controls.pitchObject.rotation.x
+        ),
+        this.camera
+      )
+      // this.raycaster.ray.origin.copy(this.controls.yawObject.position)
 
       const intersections = this.raycaster.intersectObjects(
         this.collisionSpheres
@@ -184,9 +194,11 @@ export default class Visuals {
       this.stats.end()
     }
 
-    requestAnimationFrame(() => {
-      this.animate()
-    })
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+        this.animate()
+      })
+    }, 1000 / FPS_LIMIT)
   }
 
   resize(width, height) {

@@ -33,7 +33,7 @@ function onUniverseChange() {
   composition.instrument.changePattern(pattern)
 
   // Start words
-  // view.startWords(composition.getWords())
+  view.startWords(composition.getWords())
 
   // Show a flash as signal
   view.flash()
