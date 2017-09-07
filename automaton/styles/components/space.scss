@@ -6,6 +6,37 @@
   height: 100%;
 
   cursor: crosshair;
+
+  &::after {
+    position: absolute;
+
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    display: none;
+
+    content: "";
+
+    background-color: $white;
+
+    opacity: 0;
+
+    transition: opacity 500ms linear;
+  }
+}
+
+.space--flash {
+  &::after {
+    display: block;
+  }
+}
+
+.space--flash-active {
+  &::after {
+    opacity: .5;
+  }
 }
 
 .space--active {

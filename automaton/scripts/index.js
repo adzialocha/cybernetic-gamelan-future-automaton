@@ -40,6 +40,10 @@ function onUniverseChange() {
   view.flash()
 }
 
+window.flash = () => {
+  view.flash()
+}
+
 const communication = new Communication({
   onUniverseEnterReceived: () => {
     onUniverseChange()
@@ -199,10 +203,14 @@ window.automaton = window.automaton || {
 
 // Main keyboard control strokes
 window.addEventListener('keydown', (event) => {
-  const { keyCode, shiftKey, metaKey } = event
+  const { keyCode, shiftKey, altKey, metaKey } = event
 
   // Block everything to avoid browser keys
-  if (!isPatternFocussed && view.isMainViewActive()) {
+  if (
+    !isPatternFocussed &&
+    view.isMainViewActive() &&
+    (!metaKey && !altKey && keyCode !== KeyCode.I) // Allow inspector
+  ) {
     event.preventDefault()
     event.stopPropagation()
   }

@@ -1,6 +1,7 @@
 import Settings from './Settings'
 
 const ERROR_MESSAGES_LIMIT = 3
+const FLASH_DURATION = 1000
 const MAIN_VIEW_ID = 'main-view'
 
 const VIEW_IDS = [
@@ -40,6 +41,9 @@ export default class View {
     this.words = []
     this.selectedWords = []
     this.wordsTimeout = null
+
+    // Flash
+    this.flashTimeout = null
 
     // First message
     this.addErrorMessage('Ready')
@@ -213,7 +217,24 @@ export default class View {
   }
 
   flash() {
-    // @TODO
+    if (this.flashTimeout) {
+      clearTimeout(this.flashTimeout)
+    }
+
+    this.elements.space.classList.remove('space--flash-active')
+    this.elements.space.classList.add('space--flash')
+
+    setTimeout(() => {
+      this.elements.space.classList.add('space--flash-active')
+    })
+
+    setTimeout(() => {
+      this.elements.space.classList.remove('space--flash-active')
+    }, FLASH_DURATION / 2)
+
+    this.flashTimeout = setTimeout(() => {
+      this.elements.space.classList.remove('space--flash')
+    }, FLASH_DURATION)
   }
 
   // Words
