@@ -2,10 +2,13 @@ import {
   Clock,
   Fog,
   HemisphereLight,
+  Mesh,
+  MeshBasicMaterial,
   PerspectiveCamera,
   PointLight,
   Raycaster,
   Scene,
+  SphereBufferGeometry,
   Vector3,
   WebGLRenderer,
 } from 'three'
@@ -82,7 +85,7 @@ export default class Visuals {
     this.currentUniverse = null
 
     this.universes = []
-    this.universeSpheres = []
+    this.collisionSpheres = []
 
     this.options.galaxy.forEach(setting => {
       const universe = new Universe(setting)
@@ -93,9 +96,24 @@ export default class Visuals {
         setting.position.z
       )
 
-      this.universeSpheres.push(universe.sphere)
-      this.universes.push(universe)
+      const sphere = new Mesh(
+        new SphereBufferGeometry(setting.sphereSize, 8, 8),
+        new MeshBasicMaterial({
+          color: getColor('WHITE'),
+          wireframe: true,
+        })
+      )
 
+      sphere.position.set(
+        setting.position.x,
+        setting.position.y,
+        setting.position.z
+      )
+
+      this.collisionSpheres.push(sphere)
+      this.scene.add(sphere)
+
+      this.universes.push(universe)
       this.scene.add(universe)
     })
 
@@ -146,7 +164,7 @@ export default class Visuals {
       this.raycaster.ray.origin.copy(this.controls.yawObject.position)
 
       const intersections = this.raycaster.intersectObjects(
-        this.universeSpheres
+        this.collisionSpheres
       )
 
       if (intersections.length > 0) {
