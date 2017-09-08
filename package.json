@@ -55,6 +55,7 @@
     "webpack-dev-server": "^2.7.1"
   },
   "dependencies": {
+    "cors": "^2.8.4",
     "deep-assign": "^2.0.0",
     "express": "^4.15.4",
     "key-code": "0.0.1",

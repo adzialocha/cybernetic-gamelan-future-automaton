@@ -193,11 +193,11 @@ export default class Visuals {
       this.stats.end()
     }
 
-    setTimeout(() => {
+    //setTimeout(() => {
       requestAnimationFrame(() => {
         this.animate()
       })
-    }, 1000 / FPS_LIMIT)
+    //}, 1000 / FPS_LIMIT)
   }
 
   resize(width, height) {
