@@ -23,32 +23,40 @@
         "velocity": 0.25,
         "volume": 0.25,
         "patterns": [
-          "_/:-",
-          ":-_-"
+          "_/ _ :/- ",
+          "_/ _ ^-:-",
+          "_/ _ °   ",
+          "_/ _ :/ -"
         ]
       }, {
         "synthesizerPreset": "GLOCKENSPIEL",
         "velocity": 0.25,
         "volume": 0.5,
         "patterns": [
-          "_/:-",
-          ":-_-"
+          "::--/_",
+          " :  /_^",
+          ": --/_°",
+          "::- /_"
         ]
       }, {
         "synthesizerPreset": "SPACE",
         "velocity": 0.8,
         "volume": 1,
         "patterns": [
-          "_/:-",
-          ":-_-"
+          "_-_-_/-",
+          "-__-__/",
+          "-__/-_-",
+          "-_-_/__"
         ]
       }, {
         "synthesizerPreset": "PING",
         "velocity": 0.5,
         "volume": 1,
         "patterns": [
-          "_/:-",
-          ":-_-"
+          ".  .  _ /",
+          " . _ : : °",
+          "_ _ / /  ",
+          ": : _  _ ^"
         ]
       }
     ]
