@@ -1,7 +1,6 @@
 import galaxy from './galaxy.json'
 import params from './params.json'
 import presets from './presets.json'
-import words from './words.json'
 
 import Instrument from '../instrument'
 import { SCALES, pickFromScale } from '../instrument/scales'
@@ -47,24 +46,6 @@ export default class Composition {
     }
 
     return pickRandomItem(preset.patterns)
-  }
-
-  getWords() {
-    const selectedWords = []
-
-    for (let i = 0; i < params.words.adjectives; i += 1) {
-      selectedWords.push(pickRandomItem(words.adjectives))
-    }
-
-    for (let i = 0; i < params.words.nouns; i += 1) {
-      selectedWords.push(pickRandomItem(words.nouns))
-    }
-
-    return selectedWords
-  }
-
-  getWordsCount() {
-    return params.words.count
   }
 
   getGalaxy() {

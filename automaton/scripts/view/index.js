@@ -9,15 +9,8 @@ const VIEW_IDS = [
   'settings-view',
 ]
 
-const defaultOptions = {
-  wordsCount: 5,
-  wordsFadeDuration: 20000,
-}
-
 export default class View {
-  constructor(options) {
-    this.options = Object.assign({}, defaultOptions, options)
-
+  constructor() {
     this.elements = {
       allFormInputs: document.querySelectorAll('form input'),
       body: document.body,
@@ -25,22 +18,18 @@ export default class View {
       connectedPeers: document.getElementById('connected-peers'),
       disconnectButton: document.getElementById('disconnect-button'),
       errorMessages: document.getElementById('error-messages'),
+      loading: document.getElementById('loading'),
       offsetMonitor: document.getElementById('offset-monitor'),
       pattern: document.getElementById('pattern'),
       rendererCanvas: document.getElementById('renderer-canvas'),
       resetSettings: document.getElementById('reset-settings'),
       space: document.getElementById('space'),
+      spaceStartButton: document.getElementById('space-start'),
       tick: document.getElementById('tick'),
-      wordsOptions: document.getElementById('words-options'),
-      wordsSelection: document.getElementById('words-selection'),
     }
 
     this.errorMessages = []
     this.committedPattern = null
-
-    this.words = []
-    this.selectedWords = []
-    this.wordsTimeout = null
 
     // Flash
     this.flashTimeout = null
@@ -85,6 +74,17 @@ export default class View {
     )
 
     this.elements.body.requestFullScreen()
+  }
+
+  // Loading
+
+  startLoading() {
+    this.elements.loading.classList.add('space__loading--visible')
+  }
+
+  stopLoading() {
+    this.elements.space.classList.add('space--ready')
+    this.elements.loading.classList.remove('space__loading--visible')
   }
 
   // View navigation
@@ -133,6 +133,7 @@ export default class View {
     this.elements.disconnectButton.disabled = isLoading || !isConnected
 
     this.elements.resetSettings.disabled = isLoading || isConnected
+    this.elements.spaceStartButton.disabled = isLoading || !isConnected
 
     for (let i = 0; i < this.elements.allFormInputs.length; i++) {
       this.elements.allFormInputs[i].disabled = isLoading || isConnected
@@ -237,63 +238,6 @@ export default class View {
     }, FLASH_DURATION)
   }
 
-  // Words
-
-  updateWords() {
-    this.elements.wordsOptions.innerHTML = ''
-
-    this.words.forEach(word => {
-      const wordElem = document.createElement('div')
-      wordElem.classList.add('words__item')
-      wordElem.innerText = word
-
-      this.elements.wordsOptions.appendChild(wordElem)
-    })
-
-    this.elements.wordsSelection.innerHTML = ''
-
-    this.selectedWords.forEach(word => {
-      const wordElem = document.createElement('div')
-      wordElem.classList.add('words__item')
-      wordElem.innerText = word
-
-      this.elements.wordsSelection.appendChild(wordElem)
-    })
-  }
-
-  startWords(words) {
-    this.selectedWords = []
-    this.words = words
-
-    if (this.wordsTimeout) {
-      clearTimeout(this.wordsTimeout)
-      this.wordsTimeout = null
-    }
-
-    this.updateWords()
-  }
-
-  selectWord(index, words) {
-    if (index > this.words.length - 1) {
-      return
-    }
-
-    this.selectedWords.push(this.words[index])
-
-    if (this.selectedWords.length === this.options.wordsCount) {
-      this.words = []
-
-      this.wordsTimeout = setTimeout(() => {
-        this.selectedWords = []
-        this.updateWords()
-      }, this.options.wordsFadeDuration)
-    } else {
-      this.words = words
-    }
-
-    this.updateWords()
-  }
-
   // Pattern
 
   changePattern(pattern) {
@@ -338,17 +282,5 @@ export default class View {
     // Reset pattern
     this.changePattern('')
     this.commitPattern('')
-
-    // Reset words
-    this.words = []
-    this.selectedWords = []
-
-    if (this.wordsTimeout) {
-      clearTimeout(this.wordsTimeout)
-    }
-
-    this.wordsTimeout = null
-
-    this.updateWords()
   }
 }

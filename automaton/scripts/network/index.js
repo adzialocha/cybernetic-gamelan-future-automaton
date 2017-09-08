@@ -2,6 +2,7 @@ import Peer from 'peerjs'
 import { create as createTimesync } from 'timesync'
 
 const CHECK_MISSING_PEERS_FREQUENCY = 10000
+const STUN_SERVER = 'stun:stun.l.google.com:19302'
 const PEER_ID_KEY = 'automaton-peer'
 
 function getPeerString(id) {
@@ -146,11 +147,16 @@ export default class Network {
         })
     }
 
+    const iceServers = serverPath === '/api' ? [] : [{ url: STUN_SERVER }]
+
     const serverOptions = {
       host: serverHost,
       path: serverPath,
       port: serverPort,
       secure: window.location.protocol === 'https:',
+      config: {
+        iceServers,
+      },
     }
 
     if (serverKey) {

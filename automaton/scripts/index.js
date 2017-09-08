@@ -16,10 +16,7 @@ const INPUT_VALID_KEY_CODES = [
 ]
 
 const composition = new Composition()
-
-const view = new View({
-  wordsCount: composition.getWordsCount(),
-})
+const view = new View()
 
 const isDebugMode = false
 let isPatternFocussed = false
@@ -31,9 +28,6 @@ function onUniverseChange(isMe) {
   view.changePattern(pattern)
   view.commitPattern(pattern)
   composition.instrument.changePattern(pattern)
-
-  // Start words
-  // view.startWords(composition.getWords())
 
   // Show a flash as signal
   view.flash()
@@ -54,6 +48,13 @@ const visuals = new Visuals({
   isDebugMode,
 })
 
+view.startLoading()
+
+setTimeout(() => {
+  visuals.createUniverses()
+  view.stopLoading()
+})
+
 visuals.options.onUniverseEntered = () => {
   communication.sendUniverseEntered()
   onUniverseChange(true)
@@ -65,6 +66,7 @@ const network = new Network({
   },
   onClose: () => {
     view.changeConnectionState(false, false)
+    view.exitPointerLock()
   },
   onOpenRemote: peerId => {
     view.addRemotePeer(peerId)
@@ -228,11 +230,6 @@ window.addEventListener('keydown', (event) => {
       if (keyCode === KeyCode.U) {
         onUniverseChange()
       }
-
-      // Generate words (Cmd + W)
-      if (keyCode === KeyCode.M) {
-        view.startWords(composition.getWords())
-      }
     }
   }
 
@@ -243,9 +240,6 @@ window.addEventListener('keydown', (event) => {
     if (shiftKey) {
       // Press shift + number
       view.changeView(number)
-    } else {
-      // Select a word
-      view.selectWord(number, composition.getWords())
     }
 
     return

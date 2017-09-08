@@ -89,6 +89,36 @@ export default class Visuals {
     this.universes = []
     this.collisionSpheres = []
 
+    // Prepare light scenery
+    const hemisphereLight = new HemisphereLight(
+      getColor('WHITE'),
+      getColor('WHITE'),
+      HEMISPHERE_LIGHT_INTENSITY
+    )
+
+    const pointLight = new PointLight(
+      getColor('WHITE'),
+      0.8,
+      POINT_LIGHT_DISTANCE,
+      2
+    )
+
+    this.scene.add(pointLight)
+    this.scene.add(hemisphereLight)
+
+    // Raycaster for collision detection
+    this.raycaster = new Raycaster(
+      new Vector3(0, 0, 0),
+      new Vector3(0, -1, 0),
+      0,
+      10
+    )
+
+    // Start animation
+    this.animate()
+  }
+
+  createUniverses() {
     this.options.galaxy.forEach(setting => {
       const universe = new Universe(setting)
 
@@ -119,34 +149,6 @@ export default class Visuals {
       this.universes.push(universe)
       this.scene.add(universe)
     })
-
-    // Prepare light scenery
-    const hemisphereLight = new HemisphereLight(
-      getColor('WHITE'),
-      getColor('WHITE'),
-      HEMISPHERE_LIGHT_INTENSITY
-    )
-
-    const pointLight = new PointLight(
-      getColor('WHITE'),
-      0.8,
-      POINT_LIGHT_DISTANCE,
-      2
-    )
-
-    this.scene.add(pointLight)
-    this.scene.add(hemisphereLight)
-
-    // Raycaster for collision detection
-    this.raycaster = new Raycaster(
-      new Vector3(0, 0, 0),
-      new Vector3(0, -1, 0),
-      0,
-      10
-    )
-
-    // Start animation
-    this.animate()
   }
 
   animate() {

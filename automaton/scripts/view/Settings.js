@@ -16,14 +16,14 @@ function resetStorage() {
 const defaultConfiguration = {
   clientsNumber: 4,
   peerId: 1,
-  // serverHost: 'cybernetic-gamelan-automaton.herokuapp.com',
-  // serverKey: '',
-  // serverPath: '/api',
-  // serverPort: 80,
-  serverHost: '0.peerjs.com',
-  serverKey: 'gs5wl7sq2cblnmi',
-  serverPath: '/',
-  serverPort: 9000,
+  serverHost: 'cybernetic-gamelan-automaton.herokuapp.com',
+  serverKey: '',
+  serverPath: '/api',
+  serverPort: 9090,
+  // serverHost: '0.peerjs.com',
+  // serverKey: 'gs5wl7sq2cblnmi',
+  // serverPath: '/',
+  // serverPort: 9000,
 }
 
 export default class Settings {

@@ -5,7 +5,9 @@
 
   height: 100%;
 
-  cursor: crosshair;
+  .space__start {
+    display: none;
+  }
 
   &::after {
     position: absolute;
@@ -24,6 +26,12 @@
     opacity: 0;
 
     transition: opacity 500ms linear;
+  }
+}
+
+.space--ready {
+  .space__start {
+    display: block;
   }
 }
 
@@ -50,10 +58,6 @@
 
   .space__start {
     display: none;
-  }
-
-  .space__words {
-    display: block;
   }
 
   cursor: none;
@@ -109,18 +113,7 @@
   color: $green;
 }
 
-.space__words {
-  position: absolute;
-
-  top: 50%;
-  right: 0;
-  left: 0;
-
-  display: none;
-
-  transform: translate(0, -50%);
-}
-
+.space__loading,
 .space__start {
   position: absolute;
 
@@ -130,4 +123,12 @@
   transform: translate(-50%, -50%);
 
   user-select: none;
+}
+
+.space__loading {
+  display: none;
+}
+
+.space__loading--visible {
+  display: block;
 }
