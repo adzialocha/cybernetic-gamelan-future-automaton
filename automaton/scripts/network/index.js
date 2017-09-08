@@ -2,7 +2,6 @@ import Peer from 'peerjs'
 import { create as createTimesync } from 'timesync'
 
 const CHECK_MISSING_PEERS_FREQUENCY = 10000
-const STUN_SERVER = 'stun:stun.l.google.com:19302'
 const PEER_ID_KEY = 'automaton-peer'
 
 function getPeerString(id) {
@@ -36,8 +35,8 @@ const defaultOptions = {
   onOpenRemote: () => {},
   onReceive: () => {},
   onSyncTick: () => {},
-  syncInterval: 500,
-  syncStepsDelay: 100,
+  syncInterval: 250,
+  syncStepsDelay: 25,
   syncTickFrequency: 1,
 }
 
@@ -75,6 +74,7 @@ export default class Network {
       serverHost,
       serverKey,
       serverPath,
+      stunServer,
     } = configuration
 
     const peerId = parseInt(configuration.peerId, 10)
@@ -147,15 +147,13 @@ export default class Network {
         })
     }
 
-    const iceServers = serverPath === '/api' ? [] : [{ url: STUN_SERVER }]
-
     const serverOptions = {
       host: serverHost,
       path: serverPath,
       port: serverPort,
       secure: window.location.protocol === 'https:',
       config: {
-        iceServers,
+        iceServers: stunServer && stunServer.length > 0 ? [{ url: stunServer }] : [],
       },
     }
 
