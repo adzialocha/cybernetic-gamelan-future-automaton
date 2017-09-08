@@ -24,25 +24,27 @@ export default class Composition {
     this.reset()
   }
 
-  nextPreset() {
+  nextPreset(isMe) {
     this.currentPresetIndex += 1
 
     if (this.currentPresetIndex > params.instrument.presets.length - 1) {
       this.currentPresetIndex = 0
     }
 
-    return this.setPreset(this.currentPresetIndex)
+    return this.setPreset(this.currentPresetIndex, isMe)
   }
 
-  setPreset(index) {
+  setPreset(index, isMe) {
     const preset = params.instrument.presets[index]
 
     this.currentPresetIndex = index
 
-    this.instrument.changePreset(presets[preset.synthesizerPreset])
-    this.instrument.changeVelocity(preset.velocity)
+    if (isMe) {
+      this.instrument.changePreset(presets[preset.synthesizerPreset])
+      this.instrument.changeVelocity(preset.velocity)
 
-    this.instrument.synthesizerInterface.audio.changeVolume(preset.volume)
+      this.instrument.synthesizerInterface.audio.changeVolume(preset.volume)
+    }
 
     return pickRandomItem(preset.patterns)
   }

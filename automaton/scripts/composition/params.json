@@ -4,14 +4,14 @@
     "scale": "PELOG",
     "notes": [6, 1, 2, 4, 5],
     "pattern": {
-      "holdNoteChar": "*",
+      "holdNoteChar": "+",
       "notesChar": [".", "-", "_", ":", "/"],
       "pauseChar": " ",
       "bpmUp": ">",
       "bpmDown": "<",
       "maxBpmLevel": 1,
       "minBpmLevel": -3,
-      "octaveUp": "^",
+      "octaveUp": "*",
       "octaveDown": "°",
       "maxOctaveLevel": 1,
       "minOctaveLevel": -1

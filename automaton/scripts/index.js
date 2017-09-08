@@ -25,9 +25,9 @@ const isDebugMode = false
 let isPatternFocussed = false
 
 // Someone or me entered universe
-function onUniverseChange() {
+function onUniverseChange(isMe) {
   // Change pattern and synth sound
-  const pattern = composition.nextPreset()
+  const pattern = composition.nextPreset(isMe)
   view.changePattern(pattern)
   view.commitPattern(pattern)
   composition.instrument.changePattern(pattern)
@@ -41,7 +41,7 @@ function onUniverseChange() {
 
 const communication = new Communication({
   onUniverseEnterReceived: () => {
-    onUniverseChange()
+    onUniverseChange(false)
   },
 })
 
@@ -56,7 +56,7 @@ const visuals = new Visuals({
 
 visuals.options.onUniverseEntered = () => {
   communication.sendUniverseEntered()
-  onUniverseChange()
+  onUniverseChange(true)
 }
 
 const network = new Network({
@@ -210,7 +210,7 @@ window.addEventListener('keydown', (event) => {
     event.stopPropagation()
   }
 
-  if (metaKey) {
+  if (metaKey && shiftKey) {
     // Reset button (Cmd + R)
     if (keyCode === KeyCode.R) {
       view.reset()

@@ -91,9 +91,14 @@ export function convertString(settings, string, velocity, noteMaterial) {
     return false
   }
 
+  let cleanedString = string.replace(settings.octaveUp, '')
+  cleanedString = cleanedString.replace(settings.octaveDown, '')
+  cleanedString = cleanedString.replace(settings.bpmUp, '')
+  cleanedString = cleanedString.replace(settings.bpmDown, '')
+
   const pattern = stringToSequencerPattern(
     settings,
-    string.replace(/(<|>|\^|°)/g, ''),
+    cleanedString,
     octaveLevel,
     velocity,
     noteMaterial

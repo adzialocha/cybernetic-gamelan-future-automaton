@@ -5,7 +5,7 @@ import Synthesizer from './synthesizer'
 const DEFAULT_NOTE = 72
 const DEFAULT_VELOCITY = 1.0
 
-const CHANNELS_COUNT = 20
+const CHANNELS_COUNT = 25
 const BUFFER_SIZE = 1024
 
 const DEFAULT_PRESET = {
