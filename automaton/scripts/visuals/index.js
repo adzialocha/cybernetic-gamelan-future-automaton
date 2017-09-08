@@ -171,7 +171,6 @@ export default class Visuals {
         ),
         this.camera
       )
-      // this.raycaster.ray.origin.copy(this.controls.yawObject.position)
 
       const intersections = this.raycaster.intersectObjects(
         this.collisionSpheres

@@ -21,7 +21,7 @@ const view = new View({
   wordsCount: composition.getWordsCount(),
 })
 
-const isDebugMode = true
+const isDebugMode = false
 let isPatternFocussed = false
 
 // Someone or me entered universe

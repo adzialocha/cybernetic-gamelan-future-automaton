@@ -5,7 +5,7 @@
   "main": "automaton/index.html",
   "engines": {
     "node": "~8.1.4",
-    "npm": "~5.4.0"
+    "npm": "~5.4.1"
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production npm run clean:dist && webpack",

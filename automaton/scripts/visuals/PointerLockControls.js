@@ -5,6 +5,7 @@ import {
 } from 'three'
 
 const PI_2 = Math.PI / 2
+
 const MOVE_SPEED = 5.0
 const STOP_SPEED = 1.0
 
@@ -12,15 +13,14 @@ export default class PointerLockControls {
   constructor(camera, isDebugMode) {
     this.enabled = true
     this.isDebugMode = isDebugMode
-    this.camera = camera
 
-    this.camera.rotation.set(0, 0, 0)
+    camera.rotation.set(0, 0, 0)
 
     this.pitchObject = new Object3D()
-    this.pitchObject.add(this.camera)
+    this.pitchObject.add(camera)
 
     this.yawObject = new Object3D()
-    // this.yawObject.position.y = 0
+    // this.yawObject.position.y = -10
     this.yawObject.add(this.pitchObject)
 
     this.velocity = new Vector3()
