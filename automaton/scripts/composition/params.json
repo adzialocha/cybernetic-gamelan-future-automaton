@@ -14,7 +14,7 @@
       "octaveUp": "*",
       "octaveDown": "°",
       "maxOctaveLevel": 1,
-      "minOctaveLevel": -1
+      "minOctaveLevel": -3
     },
     "initialPresetIndex": 0,
     "presets": [

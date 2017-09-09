@@ -91,10 +91,18 @@ export function convertString(settings, string, velocity, noteMaterial) {
     return false
   }
 
-  let cleanedString = string.replace(settings.octaveUp, '')
-  cleanedString = cleanedString.replace(settings.octaveDown, '')
-  cleanedString = cleanedString.replace(settings.bpmUp, '')
-  cleanedString = cleanedString.replace(settings.bpmDown, '')
+  const removeChars = [
+    settings.bpmDown,
+    settings.bpmUp,
+    settings.octaveDown,
+    settings.octaveUp,
+  ]
+
+  let cleanedString = string
+
+  removeChars.forEach(char => {
+    cleanedString = cleanedString.replace(new RegExp('\\' + char, 'g'), '')
+  })
 
   const pattern = stringToSequencerPattern(
     settings,
