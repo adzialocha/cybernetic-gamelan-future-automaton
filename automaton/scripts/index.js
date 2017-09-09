@@ -213,20 +213,20 @@ window.addEventListener('keydown', (event) => {
   }
 
   if (metaKey && shiftKey) {
-    // Reset button (Cmd + R)
-    if (keyCode === KeyCode.R) {
+    // Reset button (Cmd + Shift + T)
+    if (keyCode === KeyCode.T) {
       view.reset()
       composition.reset()
       visuals.reset()
     }
 
-    // Reset only view (Cmd + V)
+    // Reset only view (Cmd + Shift + V)
     if (keyCode === KeyCode.V) {
       visuals.reset()
     }
 
     if (isDebugMode) {
-      // Change universe manually (Cmd + U)
+      // Change universe manually (Cmd + Shift + U)
       if (keyCode === KeyCode.U) {
         onUniverseChange()
       }
