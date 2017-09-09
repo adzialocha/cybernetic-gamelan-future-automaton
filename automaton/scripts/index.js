@@ -20,6 +20,7 @@ const view = new View()
 
 const isDebugMode = false
 let isPatternFocussed = false
+let isMoveLocked = false
 
 // Someone or me entered universe
 function onUniverseChange(isMe) {
@@ -250,6 +251,10 @@ window.addEventListener('keydown', (event) => {
     if (!isPatternFocussed && view.isMainViewActive()) {
       view.focusPattern()
     }
+    break
+  case KeyCode.CAPS_LOCK:
+    isMoveLocked = !isMoveLocked
+    visuals.controls.move({ forward: isMoveLocked })
     break
   case KeyCode.UP:
   case KeyCode.W:
