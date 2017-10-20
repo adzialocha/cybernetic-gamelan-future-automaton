@@ -229,7 +229,7 @@ window.addEventListener('keydown', (event) => {
     if (isDebugMode) {
       // Change universe manually (Cmd + Shift + U)
       if (keyCode === KeyCode.U) {
-        onUniverseChange()
+        onUniverseChange(true)
       }
     }
   }
