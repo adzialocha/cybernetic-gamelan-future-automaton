@@ -6,22 +6,20 @@ The Cybernetic Gamelan Future Automaton is a network-based browser game for four
 
 https://www.youtube.com/watch?v=a-93zvpLtMg
 
----
-
-## Setup
+### Setup
 
 ```
 npm install
 ```
 
-## Development
+### Development
 
 ```
 npm run serve
 npm run lint
 ```
 
-## Deployment
+### Deployment
 
 ```
 npm run build
