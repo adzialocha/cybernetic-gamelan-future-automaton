@@ -19,11 +19,41 @@ const APP_DEPENDENCIES = [
   'timesync',
 ]
 
-const getPath = (filePath) => path.resolve(__dirname, filePath)
+const isProduction = process.env.NODE_ENV === 'production'
+
+const getPath = filePath => path.resolve(__dirname, filePath)
 
 const extractSassPlugin = new ExtractTextPlugin({
   filename: '[name].css',
 })
+
+const plugins = [
+  new webpack.optimize.CommonsChunkPlugin({
+    name: VENDOR_FOLDER_NAME,
+    fileName: '[name].[hash].js',
+    minChunks: Infinity,
+  }),
+  new webpack.optimize.AggressiveMergingPlugin({}),
+  new webpack.optimize.OccurrenceOrderPlugin(true),
+  new HtmlWebpackPlugin({
+    filename: 'index.html',
+    hash: true,
+    inject: 'body',
+    template: getPath(`./${SRC_FOLDER}/index.html`),
+    minify: {
+      collapseWhitespace: true,
+      minifyJS: true,
+      removeComments: true,
+    },
+  }),
+  extractSassPlugin,
+]
+
+if (isProduction) {
+  plugins.push(new webpack.optimize.UglifyJsPlugin({
+    sourceMap: false,
+  }))
+}
 
 module.exports = {
   entry: {
@@ -53,8 +83,8 @@ module.exports = {
           use: [{
             loader: 'css-loader',
             options: {
-              minimize: true,
-              sourceMap: true,
+              minimize: isProduction,
+              sourceMap: false,
             },
           }, {
             loader: 'sass-loader',
@@ -77,34 +107,10 @@ module.exports = {
       '.scss',
     ],
   },
-  devtool: 'source-map',
+  devtool: isProduction ? false : 'source-map',
   devServer: {
     compress: true,
     port: SERVER_PORT,
   },
-  plugins: [
-    new webpack.optimize.CommonsChunkPlugin({
-      name: VENDOR_FOLDER_NAME,
-      fileName: '[name].[hash].js',
-      minChunks: Infinity,
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compress: process.env.NODE_ENV === 'production',
-    }),
-    new webpack.optimize.AggressiveMergingPlugin({}),
-    new webpack.optimize.OccurrenceOrderPlugin(true),
-    new HtmlWebpackPlugin({
-      filename: 'index.html',
-      hash: true,
-      inject: 'body',
-      template: getPath(`./${SRC_FOLDER}/index.html`),
-      minify: {
-        collapseWhitespace: true,
-        minifyJS: true,
-        removeComments: true,
-      },
-    }),
-    extractSassPlugin,
-  ],
+  plugins,
 }
