@@ -19,6 +19,8 @@
 //   })
 // }
 
+const INITIAL_VOLUME = 0.5
+
 export default class AudioInterface {
   constructor() {
     // Create audio context
@@ -34,18 +36,19 @@ export default class AudioInterface {
     //     this.convolverNode.buffer = buffer
     //   })
 
+    const { currentTime } = this.context
+
     // Compressor
     this.compressorNode = this.context.createDynamicsCompressor()
-    this.compressorNode.threshold.value = -5
-    this.compressorNode.knee.value = 10
-    this.compressorNode.ratio.value = 20
-    this.compressorNode.attack.value = 0
-    this.compressorNode.release.value = 0.25
+    this.compressorNode.threshold.setValueAtTime(-5, currentTime)
+    this.compressorNode.knee.setValueAtTime(10, currentTime)
+    this.compressorNode.ratio.setValueAtTime(20, currentTime)
+    this.compressorNode.attack.setValueAtTime(0, currentTime)
+    this.compressorNode.release.setValueAtTime(0.25, currentTime)
 
     // Gain
-    this.currentVolume = 0.5
     this.gainNode = this.context.createGain()
-    this.gainNode.gain.value = this.currentVolume
+    this.changeVolume(INITIAL_VOLUME)
 
     // Connect nodes
     this.compressorNode.connect(this.gainNode)
@@ -53,16 +56,19 @@ export default class AudioInterface {
     this.gainNode.connect(this.context.destination)
   }
 
-  changeVolume(volume) {
-    this.gainNode.gain.value = volume
-    this.currentVolume = volume
+  changeVolume(volume, isRememberingValue = true) {
+    this.gainNode.gain.setValueAtTime(volume, this.context.currentTime)
+
+    if (isRememberingValue) {
+      this.currentVolume = volume
+    }
   }
 
   mute() {
-    this.gainNode.gain.value = 0
+    this.changeVolume(0, false)
   }
 
   unmute() {
-    this.gainNode.gain.value = this.currentVolume
+    this.changeVolume(this.currentVolume)
   }
 }

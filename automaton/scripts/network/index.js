@@ -153,7 +153,10 @@ export default class Network {
       port: serverPort,
       secure: window.location.protocol === 'https:',
       config: {
-        iceServers: stunServer && stunServer.length > 0 ? [{ url: stunServer }] : [],
+        iceServers: (
+          stunServer &&
+          stunServer.length > 0 ? [{ url: stunServer }] : []
+        ),
       },
     }
 
