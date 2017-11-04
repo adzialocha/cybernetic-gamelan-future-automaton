@@ -35,7 +35,7 @@ function stringToSequencerPattern(settings, patternString, octave = 0, velocity,
     return {
       frequency,
       isHolding,
-      position: noteIndex / settings.maxNotesCount,
+      position: noteIndex / notes.length,
       velocity: frequency ? velocity : 0.0,
     }
   })
