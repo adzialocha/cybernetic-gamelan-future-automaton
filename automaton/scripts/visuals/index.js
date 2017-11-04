@@ -23,7 +23,7 @@ import Universe from './Universe'
 import { getColor } from './colors'
 
 const FOG_FAR_DISTANCE = 800
-const FPS_LIMIT = 30
+// const FPS_LIMIT = 30
 const HEMISPHERE_LIGHT_INTENSITY = 0.08
 const POINT_LIGHT_DISTANCE = 500
 
@@ -195,11 +195,11 @@ export default class Visuals {
       this.stats.end()
     }
 
-    //setTimeout(() => {
-      requestAnimationFrame(() => {
-        this.animate()
-      })
-    //}, 1000 / FPS_LIMIT)
+    // setTimeout(() => {
+    requestAnimationFrame(() => {
+      this.animate()
+    })
+    // }, 1000 / FPS_LIMIT)
   }
 
   resize(width, height) {

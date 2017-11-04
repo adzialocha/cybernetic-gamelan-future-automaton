@@ -11,7 +11,6 @@ function stringToSequencerPattern(settings, patternString, octave = 0, velocity,
   const result = notes.map((noteChar, noteIndex) => {
     let isHolding = false
     let frequency = null
-    let position = 0
 
     if (noteChar === settings.holdNoteChar) {
       if (!previousFrequency) {

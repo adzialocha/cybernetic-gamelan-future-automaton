@@ -59,7 +59,7 @@ export default class Instrument {
       ),
       synthesizerInterface: this.synthesizerInterface,
       tickTotalCount: TICKS_PER_SECOND,
-      onNextCycle: cycleCount => {
+      onNextCycle: () => {
         // Change pattern and bpm on next cycle when given
         if (this.nextWaitingPattern) {
           this.sequencer.changePattern(this.nextWaitingPattern)
@@ -67,7 +67,6 @@ export default class Instrument {
         }
 
         if (this.nextWaitingBpm) {
-          console.log(`bpm: ${this.nextWaitingBpm}`)
           this.changeBpm(this.nextWaitingBpm)
           this.nextWaitingBpm = null
         }
@@ -136,9 +135,11 @@ export default class Instrument {
       this.lastTickSyncAt ? now - this.lastTickSyncAt.getTime() : MS_PER_SECOND
     )
 
-    if (Math.abs(elasticSecond) - MS_PER_SECOND > VARIANCE_TRESHOLD) {
+    const diff = Math.abs(elasticSecond) - MS_PER_SECOND
+
+    if (diff > VARIANCE_TRESHOLD) {
       elasticSecond = MS_PER_SECOND
-      console.warn('Warning: out of sync!')
+      console.warn(`Warning: out of sync! (${diff})`) // eslint-disable-line no-console
     }
 
     const elasticMinute = SECONDS_PER_MINUTE * elasticSecond
