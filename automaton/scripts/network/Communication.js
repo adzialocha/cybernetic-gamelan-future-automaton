@@ -1,4 +1,5 @@
 const defaultOptions = {
+  onNextCycleReceived: () => {},
   onUniverseEnterReceived: () => {},
 }
 
@@ -36,6 +37,9 @@ export default class Communication {
     switch (data.type) {
     case 'UNIVERSE_ENTER':
       this.options.onUniverseEnterReceived()
+      break
+    case 'NEXT_CYCLE':
+      this.options.onNextCycleReceived()
       break
     }
   }

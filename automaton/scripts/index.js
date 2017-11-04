@@ -40,6 +40,9 @@ const communication = new Communication({
   onUniverseEnterReceived: () => {
     onUniverseChange(false)
   },
+  onNextCycleReceived: () => {
+    composition.instrument.commitPatternAndBpm()
+  },
 })
 
 const visuals = new Visuals({

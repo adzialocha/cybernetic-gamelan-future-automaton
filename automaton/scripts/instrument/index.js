@@ -59,18 +59,6 @@ export default class Instrument {
       ),
       synthesizerInterface: this.synthesizerInterface,
       tickTotalCount: TICKS_PER_SECOND,
-      onNextCycle: () => {
-        // Change pattern and bpm on next cycle when given
-        if (this.nextWaitingPattern) {
-          this.sequencer.changePattern(this.nextWaitingPattern)
-          this.nextWaitingPattern = null
-        }
-
-        if (this.nextWaitingBpm) {
-          this.changeBpm(this.nextWaitingBpm)
-          this.nextWaitingBpm = null
-        }
-      },
     })
 
     this.nextWaitingPattern = null
@@ -118,6 +106,19 @@ export default class Instrument {
     this.nextWaitingPattern = result.pattern
 
     return true
+  }
+
+  commitPatternAndBpm() {
+    // Finally commit the new pattern and bpm
+    if (this.nextWaitingPattern) {
+      this.sequencer.changePattern(this.nextWaitingPattern)
+      this.nextWaitingPattern = null
+    }
+
+    if (this.nextWaitingBpm) {
+      this.changeBpm(this.nextWaitingBpm)
+      this.nextWaitingBpm = null
+    }
   }
 
   step() {
