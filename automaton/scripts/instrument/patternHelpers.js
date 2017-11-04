@@ -1,43 +1,53 @@
 function stringToSequencerPattern(settings, patternString, octave = 0, velocity, noteMaterial) {
   const notes = patternString.toLowerCase().split('')
+  const pureNotes = notes.filter(note => note !== settings.holdNoteChar)
 
-  if (notes.length === 0) {
+  if (pureNotes.length === 0) {
     return []
   }
 
-  let previousFrequency = null
   let isError = false
+  let position = 0
 
-  const result = notes.map((noteChar, noteIndex) => {
-    let isHolding = false
+  const { holdNoteChar, pauseChar, notesChar } = settings
+
+  const result = notes.reduce((acc, noteChar, noteIndex) => {
     let frequency = null
 
-    if (noteChar === settings.holdNoteChar) {
-      if (!previousFrequency) {
-        isError = true
-        return false
-      }
+    const succeedingNoteChar = (
+      noteIndex < notes.length ? notes[noteIndex + 1] : null
+    )
 
-      frequency = previousFrequency
-      isHolding = true
-    } else if (noteChar === settings.pauseChar) {
-      previousFrequency = null
-    } else if (settings.notesChar.includes(noteChar)) {
-      const noteNumber = settings.notesChar.indexOf(noteChar)
+    // Does note appear with a succeeding holding symbol?
+    const isHolding = (succeedingNoteChar === holdNoteChar)
+
+    if (noteChar === holdNoteChar || noteChar === pauseChar) {
+      // Multiple hold note chars or holded pause are invalid
+      if (succeedingNoteChar && isHolding) {
+        isError = true
+      }
+    } else if (notesChar.includes(noteChar)) {
+      const noteNumber = notesChar.indexOf(noteChar)
       frequency = noteMaterial[noteNumber] * Math.pow(2, octave)
-      previousFrequency = frequency
     } else {
       isError = true
-      return false
     }
 
-    return {
-      frequency,
-      isHolding,
-      position: noteIndex / notes.length,
-      velocity: frequency ? velocity : 0.0,
+    // Add note or pause to pattern
+    if (!isError && (noteChar !== holdNoteChar)) {
+      acc.push({
+        frequency,
+        isHolding,
+        position: position / pureNotes.length,
+        velocity: frequency ? velocity : 0.0,
+      })
+
+      // Increase position in cycle
+      position += 1
     }
-  })
+
+    return acc
+  }, [])
 
   if (isError) {
     return false

@@ -139,7 +139,7 @@ export default class Instrument {
 
     if (diff > VARIANCE_TRESHOLD) {
       elasticSecond = MS_PER_SECOND
-      console.warn(`Warning: out of sync! (${diff})`) // eslint-disable-line no-console
+      console.warn(`Warning: out of sync! (${diff}ms)`) // eslint-disable-line no-console
     }
 
     const elasticMinute = SECONDS_PER_MINUTE * elasticSecond

@@ -33,11 +33,13 @@ export default class Sequencer {
       return
     }
 
+    // Cycle callback when reached beginning of new cycle
     if (this.currentTickIndex === 0) {
       this.options.onNextCycle(this.cycleCount)
       this.cycleCount += 1
     }
 
+    // Tick and ignore when no pattern is given
     if (this.pattern.length === 0) {
       this.tick()
       return
@@ -50,10 +52,11 @@ export default class Sequencer {
 
     // No pattern or upcoming event exists
     if (!nextNote) {
-      // Stop current note when note is played "too long"
+      // Stop current note when unheld note is played "too long"
       if (
         this.previousNote &&
         this.previousNote.frequency &&
+        !this.previousNote.isHolding &&
         (
           (this.currentTickIndex - this.previousNote.playedAtTick) >
           this.options.maxUnheldNoteTicks
@@ -68,28 +71,20 @@ export default class Sequencer {
       return
     }
 
-    const { frequency, isHolding, velocity } = nextNote
+    const { frequency, velocity } = nextNote
     const previousFrequency = this.previousNote && this.previousNote.frequency
 
     // Stop previous note for upcoming one
-    if (
-      previousFrequency &&
-      (previousFrequency !== frequency || !isHolding)
-    ) {
+    if (previousFrequency) {
       synthesizerInterface.noteOff(previousFrequency)
     }
 
-    // Play a new note when previous is not held
-    if (
-      frequency &&
-      (frequency !== previousFrequency || !isHolding)
-    ) {
-      synthesizerInterface.noteOn(
-        frequency,
-        velocity
-      )
+    // Play a new note
+    if (frequency) {
+      synthesizerInterface.noteOn(frequency, velocity)
     }
 
+    // Keep the last played note in memory
     this.previousNote = {
       ... nextNote,
       playedAtTick: this.currentTickIndex,

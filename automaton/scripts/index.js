@@ -19,6 +19,8 @@ const composition = new Composition()
 const view = new View()
 
 const isDebugMode = false
+const isVisualsEnabled = true
+
 let isPatternFocussed = false
 let isMoveLocked = false
 
@@ -41,18 +43,22 @@ const communication = new Communication({
 })
 
 const visuals = new Visuals({
-  galaxy: composition.getGalaxy(),
   canvas: view.getRendererCanvas(),
   devicePixelRatio: window.devicePixelRatio,
+  galaxy: composition.getGalaxy(),
   initialHeight: window.innerHeight,
   initialWidth: window.innerWidth,
   isDebugMode,
+  isEnabled: isVisualsEnabled,
 })
 
 view.startLoading()
 
 setTimeout(() => {
-  visuals.createUniverses()
+  if (isVisualsEnabled) {
+    visuals.createUniverses()
+  }
+
   view.stopLoading()
 })
 
@@ -246,9 +252,13 @@ window.addEventListener('keydown', (event) => {
     return
   }
 
+  if (isPatternFocussed) {
+    return
+  }
+
   switch (keyCode) {
   case KeyCode.ENTER:
-    if (!isPatternFocussed && view.isMainViewActive()) {
+    if (view.isMainViewActive()) {
       view.focusPattern()
     }
     break
@@ -276,6 +286,10 @@ window.addEventListener('keydown', (event) => {
 })
 
 window.addEventListener('keyup', (event) => {
+  if (isPatternFocussed) {
+    return
+  }
+
   switch (event.keyCode) {
   case KeyCode.UP:
   case KeyCode.W:

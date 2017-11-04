@@ -34,12 +34,17 @@ const defaultOptions = {
   initialHeight: 0,
   initialWidth: 0,
   isDebugMode: false,
+  isEnabled: true,
   onUniverseEntered: () => {},
 }
 
 export default class Visuals {
   constructor(options) {
     this.options = deepAssign({}, defaultOptions, options)
+
+    if (!this.options.isEnabled) {
+      return
+    }
 
     this.isEnabled = false
     this.clock = new Clock()
