@@ -14,17 +14,17 @@ const defaultOptions = {
   baseBpm: 120,
   noteMaterial: [],
   patternSettings: {
-    holdNoteChar: '*',
-    notesChar: ['.', '-', '_', ':', '/'],
-    pauseChar: ' ',
-    bpmUp: '>',
     bpmDown: '<',
+    bpmUp: '>',
+    holdNoteChar: '*',
     maxBpmLevel: 1,
-    minBpmLevel: -3,
-    octaveUp: '^',
-    octaveDown: '°',
     maxOctaveLevel: 1,
+    minBpmLevel: -3,
     minOctaveLevel: -1,
+    notesChar: ['.', '-', '_', ':', '/'],
+    octaveDown: '°',
+    octaveUp: '^',
+    pauseChar: ' ',
   },
 }
 
@@ -52,13 +52,30 @@ export default class Instrument {
     }
 
     this.synthesizerInterface = new SynthesizerInterface()
+
     this.sequencer = new Sequencer({
       maxUnheldNoteTicks: Math.floor(
         TICKS_PER_SECOND / UNHELD_NOTE_MAX_DURATION
       ),
       synthesizerInterface: this.synthesizerInterface,
       tickTotalCount: TICKS_PER_SECOND,
+      onNextCycle: cycleCount => {
+        // Change pattern and bpm on next cycle when given
+        if (this.nextWaitingPattern) {
+          this.sequencer.changePattern(this.nextWaitingPattern)
+          this.nextWaitingPattern = null
+        }
+
+        if (this.nextWaitingBpm) {
+          console.log(`bpm: ${this.nextWaitingBpm}`)
+          this.changeBpm(this.nextWaitingBpm)
+          this.nextWaitingBpm = null
+        }
+      },
     })
+
+    this.nextWaitingPattern = null
+    this.nextWaitingBpm = null
   }
 
   isRunning() {
@@ -96,12 +113,10 @@ export default class Instrument {
       return false
     }
 
-    // Change BPM
+    // Prepare BPM and pattern for next cycle
     const newBpm = this.options.baseBpm * Math.pow(2, result.bpmLevel)
-    this.changeBpm(newBpm)
-
-    // Give new pattern to sequencer when no problem occurred
-    this.sequencer.changePattern(result.pattern)
+    this.nextWaitingBpm = newBpm
+    this.nextWaitingPattern = result.pattern
 
     return true
   }

@@ -2,6 +2,7 @@ import { positionToTickIndex } from '../patternHelpers'
 
 const defaultOptions = {
   maxUnheldNoteTicks: 0,
+  onNextCycle: () => true,
   synthesizerInterface: null,
   tickTotalCount: 0,
 }
@@ -10,8 +11,8 @@ export default class Sequencer {
   constructor(customOptions) {
     this.options = Object.assign({}, defaultOptions, customOptions)
 
-    this.currentPatternIndex = 0
     this.currentTickIndex = 0
+    this.cycleCount = 0
     this.previousNote = null
 
     this.pattern = []
@@ -30,6 +31,11 @@ export default class Sequencer {
   step() {
     if (!this.isRunning) {
       return
+    }
+
+    if (this.currentTickIndex === 0) {
+      this.options.onNextCycle(this.cycleCount)
+      this.cycleCount += 1
     }
 
     if (this.pattern.length === 0) {
@@ -93,13 +99,10 @@ export default class Sequencer {
   }
 
   reset() {
-    this.pattern = []
-
-    this.currentPatternIndex = 0
     this.currentTickIndex = 0
-    this.previousNote = null
-
     this.options.synthesizerInterface.allNotesOff()
+    this.pattern = []
+    this.previousNote = null
   }
 
   start() {
