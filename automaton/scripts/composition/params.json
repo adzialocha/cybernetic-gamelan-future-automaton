@@ -4,17 +4,18 @@
     "scale": "PELOG",
     "notes": [6, 1, 2, 4, 5],
     "pattern": {
-      "holdNoteChar": "+",
-      "notesChar": [".", "-", "_", ":", "/"],
-      "pauseChar": " ",
-      "bpmUp": ">",
       "bpmDown": "<",
+      "bpmUp": ">",
+      "holdNoteChar": "+",
       "maxBpmLevel": 1,
-      "minBpmLevel": -3,
-      "octaveUp": "*",
-      "octaveDown": "°",
+      "maxNotesCount": 11,
       "maxOctaveLevel": 1,
-      "minOctaveLevel": -3
+      "minBpmLevel": -3,
+      "minOctaveLevel": -3,
+      "notesChar": [".", "-", "_", ":", "/"],
+      "octaveDown": "°",
+      "octaveUp": "*",
+      "pauseChar": " "
     },
     "initialPresetIndex": 0,
     "presets": [

@@ -104,6 +104,10 @@ export function convertString(settings, string, velocity, noteMaterial) {
     cleanedString = cleanedString.replace(new RegExp('\\' + char, 'g'), '')
   })
 
+  if (cleanedString.length > settings.maxNotesCount) {
+    return false
+  }
+
   const pattern = stringToSequencerPattern(
     settings,
     cleanedString,
