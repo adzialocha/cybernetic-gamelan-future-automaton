@@ -6,7 +6,8 @@ import { convertString } from './patternHelpers'
 
 const MS_PER_SECOND = 1000
 const SECONDS_PER_MINUTE = 60
-const SMALLEST_BAR_DIVIDE = 16 // 16th note
+const TICKS_PER_SECOND = 120
+const UNHELD_NOTE_MAX_DURATION = 8
 const VARIANCE_TRESHOLD = 100
 
 const defaultOptions = {
@@ -31,6 +32,10 @@ function bpmToMs(minuteMs = 60000, bpm, duration) {
   return (minuteMs / bpm) * (1 / duration) * 4
 }
 
+function bpmToMsTicksPerSecond(minuteMs = 60000, bpm, duration) {
+  return bpmToMs(minuteMs, bpm, duration) / 2
+}
+
 export default class Instrument {
   constructor(options = {}) {
     this.options = deepAssign({}, defaultOptions, options)
@@ -47,7 +52,13 @@ export default class Instrument {
     }
 
     this.synthesizerInterface = new SynthesizerInterface()
-    this.sequencer = new Sequencer(this.synthesizerInterface)
+    this.sequencer = new Sequencer({
+      maxUnheldNoteTicks: Math.floor(
+        TICKS_PER_SECOND / UNHELD_NOTE_MAX_DURATION
+      ),
+      synthesizerInterface: this.synthesizerInterface,
+      tickTotalCount: TICKS_PER_SECOND,
+    })
   }
 
   isRunning() {
@@ -104,7 +115,7 @@ export default class Instrument {
   }
 
   syncTick() {
-    // Calculate a minute in our synced network
+    // Calculate a second in our synced network
     const now = new Date().getTime()
     let elasticSecond = (
       this.lastTickSyncAt ? now - this.lastTickSyncAt.getTime() : MS_PER_SECOND
@@ -112,15 +123,16 @@ export default class Instrument {
 
     if (Math.abs(elasticSecond) - MS_PER_SECOND > VARIANCE_TRESHOLD) {
       elasticSecond = MS_PER_SECOND
+      console.warn('Warning: out of sync!')
     }
 
     const elasticMinute = SECONDS_PER_MINUTE * elasticSecond
 
-    // .. and generate 16th note ticks
-    this.stepFrequency = bpmToMs(
+    // .. and generate ticks
+    this.stepFrequency = bpmToMsTicksPerSecond(
       elasticMinute,
       this.settings.bpm,
-      SMALLEST_BAR_DIVIDE
+      TICKS_PER_SECOND
     )
     this.lastTickSyncAt = new Date()
 

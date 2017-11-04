@@ -1,14 +1,30 @@
-export default class Sequencer {
-  constructor(synthesizerInterface) {
-    this.synthesizerInterface = synthesizerInterface
+import { positionToTickIndex } from '../patternHelpers'
 
-    this.currentStep = null
-    this.currentStepIndex = 0
-    this.previousStep = null
+const defaultOptions = {
+  maxUnheldNoteTicks: 0,
+  synthesizerInterface: null,
+  tickTotalCount: 0,
+}
+
+export default class Sequencer {
+  constructor(customOptions) {
+    this.options = Object.assign({}, defaultOptions, customOptions)
+
+    this.currentPatternIndex = 0
+    this.currentTickIndex = 0
+    this.previousNote = null
 
     this.pattern = []
 
     this.isRunning = false
+  }
+
+  tick() {
+    this.currentTickIndex += 1
+
+    if (this.currentTickIndex > this.options.tickTotalCount) {
+      this.currentTickIndex = 0
+    }
   }
 
   step() {
@@ -17,35 +33,73 @@ export default class Sequencer {
     }
 
     if (this.pattern.length === 0) {
+      this.tick()
       return
     }
 
-    const {
-      isHolding,
-      note,
-      velocity,
-    } = this.pattern[this.currentStepIndex]
+    const { synthesizerInterface } = this.options
 
-    const previousNote = this.previousStep && this.previousStep.note
+    // Get next event in pattern
+    const nextNote = this.pattern[this.currentTickIndex]
 
-    if (previousNote && (previousNote !== note || !isHolding)) {
-      this.synthesizerInterface.noteOff(previousNote)
+    // No pattern or upcoming event exists
+    if (!nextNote) {
+      // Stop current note when note is played "too long"
+      if (
+        this.previousNote &&
+        this.previousNote.frequency &&
+        (
+          (this.currentTickIndex - this.previousNote.playedAtTick) >
+          this.options.maxUnheldNoteTicks
+        )
+      ) {
+        synthesizerInterface.noteOff(this.previousNote.frequency)
+        this.previousNote = null
+      }
+
+      this.tick()
+
+      return
     }
 
-    if (note && (note !== previousNote || !isHolding)) {
-      this.synthesizerInterface.noteOn(
-        note,
+    const { frequency, isHolding, velocity } = nextNote
+    const previousFrequency = this.previousNote && this.previousNote.frequency
+
+    // Stop previous note for upcoming one
+    if (
+      previousFrequency &&
+      (previousFrequency !== frequency || !isHolding)
+    ) {
+      synthesizerInterface.noteOff(previousFrequency)
+    }
+
+    // Play a new note when previous is not held
+    if (
+      frequency &&
+      (frequency !== previousFrequency || !isHolding)
+    ) {
+      synthesizerInterface.noteOn(
+        frequency,
         velocity
       )
     }
 
-    this.previousStep = this.pattern[this.currentStepIndex]
-
-    this.currentStepIndex += 1
-
-    if (this.currentStepIndex > this.pattern.length - 1) {
-      this.currentStepIndex = 0
+    this.previousNote = {
+      ... nextNote,
+      playedAtTick: this.currentTickIndex,
     }
+
+    this.tick()
+  }
+
+  reset() {
+    this.pattern = []
+
+    this.currentPatternIndex = 0
+    this.currentTickIndex = 0
+    this.previousNote = null
+
+    this.options.synthesizerInterface.allNotesOff()
   }
 
   start() {
@@ -55,14 +109,20 @@ export default class Sequencer {
   stop() {
     this.isRunning = false
 
-    this.currentStepIndex = 0
-    this.previousStep = null
-    this.synthesizerInterface.allNotesOff()
+    this.reset()
   }
 
   changePattern(pattern) {
-    this.stop()
-    this.pattern = pattern
-    this.start()
+    this.reset()
+
+    // Convert pattern note positions to tick index object
+    this.pattern = pattern.reduce((acc, item) => {
+      const tickIndex = positionToTickIndex(
+        item.position,
+        this.options.tickTotalCount
+      )
+      acc[tickIndex] = item
+      return acc
+    }, {})
   }
 }

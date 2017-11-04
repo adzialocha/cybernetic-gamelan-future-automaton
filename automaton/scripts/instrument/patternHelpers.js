@@ -5,36 +5,38 @@ function stringToSequencerPattern(settings, patternString, octave = 0, velocity,
     return []
   }
 
-  let previousNote = null
+  let previousFrequency = null
   let isError = false
 
-  const result = notes.map(noteChar => {
-    let note = null
+  const result = notes.map((noteChar, noteIndex) => {
     let isHolding = false
+    let frequency = null
+    let position = 0
 
     if (noteChar === settings.holdNoteChar) {
-      if (!previousNote) {
+      if (!previousFrequency) {
         isError = true
         return false
       }
 
-      note = previousNote
+      frequency = previousFrequency
       isHolding = true
     } else if (noteChar === settings.pauseChar) {
-      previousNote = null
+      previousFrequency = null
     } else if (settings.notesChar.includes(noteChar)) {
       const noteNumber = settings.notesChar.indexOf(noteChar)
-      note = noteMaterial[noteNumber] * Math.pow(2, octave)
-      previousNote = note
+      frequency = noteMaterial[noteNumber] * Math.pow(2, octave)
+      previousFrequency = frequency
     } else {
       isError = true
       return false
     }
 
     return {
+      frequency,
       isHolding,
-      note,
-      velocity: note ? velocity : 0.0,
+      position: noteIndex / settings.maxNotesCount,
+      velocity: frequency ? velocity : 0.0,
     }
   })
 
@@ -62,6 +64,10 @@ function extractOctaveLevel(string, upCount, downCount) {
   const down = countCharInString(string, downCount)
 
   return up - down
+}
+
+export function positionToTickIndex(position, tickTotalCount) {
+  return Math.floor(position * tickTotalCount)
 }
 
 export function convertString(settings, string, velocity, noteMaterial) {
