@@ -64,7 +64,7 @@ module.exports = {
   },
   output: {
     path: getPath(`./${DIST_FOLDER}`),
-    filename: '[name].bundle.js',
+    filename: '[name].js',
   },
   module: {
     rules: [
