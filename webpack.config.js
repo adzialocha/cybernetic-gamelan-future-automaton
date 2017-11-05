@@ -13,10 +13,9 @@ const APP_DEPENDENCIES = [
   'deep-assign',
   'key-code',
   'mathjs',
-  'peerjs',
+  'osc-js',
   'stats.js',
   'three',
-  'timesync',
 ]
 
 const isProduction = process.env.NODE_ENV === 'production'
@@ -106,6 +105,9 @@ module.exports = {
       '.js',
       '.scss',
     ],
+    alias: {
+      'osc-js': getPath('./node_modules/osc-js/lib/osc.browser.js'),
+    },
   },
   devtool: isProduction ? false : 'source-map',
   devServer: {

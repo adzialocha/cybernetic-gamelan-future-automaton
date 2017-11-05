@@ -40,8 +40,6 @@ export default class Composition {
 
     if (isMe) {
       this.instrument.changePreset(presets[preset.synthesizerPreset])
-      this.instrument.changeVelocity(preset.velocity)
-
       this.instrument.synthesizerInterface.audio.changeVolume(preset.volume)
     }
 
@@ -50,10 +48,6 @@ export default class Composition {
 
   getGalaxy() {
     return galaxy
-  }
-
-  getCurrentPattern() {
-    return this.instrument.settings.patternString
   }
 
   getValidPatternCharacters() {
@@ -91,9 +85,6 @@ export default class Composition {
     const preset = params.instrument.presets[this.currentPresetIndex]
 
     this.instrument.changePreset(presets[preset.synthesizerPreset])
-    this.instrument.changeVelocity(preset.velocity)
-    this.instrument.changePattern('')
-
     this.instrument.synthesizerInterface.audio.changeVolume(preset.volume)
   }
 }

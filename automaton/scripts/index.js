@@ -2,7 +2,6 @@ import '../styles/index.scss'
 
 import KeyCode from 'key-code'
 
-import Communication from './network/Communication'
 import Composition from './composition'
 import Network from './network'
 import View from './view'
@@ -25,25 +24,16 @@ let isPatternFocussed = false
 let isMoveLocked = false
 
 // Someone or me entered universe
-function onUniverseChange(isMe) {
-  // Change pattern and synth sound
-  const pattern = composition.nextPreset(isMe)
-  view.changePattern(pattern)
-  view.commitPattern(pattern)
-  composition.instrument.changePattern(pattern)
+// function onUniverseChange(isMe) {
+//   // Change pattern and synth sound
+//   const pattern = composition.nextPreset(isMe)
+//   view.changePattern(pattern)
+//   view.commitPattern(pattern)
+//   composition.instrument.changePattern(pattern)
 
-  // Show a flash as signal
-  view.flash()
-}
-
-const communication = new Communication({
-  onUniverseEnterReceived: () => {
-    onUniverseChange(false)
-  },
-  onNextCycleReceived: () => {
-    composition.instrument.commitPatternAndBpm()
-  },
-})
+//   // Show a flash as signal
+//   view.flash()
+// }
 
 const visuals = new Visuals({
   canvas: view.getRendererCanvas(),
@@ -65,10 +55,9 @@ setTimeout(() => {
   view.stopLoading()
 })
 
-visuals.options.onUniverseEntered = () => {
-  communication.sendUniverseEntered()
-  onUniverseChange(true)
-}
+// visuals.options.onUniverseEntered = () => {
+//   onUniverseChange(true)
+// }
 
 const network = new Network({
   onOpen: () => {
@@ -78,33 +67,29 @@ const network = new Network({
     view.changeConnectionState(false, false)
     view.exitPointerLock()
   },
-  onOpenRemote: peerId => {
-    view.addRemotePeer(peerId)
+  // onOpenRemote: peerId => {
+  //   view.addRemotePeer(peerId)
+  // },
+  // onCloseRemote: peerId => {
+  //   view.removeRemotePeer(peerId)
+  // },
+  onSyncTick: (currentTick, totalTicksCount) => {
+    composition.instrument.tick(currentTick, totalTicksCount)
   },
-  onCloseRemote: peerId => {
-    view.removeRemotePeer(peerId)
-  },
-  onSyncTick: offset => {
-    view.updateOffset(offset)
+  onNextCycle: currentCycle => {
     view.tick()
-
-    composition.instrument.syncTick()
-  },
-  onReceive: (peer, data) => {
-    communication.receive(peer, data)
+    composition.instrument.cycle(currentCycle)
   },
   onError: err => {
     view.addErrorMessage(err.message)
   },
 })
 
-communication.setNetwork(network)
-
 // Initialize
 window.addEventListener('load', () => {
   view.loadAllSettings()
   view.changeConnectionState(false, false)
-  view.changePattern(composition.getCurrentPattern())
+  view.changePattern('')
 })
 
 // Resize rendered when window size was changed
@@ -198,7 +183,7 @@ window.automaton = window.automaton || {
     if (keyCode === KeyCode.ENTER) {
       const value = event.target.value
 
-      if (composition.instrument.changePattern(value)) {
+      if (composition.instrument.queuePattern(value)) {
         view.commitPattern(value)
 
         event.preventDefault()
@@ -235,12 +220,12 @@ window.addEventListener('keydown', (event) => {
       visuals.reset()
     }
 
-    if (isDebugMode) {
-      // Change universe manually (Cmd + Shift + U)
-      if (keyCode === KeyCode.U) {
-        onUniverseChange(true)
-      }
-    }
+    // if (isDebugMode) {
+    //   // Change universe manually (Cmd + Shift + U)
+    //   if (keyCode === KeyCode.U) {
+    //     onUniverseChange(true)
+    //   }
+    // }
   }
 
   // Press number

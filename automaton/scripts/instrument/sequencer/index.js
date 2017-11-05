@@ -1,54 +1,68 @@
 import { positionToTickIndex } from '../patternHelpers'
 
 const defaultOptions = {
-  maxUnheldNoteTicks: 0,
-  onNextCycle: () => true,
+  maxUnheldNoteTicks: 40,
   synthesizerInterface: null,
-  tickTotalCount: 0,
+}
+
+function preparePattern(data, totalTicksCount, patternCycles, patternTotalTicksCount) {
+  // Concert pattern to tick positions
+  const pattern = data.pattern.reduce((acc, item) => {
+    const tickIndex = positionToTickIndex(
+      item.position,
+      patternTotalTicksCount
+    )
+    acc[tickIndex] = item
+    return acc
+  }, {})
+
+  return pattern
 }
 
 export default class Sequencer {
   constructor(customOptions) {
     this.options = Object.assign({}, defaultOptions, customOptions)
 
-    this.currentTickIndex = 0
-    this.cycleCount = 0
-    this.previousNote = null
-
-    this.pattern = []
-
+    this.currentCycle = 0
+    this.data = null
     this.isRunning = false
+    this.pattern = null
+    this.previousNote = null
   }
 
-  tick() {
-    this.currentTickIndex += 1
-
-    if (this.currentTickIndex > this.options.tickTotalCount) {
-      this.currentTickIndex = 0
-    }
-  }
-
-  step() {
-    if (!this.isRunning) {
+  tick(currentTick, totalTicksCount) {
+    // Ignore when no pattern is given
+    if (!this.isRunning || !this.data) {
       return
     }
 
-    // Cycle callback when reached beginning of new cycle
-    if (this.currentTickIndex === 0) {
-      this.options.onNextCycle(this.cycleCount)
-      this.cycleCount += 1
-    }
+    // How many cycles long is our pattern
+    const patternCycles = Math.pow(2, -(this.data.bpmLevel))
 
-    // Tick and ignore when no pattern is given
-    if (this.pattern.length === 0) {
-      this.tick()
-      return
+    // In which cycle is our pattern
+    const patternCurrentCycle = this.currentCycle % patternCycles
+
+    // Calculate how many ticks our pattern needs
+    const patternTotalTicksCount = totalTicksCount * patternCycles
+
+    // Current pattern tick
+    const patternCurrentTick = (
+      currentTick + (patternCurrentCycle * totalTicksCount)
+    ) % (patternTotalTicksCount + 1)
+
+    if (!this.pattern) {
+      this.pattern = preparePattern(
+        this.data,
+        totalTicksCount,
+        patternCycles,
+        patternTotalTicksCount
+      )
     }
 
     const { synthesizerInterface } = this.options
 
     // Get next event in pattern
-    const nextNote = this.pattern[this.currentTickIndex]
+    const nextNote = this.pattern[patternCurrentTick]
 
     // No pattern or upcoming event exists
     if (!nextNote) {
@@ -58,15 +72,13 @@ export default class Sequencer {
         this.previousNote.frequency &&
         !this.previousNote.isHolding &&
         (
-          (this.currentTickIndex - this.previousNote.playedAtTick) >
+          (patternCurrentTick - this.previousNote.playedAtTick) >
           this.options.maxUnheldNoteTicks
         )
       ) {
         synthesizerInterface.noteOff(this.previousNote.frequency)
         this.previousNote = null
       }
-
-      this.tick()
 
       return
     }
@@ -87,16 +99,25 @@ export default class Sequencer {
     // Keep the last played note in memory
     this.previousNote = {
       ... nextNote,
-      playedAtTick: this.currentTickIndex,
+      playedAtTick: patternCurrentTick,
+    }
+  }
+
+  cycle(currentCycle, data) {
+    // Use new data when given
+    if (data) {
+      this.reset()
+
+      this.data = data
     }
 
-    this.tick()
+    this.currentCycle = currentCycle
   }
 
   reset() {
-    this.currentTickIndex = 0
+    this.data = null
     this.options.synthesizerInterface.allNotesOff()
-    this.pattern = []
+    this.pattern = null
     this.previousNote = null
   }
 
@@ -108,19 +129,5 @@ export default class Sequencer {
     this.isRunning = false
 
     this.reset()
-  }
-
-  changePattern(pattern) {
-    this.reset()
-
-    // Convert pattern note positions to tick index object
-    this.pattern = pattern.reduce((acc, item) => {
-      const tickIndex = positionToTickIndex(
-        item.position,
-        this.options.tickTotalCount
-      )
-      acc[tickIndex] = item
-      return acc
-    }, {})
   }
 }

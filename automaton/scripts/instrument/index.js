@@ -4,20 +4,15 @@ import Sequencer from './sequencer'
 import SynthesizerInterface from './SynthesizerInterface'
 import { convertString } from './patternHelpers'
 
-const MS_PER_SECOND = 1000
-const SECONDS_PER_MINUTE = 60
-const TICKS_PER_SECOND = 120
 const UNHELD_NOTE_MAX_DURATION = 8
-const VARIANCE_TRESHOLD = 100
 
 const defaultOptions = {
-  baseBpm: 120,
   noteMaterial: [],
   patternSettings: {
     bpmDown: '<',
     bpmUp: '>',
     holdNoteChar: '*',
-    maxBpmLevel: 1,
+    maxBpmLevel: 2,
     maxOctaveLevel: 1,
     minBpmLevel: -3,
     minOctaveLevel: -1,
@@ -28,71 +23,35 @@ const defaultOptions = {
   },
 }
 
-function bpmToMs(minuteMs = 60000, bpm, duration) {
-  return (minuteMs / bpm) * (1 / duration) * 4
-}
-
-function bpmToMsTicksPerSecond(minuteMs = 60000, bpm, duration) {
-  return bpmToMs(minuteMs, bpm, duration) / 2
-}
-
 export default class Instrument {
   constructor(options = {}) {
     this.options = deepAssign({}, defaultOptions, options)
 
-    this.lastTickSyncAt = null
-    this.stepFrequency = null
-    this.tickTimeout = null
-
-    this.settings = {
-      bpm: this.options.baseBpm,
-      octave: 0,
-      patternString: '',
-      velocity: 1.0,
-    }
-
     this.synthesizerInterface = new SynthesizerInterface()
 
     this.sequencer = new Sequencer({
-      maxUnheldNoteTicks: Math.floor(
-        TICKS_PER_SECOND / UNHELD_NOTE_MAX_DURATION
-      ),
+      maxUnheldNoteTicks: UNHELD_NOTE_MAX_DURATION,
       synthesizerInterface: this.synthesizerInterface,
-      tickTotalCount: TICKS_PER_SECOND,
     })
 
-    this.nextWaitingPattern = null
-    this.nextWaitingBpm = null
-  }
-
-  isRunning() {
-    return this.sequencer.isRunning
+    this.waitingCommit = null
+    this.velocity = 1.0
   }
 
   changePreset(preset) {
     this.synthesizerInterface.changePreset(preset)
   }
 
-  changeBpm(bpm) {
-    this.settings.bpm = bpm
-  }
-
-  changeOctave(octave) {
-    this.settings.octave = octave
-  }
-
   changeVelocity(velocity) {
-    this.settings.velocity = velocity
+    this.velocity = velocity
   }
 
-  changePattern(patternString) {
-    this.settings.patternString = patternString
-
+  queuePattern(patternString) {
     // Translate string to sequencer pattern
     const result = convertString(
       this.options.patternSettings,
-      this.settings.patternString,
-      this.settings.velocity,
+      patternString,
+      this.velocity,
       this.options.noteMaterial
     )
 
@@ -100,62 +59,20 @@ export default class Instrument {
       return false
     }
 
-    // Prepare BPM and pattern for next cycle
-    const newBpm = this.options.baseBpm * Math.pow(2, result.bpmLevel)
-    this.nextWaitingBpm = newBpm
-    this.nextWaitingPattern = result.pattern
+    // Prepare pattern for next cycle
+    this.waitingCommit = result
 
     return true
   }
 
-  commitPatternAndBpm() {
-    // Finally commit the new pattern and bpm
-    if (this.nextWaitingPattern) {
-      this.sequencer.changePattern(this.nextWaitingPattern)
-      this.nextWaitingPattern = null
-    }
-
-    if (this.nextWaitingBpm) {
-      this.changeBpm(this.nextWaitingBpm)
-      this.nextWaitingBpm = null
-    }
+  cycle(currentCycle) {
+    // Finally commit the new pattern when waiting for it
+    this.sequencer.cycle(currentCycle, this.waitingCommit)
+    this.waitingCommit = null
   }
 
-  step() {
-    this.sequencer.step()
-
-    this.tickTimeout = setTimeout(() => {
-      this.step()
-    }, this.stepFrequency)
-  }
-
-  syncTick() {
-    // Calculate a second in our synced network
-    const now = new Date().getTime()
-    let elasticSecond = (
-      this.lastTickSyncAt ? now - this.lastTickSyncAt.getTime() : MS_PER_SECOND
-    )
-
-    const diff = Math.abs(elasticSecond) - MS_PER_SECOND
-
-    if (diff > VARIANCE_TRESHOLD) {
-      elasticSecond = MS_PER_SECOND
-      console.warn(`Warning: out of sync! (${diff}ms)`) // eslint-disable-line no-console
-    }
-
-    const elasticMinute = SECONDS_PER_MINUTE * elasticSecond
-
-    // .. and generate ticks
-    this.stepFrequency = bpmToMsTicksPerSecond(
-      elasticMinute,
-      this.settings.bpm,
-      TICKS_PER_SECOND
-    )
-    this.lastTickSyncAt = new Date()
-
-    if (!this.tickTimeout) {
-      this.step()
-    }
+  tick(currentTick, ticksTotalCount) {
+    this.sequencer.tick(currentTick, ticksTotalCount)
   }
 
   start() {
@@ -164,12 +81,5 @@ export default class Instrument {
 
   stop() {
     this.sequencer.stop()
-
-    clearTimeout(this.tickTimeout)
-
-    this.tickTimeout = null
-    this.lastTickSyncAt = null
-    this.lastPatternSyncAt = null
-    this.stepFrequency = null
   }
 }

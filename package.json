@@ -56,16 +56,15 @@
     "webpack-dev-server": "^2.9.4"
   },
   "dependencies": {
+    "chalk": "^2.3.0",
     "cors": "^2.8.4",
     "deep-assign": "^2.0.0",
     "express": "^4.16.2",
     "key-code": "0.0.1",
     "mathjs": "^3.16.5",
     "normalize.css": "^7.0.0",
-    "peer": "^0.2.8",
-    "peerjs": "^0.3.14",
+    "osc-js": "^1.1.0",
     "stats.js": "^0.17.0",
-    "three": "^0.88.0",
-    "timesync": "^0.4.2"
+    "three": "^0.88.0"
   }
 }
