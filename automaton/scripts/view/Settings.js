@@ -14,17 +14,8 @@ function resetStorage() {
 }
 
 const defaultConfiguration = {
-  clientsNumber: 4,
-  peerId: 1,
-  serverHost: '10.0.0.100',
-  serverKey: '',
-  serverPath: '/api',
-  serverPort: 9090,
-  stunServer: '', // 'stun:stun.l.google.com:19302',
-  // serverHost: '0.peerjs.com',
-  // serverKey: 'gs5wl7sq2cblnmi',
-  // serverPath: '/',
-  // serverPort: 9000,
+  serverHost: '192.168.1.100',
+  serverPort: 52525,
 }
 
 export default class Settings {

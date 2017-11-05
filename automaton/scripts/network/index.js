@@ -4,11 +4,12 @@ import OSC, {
 } from 'osc-js'
 
 const defaultOptions = {
-  onClose: () => {},
-  onError: () => {},
-  onOpen: () => {},
-  onSyncTick: () => {},
-  onNextCycle: () => {},
+  onClientsChanged: () => true,
+  onClose: () => true,
+  onError: () => true,
+  onNextCycle: () => true,
+  onOpen: () => true,
+  onSyncTick: () => true,
 }
 
 export default class Network {
@@ -18,7 +19,6 @@ export default class Network {
     this.osc = new OSC()
 
     // osc events
-
     this.osc.on('open', () => {
       this.options.onOpen()
     })
@@ -27,21 +27,38 @@ export default class Network {
       this.options.onClose()
     })
 
-    this.osc.on('error', err => {
-      this.options.onError(err)
+    this.osc.on('error', error => {
+      this.options.onError(error)
       this.disconnect()
     })
 
     // osc messages
-
     this.osc.on('/automaton/tick', message => {
-      const [currentTick, totalTicksCount] = message.args
-      this.options.onSyncTick(currentTick, totalTicksCount)
+      const [currentTick, totalTicksCount, originalTimestamp] = message.args
+
+      this.options.onSyncTick(
+        currentTick,
+        totalTicksCount,
+        parseInt(originalTimestamp, 10)
+      )
     })
 
     this.osc.on('/automaton/cycle', message => {
       const [currentCycle] = message.args
+
       this.options.onNextCycle(currentCycle)
+    })
+
+    this.osc.on('/automaton/open', message => {
+      const [clientsCount] = message.args
+
+      this.options.onClientsChanged(clientsCount)
+    })
+
+    this.osc.on('/automaton/close', message => {
+      const [clientsCount] = message.args
+
+      this.options.onClientsChanged(clientsCount)
     })
   }
 

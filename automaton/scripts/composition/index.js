@@ -23,27 +23,23 @@ export default class Composition {
     this.reset()
   }
 
-  nextPreset(isMe) {
+  nextPreset() {
     this.currentPresetIndex += 1
 
     if (this.currentPresetIndex > params.instrument.presets.length - 1) {
       this.currentPresetIndex = 0
     }
 
-    return this.setPreset(this.currentPresetIndex, isMe)
+    this.setPreset(this.currentPresetIndex)
   }
 
-  setPreset(index, isMe) {
+  setPreset(index) {
     const preset = params.instrument.presets[index]
 
     this.currentPresetIndex = index
 
-    if (isMe) {
-      this.instrument.changePreset(presets[preset.synthesizerPreset])
-      this.instrument.synthesizerInterface.audio.changeVolume(preset.volume)
-    }
-
-    return pickRandomItem(preset.patterns)
+    this.instrument.changePreset(presets[preset.synthesizerPreset])
+    this.instrument.synthesizerInterface.audio.changeVolume(preset.volume)
   }
 
   getGalaxy() {

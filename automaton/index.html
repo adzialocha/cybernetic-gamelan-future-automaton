@@ -47,8 +47,8 @@
         <div class="settings__section-content">
           <div class="status">
             <div class="status__field">
-              <div class="status__field-label">Offset</div>
-              <div class="status__field-value" id="offset-monitor">0.0 ms</div>
+              <div class="status__field-label">Latency</div>
+              <div class="status__field-value" id="latency-monitor">0 ms</div>
             </div>
             <div class="status__field">
               <div class="status__field-label">Tick</div>
@@ -91,29 +91,8 @@
               <input type="text" id="serverHost" />
             </div>
             <div class="form__group">
-              <label for="stunServer">STUN Server</label>
-              <input type="text" id="stunServer" />
-            </div>
-            <div class="form__group">
-              <label for="serverPath">Path</label>
-              <input type="text" id="serverPath" />
-            </div>
-            <div class="form__group">
-              <label for="serverKey">Key</label>
-              <input type="text" id="serverKey" />
-            </div>
-            <div class="form__group">
               <label for="serverPort">Port</label>
               <input type="text" id="serverPort" />
-            </div>
-            <h3 class="form__title">Client</h3>
-            <div class="form__group">
-              <label for="clientsNumber">Total peers number</label>
-              <input type="text" id="clientsNumber" />
-            </div>
-            <div class="form__group">
-              <label for="peerId">Your peer ID</label>
-              <input type="text" id="peerId" />
             </div>
             <hr />
             <button

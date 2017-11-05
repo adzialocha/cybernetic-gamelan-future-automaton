@@ -23,18 +23,6 @@ const isVisualsEnabled = true
 let isPatternFocussed = false
 let isMoveLocked = false
 
-// Someone or me entered universe
-// function onUniverseChange(isMe) {
-//   // Change pattern and synth sound
-//   const pattern = composition.nextPreset(isMe)
-//   view.changePattern(pattern)
-//   view.commitPattern(pattern)
-//   composition.instrument.changePattern(pattern)
-
-//   // Show a flash as signal
-//   view.flash()
-// }
-
 const visuals = new Visuals({
   canvas: view.getRendererCanvas(),
   devicePixelRatio: window.devicePixelRatio,
@@ -55,9 +43,13 @@ setTimeout(() => {
   view.stopLoading()
 })
 
-// visuals.options.onUniverseEntered = () => {
-//   onUniverseChange(true)
-// }
+visuals.options.onUniverseEntered = () => {
+  // Change pattern and synth sound
+  composition.nextPreset()
+
+  // Show a flash as signal
+  view.flash()
+}
 
 const network = new Network({
   onOpen: () => {
@@ -67,16 +59,17 @@ const network = new Network({
     view.changeConnectionState(false, false)
     view.exitPointerLock()
   },
-  // onOpenRemote: peerId => {
-  //   view.addRemotePeer(peerId)
-  // },
-  // onCloseRemote: peerId => {
-  //   view.removeRemotePeer(peerId)
-  // },
-  onSyncTick: (currentTick, totalTicksCount) => {
+  onClientsChanged: count => {
+    view.changeClients(count)
+  },
+  onSyncTick: (currentTick, totalTicksCount, originalTimestamp) => {
+    if (currentTick === 0 ) {
+      view.updateOffset(Date.now() - originalTimestamp)
+    }
+
     composition.instrument.tick(currentTick, totalTicksCount)
   },
-  onNextCycle: currentCycle => {
+  onNextCycle: (currentCycle) => {
     view.tick()
     composition.instrument.cycle(currentCycle)
   },
@@ -219,13 +212,6 @@ window.addEventListener('keydown', (event) => {
     if (keyCode === KeyCode.V) {
       visuals.reset()
     }
-
-    // if (isDebugMode) {
-    //   // Change universe manually (Cmd + Shift + U)
-    //   if (keyCode === KeyCode.U) {
-    //     onUniverseChange(true)
-    //   }
-    // }
   }
 
   // Press number
