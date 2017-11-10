@@ -63,7 +63,7 @@
     "key-code": "0.0.1",
     "mathjs": "^3.16.5",
     "normalize.css": "^7.0.0",
-    "osc-js": "^1.1.1",
+    "osc-js": "^1.2.0",
     "stats.js": "^0.17.0",
     "three": "^0.88.0"
   }

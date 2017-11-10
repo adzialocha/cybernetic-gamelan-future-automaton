@@ -71,8 +71,9 @@ export default class Network {
 
     const { serverHost: host } = configuration
     const port = parseInt(configuration.serverPort, 10)
+    const secure = window.location.href.includes('https')
 
-    this.osc.open({ host, port })
+    this.osc.open({ host, port, secure })
 
     return true
   }
