@@ -148,6 +148,8 @@ export default class Visuals {
         setting.position.z
       )
 
+      sphere.__universeUuid = universe.uuid
+
       this.collisionSpheres.push(sphere)
       this.scene.add(sphere)
 
@@ -184,10 +186,11 @@ export default class Visuals {
       )
 
       if (intersections.length > 0) {
-        const uuid = intersections[0].object.uuid
+        const uuid = intersections[0].object.__universeUuid
 
         if (uuid !== this.currentUniverse) {
           this.currentUniverse = uuid
+
           this.options.onUniverseEntered(uuid)
         }
       }

@@ -24,6 +24,7 @@
         "count": 100,
         "geometry": "IcosahedronGeometry",
         "attributes": [8, 2],
+        "material": "phong",
         "meshColor": "DARK_BLUE",
         "meshSpecular": "DARKER_BLUE",
         "hasWireframes": false,
@@ -90,6 +91,7 @@
         "geometry": "IcosahedronGeometry",
         "attributes": [32, 2],
         "meshColor": "GREEN",
+        "material": "phong",
         "meshSpecular": "LIGHT_RED",
         "hasWireframes": false,
         "hasLines": false,
@@ -151,6 +153,7 @@
         "attributes": [20, 4, 40, 8],
         "meshColor": "LIGHT_RED",
         "meshSpecular": "WHITE",
+        "material": "phong",
         "hasWireframes": false,
         "hasLines": false,
         "factor": 0
@@ -161,6 +164,7 @@
         "attributes": [10, 3, 80, 16],
         "meshColor": "LIGHT_RED",
         "meshSpecular": "WHITE",
+        "material": "phong",
         "hasWireframes": false,
         "hasLines": true,
         "factor": 0,
@@ -184,6 +188,7 @@
         "meshColor": "LIGHT_GRAY",
         "meshSpecular": "LIGHT_RED",
         "hasWireframes": false,
+        "material": "phong",
         "hasLines": false,
         "factor": 0
       }
@@ -219,6 +224,7 @@
         "attributes": [7, 40, 4],
         "meshColor": "GREEN",
         "meshSpecular": "WHITE",
+        "material": "phong",
         "hasWireframes": false,
         "hasLines": false,
         "factor": 0.05
