@@ -91,10 +91,6 @@ module.exports = {
           fallback: 'style-loader',
         }),
       },
-      {
-        test: /\.wav$/,
-        loader: 'file-loader',
-      },
     ],
   },
   resolve: {

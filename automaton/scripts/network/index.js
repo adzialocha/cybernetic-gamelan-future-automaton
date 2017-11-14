@@ -27,8 +27,8 @@ export default class Network {
       this.options.onClose()
     })
 
-    this.osc.on('error', error => {
-      this.options.onError(error)
+    this.osc.on('error', () => {
+      this.options.onError('Websocket error')
       this.disconnect()
     })
 

@@ -1,40 +1,11 @@
-// import impulseUrl from '../../assets/impulse.wav'
-
-// function getImpulse(context) {
-//   return new Promise((resolve, reject) => {
-//     const ajaxRequest = new XMLHttpRequest()
-//     ajaxRequest.open('GET', impulseUrl, true)
-//     ajaxRequest.responseType = 'arraybuffer'
-
-//     ajaxRequest.onload = () => {
-//       const impulseData = ajaxRequest.response
-//       context.decodeAudioData(impulseData, buffer => {
-//         resolve(buffer)
-//       }, (err) => {
-//         reject(err)
-//       })
-//     }
-
-//     ajaxRequest.send()
-//   })
-// }
-
 const INITIAL_VOLUME = 0.5
 
 export default class AudioInterface {
   constructor() {
+    const AudioContext = window.AudioContext || window.webkitAudioContext
+
     // Create audio context
     this.context = new AudioContext()
-
-    // Reverb
-    // this.convolverNode = this.context.createConvolver()
-    // this.convolverNode.loop = true
-    // this.convolverNode.normalize = true
-
-    // getImpulse(this.context)
-    //   .then(buffer => {
-    //     this.convolverNode.buffer = buffer
-    //   })
 
     const { currentTime } = this.context
 
@@ -52,7 +23,6 @@ export default class AudioInterface {
 
     // Connect nodes
     this.compressorNode.connect(this.gainNode)
-    // this.convolverNode.connect(this.gainNode)
     this.gainNode.connect(this.context.destination)
   }
 

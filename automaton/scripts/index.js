@@ -17,7 +17,7 @@ const INPUT_VALID_KEY_CODES = [
 const composition = new Composition()
 const view = new View()
 
-const isDebugMode = false
+const isDebugMode = true
 const isVisualsEnabled = true
 
 let isPatternFocussed = false
@@ -69,12 +69,12 @@ const network = new Network({
 
     composition.instrument.tick(currentTick, totalTicksCount)
   },
-  onNextCycle: (currentCycle) => {
+  onNextCycle: currentCycle => {
     view.tick()
     composition.instrument.cycle(currentCycle)
   },
-  onError: err => {
-    view.addErrorMessage(err.message)
+  onError: message => {
+    view.addErrorMessage(message)
   },
 })
 
@@ -214,14 +214,24 @@ window.addEventListener('keydown', (event) => {
     }
   }
 
-  // Press number
-  if (keyCode >= KeyCode.ONE && keyCode <= KeyCode.NINE) {
-    const number = keyCode - KeyCode.ONE
+  // Press number + shift
+  if (
+    shiftKey && (
+      (keyCode >= KeyCode.ONE && keyCode <= KeyCode.NINE) ||
+      (keyCode === 222 || keyCode === 191)
+    )
+  ) {
+    let index
 
-    if (shiftKey) {
-      // Press shift + number
-      view.changeView(number)
+    if (keyCode === 222) {
+      index = 1
+    } else if (keyCode === 191) {
+      index = 6
+    } else {
+      index = keyCode - KeyCode.ONE
     }
+
+    view.changeView(index)
 
     return
   }
