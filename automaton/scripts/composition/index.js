@@ -51,7 +51,7 @@ export default class Composition {
   }
 
   updateSynthesizer(distances) {
-    const b = -1 / 10
+    const b = -1 / 10000
 
     // Calculate the weight of every universe
     const weights = distances.reduce((acc, item) => {
