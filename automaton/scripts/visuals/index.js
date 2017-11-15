@@ -17,7 +17,6 @@ import Universe from './Universe'
 import { getColor } from './colors'
 
 const FOG_FAR_DISTANCE = 800
-// const FPS_LIMIT = 30
 const HEMISPHERE_LIGHT_INTENSITY = 0.08
 const POINT_LIGHT_DISTANCE = 500
 
@@ -118,23 +117,6 @@ export default class Visuals {
         setting.position.z
       )
 
-      // const sphere = new Mesh(
-      //   new SphereBufferGeometry(setting.sphereSize, 16, 16),
-      //   new MeshBasicMaterial({
-      //     color: getColor('BLACK'),
-      //     opacity: 0.5,
-      //     transparent: true,
-      //   })
-      // )
-
-      // sphere.position.set(
-      //   setting.position.x,
-      //   setting.position.y,
-      //   setting.position.z
-      // )
-
-      // this.scene.add(sphere)
-
       this.universes.push(universe)
       this.scene.add(universe)
     })
@@ -161,8 +143,9 @@ export default class Visuals {
         )
 
         acc.push({
+          distance: Math.round(distance),
+          sphereSize: universe.options.sphereSize,
           uuid,
-          distance,
         })
 
         return acc
@@ -178,11 +161,9 @@ export default class Visuals {
       this.stats.end()
     }
 
-    // setTimeout(() => {
     requestAnimationFrame(() => {
       this.animate()
     })
-    // }, 1000 / FPS_LIMIT)
   }
 
   resize(width, height) {

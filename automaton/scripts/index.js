@@ -31,10 +31,11 @@ const visuals = new Visuals({
   initialWidth: window.innerWidth,
   isEnabled: isVisualsEnabled,
   isDebugMode,
-  onDistancesUpdated: distances => {
-    composition.updateDistances(distances)
-  },
 })
+
+visuals.options.onDistancesUpdated = distances => {
+  composition.queueDistances(distances)
+}
 
 const network = new Network({
   onOpen: () => {
