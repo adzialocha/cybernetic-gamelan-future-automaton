@@ -2,15 +2,9 @@ import {
   Clock,
   Fog,
   HemisphereLight,
-  Mesh,
-  MeshBasicMaterial,
   PerspectiveCamera,
   PointLight,
-  Raycaster,
   Scene,
-  SphereBufferGeometry,
-  Vector2,
-  Vector3,
   WebGLRenderer,
 } from 'three'
 
@@ -35,7 +29,7 @@ const defaultOptions = {
   initialWidth: 0,
   isDebugMode: false,
   isEnabled: true,
-  onUniverseEntered: () => {},
+  onDistancesUpdated: () => {},
 }
 
 export default class Visuals {
@@ -92,7 +86,6 @@ export default class Visuals {
     this.currentUniverse = null
 
     this.universes = []
-    this.collisionSpheres = []
 
     // Prepare light scenery
     const hemisphereLight = new HemisphereLight(
@@ -111,14 +104,6 @@ export default class Visuals {
     this.scene.add(pointLight)
     this.scene.add(hemisphereLight)
 
-    // Raycaster for collision detection
-    this.raycaster = new Raycaster(
-      new Vector3(0, 0, 0),
-      new Vector3(0, -1, 0),
-      0,
-      10
-    )
-
     // Start animation
     this.animate()
   }
@@ -133,25 +118,22 @@ export default class Visuals {
         setting.position.z
       )
 
-      const sphere = new Mesh(
-        new SphereBufferGeometry(setting.sphereSize, 16, 16),
-        new MeshBasicMaterial({
-          color: getColor('BLACK'),
-          opacity: 0.5,
-          transparent: true,
-        })
-      )
+      // const sphere = new Mesh(
+      //   new SphereBufferGeometry(setting.sphereSize, 16, 16),
+      //   new MeshBasicMaterial({
+      //     color: getColor('BLACK'),
+      //     opacity: 0.5,
+      //     transparent: true,
+      //   })
+      // )
 
-      sphere.position.set(
-        setting.position.x,
-        setting.position.y,
-        setting.position.z
-      )
+      // sphere.position.set(
+      //   setting.position.x,
+      //   setting.position.y,
+      //   setting.position.z
+      // )
 
-      sphere.__universeUuid = universe.uuid
-
-      this.collisionSpheres.push(sphere)
-      this.scene.add(sphere)
+      // this.scene.add(sphere)
 
       this.universes.push(universe)
       this.scene.add(universe)
@@ -167,33 +149,26 @@ export default class Visuals {
       // Update controls
       this.controls.update(this.clock.getDelta())
 
-      // Update universes
-      this.universes.forEach(universe => {
+      // Update universes and get distances
+      const distances = this.universes.reduce((acc, universe) => {
         universe.update(this.clock)
-      })
 
-      // Check for intersections
-      this.raycaster.setFromCamera(
-        new Vector2(
-          this.controls.yawObject.rotation.y,
-          this.controls.pitchObject.rotation.x
-        ),
-        this.camera
-      )
+        const { uuid } = universe
+        const controlsPosition = this.controls.yawObject.getWorldPosition()
 
-      const intersections = this.raycaster.intersectObjects(
-        this.collisionSpheres
-      )
+        const distance = controlsPosition.distanceTo(
+          universe.getWorldPosition()
+        )
 
-      if (intersections.length > 0) {
-        const uuid = intersections[0].object.__universeUuid
+        acc.push({
+          uuid,
+          distance,
+        })
 
-        if (uuid !== this.currentUniverse) {
-          this.currentUniverse = uuid
+        return acc
+      }, [])
 
-          this.options.onUniverseEntered(uuid)
-        }
-      }
+      this.options.onDistancesUpdated(distances)
 
       // Renderer loop
       this.renderer.render(this.scene, this.camera)

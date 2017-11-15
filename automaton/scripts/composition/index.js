@@ -5,12 +5,9 @@ import presets from './presets.json'
 import Instrument from '../instrument'
 import { SCALES, pickFromScale } from '../instrument/scales'
 
-function pickRandomItem(arr) {
-  return arr[Math.floor(Math.random() * arr.length)]
-}
-
 export default class Composition {
   constructor() {
+    // Initialise gamelan instrument
     this.instrument = new Instrument({
       baseBpm: params.instrument.baseBpm,
       noteMaterial: pickFromScale(
@@ -20,26 +17,17 @@ export default class Composition {
       patternSettings: params.instrument.pattern,
     })
 
-    this.reset()
+    // Initialise base synthesizer sound
+    const { name, velocity, volume } = params.basePreset
+    this.instrument.changePreset(presets[name], velocity, volume)
   }
 
-  nextPreset() {
-    this.currentPresetIndex += 1
+  updateDistances(distances) {
 
-    if (this.currentPresetIndex > params.instrument.presets.length - 1) {
-      this.currentPresetIndex = 0
-    }
-
-    this.setPreset(this.currentPresetIndex)
   }
 
-  setPreset(index) {
-    const preset = params.instrument.presets[index]
-
-    this.currentPresetIndex = index
-
-    this.instrument.changePreset(presets[preset.synthesizerPreset])
-    this.instrument.synthesizerInterface.audio.changeVolume(preset.volume)
+  cycle(currentCycle) {
+    this.instrument.cycle(currentCycle)
   }
 
   getGalaxy() {
@@ -73,14 +61,5 @@ export default class Composition {
 
   stop() {
     this.instrument.stop()
-  }
-
-  reset() {
-    this.currentPresetIndex = params.instrument.initialPresetIndex
-
-    const preset = params.instrument.presets[this.currentPresetIndex]
-
-    this.instrument.changePreset(presets[preset.synthesizerPreset])
-    this.instrument.synthesizerInterface.audio.changeVolume(preset.volume)
   }
 }

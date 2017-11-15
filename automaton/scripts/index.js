@@ -14,14 +14,14 @@ const INPUT_VALID_KEY_CODES = [
   KeyCode.RIGHT,
 ]
 
-const composition = new Composition()
-const view = new View()
-
 const isDebugMode = true
 const isVisualsEnabled = true
 
 let isPatternFocussed = false
 let isMoveLocked = false
+
+const composition = new Composition()
+const view = new View()
 
 const visuals = new Visuals({
   canvas: view.getRendererCanvas(),
@@ -29,27 +29,12 @@ const visuals = new Visuals({
   galaxy: composition.getGalaxy(),
   initialHeight: window.innerHeight,
   initialWidth: window.innerWidth,
-  isDebugMode,
   isEnabled: isVisualsEnabled,
+  isDebugMode,
+  onDistancesUpdated: distances => {
+    composition.updateDistances(distances)
+  },
 })
-
-view.startLoading()
-
-setTimeout(() => {
-  if (isVisualsEnabled) {
-    visuals.createUniverses()
-  }
-
-  view.stopLoading()
-})
-
-visuals.options.onUniverseEntered = () => {
-  // Change pattern and synth sound
-  composition.nextPreset()
-
-  // Show a flash as signal
-  view.flash()
-}
 
 const network = new Network({
   onOpen: () => {
@@ -63,53 +48,19 @@ const network = new Network({
     view.changeClients(count)
   },
   onSyncTick: (currentTick, totalTicksCount, originalTimestamp) => {
-    if (currentTick === 0 ) {
+    if (currentTick === 0) {
       view.updateOffset(Date.now() - originalTimestamp)
     }
-
     composition.instrument.tick(currentTick, totalTicksCount)
   },
   onNextCycle: currentCycle => {
     view.tick()
-    composition.instrument.cycle(currentCycle)
+    composition.cycle(currentCycle)
   },
   onError: message => {
     view.addErrorMessage(message)
   },
 })
-
-// Initialize
-window.addEventListener('load', () => {
-  view.loadAllSettings()
-  view.changeConnectionState(false, false)
-  view.changePattern('')
-})
-
-// Resize rendered when window size was changed
-window.addEventListener('resize', () => {
-  visuals.resize(window.innerWidth, window.innerHeight)
-}, false)
-
-// Pointer lock state changed
-function onPointerLockChange() {
-  const element = document.pointerLockElement || document.mozPointerLockElement
-  const isPointerLocked = element === document.body
-
-  view.changeSpaceState(isPointerLocked)
-  visuals.isEnabled = isPointerLocked
-
-  if (isPointerLocked) {
-    composition.start()
-  } else {
-    composition.stop()
-  }
-}
-
-if ('onpointerlockchange' in document) {
-  document.addEventListener('pointerlockchange', onPointerLockChange, false)
-} else if ('onmozpointerlockchange' in document) {
-  document.addEventListener('mozpointerlockchange', onPointerLockChange, false)
-}
 
 // Expose some interfaces to the view
 window.automaton = window.automaton || {
@@ -186,6 +137,22 @@ window.automaton = window.automaton || {
   },
 }
 
+function initialize() {
+  view.startLoading()
+
+  view.loadAllSettings()
+  view.changeConnectionState(false, false)
+  view.changePattern('')
+
+  setTimeout(() => {
+    if (isVisualsEnabled) {
+      visuals.createUniverses()
+    }
+
+    view.stopLoading()
+  })
+}
+
 // Main keyboard control strokes
 window.addEventListener('keydown', (event) => {
   const { keyCode, shiftKey, altKey, metaKey } = event
@@ -201,14 +168,7 @@ window.addEventListener('keydown', (event) => {
   }
 
   if (metaKey && shiftKey) {
-    // Reset button (Cmd + Shift + T)
-    if (keyCode === KeyCode.T) {
-      view.reset()
-      composition.reset()
-      visuals.reset()
-    }
-
-    // Reset only view (Cmd + Shift + V)
+    // Reset view (Cmd + Shift + V)
     if (keyCode === KeyCode.V) {
       visuals.reset()
     }
@@ -277,7 +237,7 @@ window.addEventListener('keyup', (event) => {
   switch (event.keyCode) {
   case KeyCode.UP:
   case KeyCode.W:
-    visuals.controls.move({ forward: false })
+    visuals.controls.move({ forward: isMoveLocked || false })
     break
   case KeyCode.LEFT:
   case KeyCode.A:
@@ -294,6 +254,37 @@ window.addEventListener('keyup', (event) => {
   }
 })
 
+// Pointer lock state changed
+function onPointerLockChange() {
+  const element = document.pointerLockElement || document.mozPointerLockElement
+  const isPointerLocked = element === document.body
+
+  view.changeSpaceState(isPointerLocked)
+  visuals.isEnabled = isPointerLocked
+
+  if (isPointerLocked) {
+    composition.start()
+  } else {
+    composition.stop()
+  }
+}
+
+if ('onpointerlockchange' in document) {
+  document.addEventListener('pointerlockchange', onPointerLockChange, false)
+} else if ('onmozpointerlockchange' in document) {
+  document.addEventListener('mozpointerlockchange', onPointerLockChange, false)
+}
+
 window.addEventListener('contextmenu', event => {
   event.preventDefault()
 }, false)
+
+// Resize rendered when window size was changed
+window.addEventListener('resize', () => {
+  visuals.resize(window.innerWidth, window.innerHeight)
+}, false)
+
+// Initialize
+window.addEventListener('load', () => {
+  initialize()
+})

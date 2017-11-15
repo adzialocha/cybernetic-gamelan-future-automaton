@@ -38,11 +38,9 @@ export default class Instrument {
     this.velocity = 1.0
   }
 
-  changePreset(preset) {
+  changePreset(preset, velocity, volume) {
     this.synthesizerInterface.changePreset(preset)
-  }
-
-  changeVelocity(velocity) {
+    this.synthesizerInterface.audio.changeVolume(volume)
     this.velocity = velocity
   }
 

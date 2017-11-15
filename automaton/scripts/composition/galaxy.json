@@ -1,6 +1,11 @@
 [
   {
     "name": "allobrain",
+    "preset": {
+      "synthesizerPreset": "GLOCKENSPIEL",
+      "velocity": 0.25,
+      "volume": 0.5
+    },
     "position": {
       "x": -450,
       "y": -450,
@@ -64,6 +69,11 @@
   },
   {
     "name": "core",
+    "preset": {
+      "synthesizerPreset": "SPACE",
+      "velocity": 0.8,
+      "volume": 1
+    },
     "position": {
       "x": 450,
       "y": -450,
@@ -135,6 +145,11 @@
   },
   {
     "name": "parametric-planet",
+    "preset": {
+      "synthesizerPreset": "GUITAR",
+      "velocity": 0.5,
+      "volume": 1
+    },
     "position": {
       "x": -550,
       "y": -150,
@@ -196,6 +211,11 @@
   },
   {
     "name": "dunshire",
+    "preset": {
+      "synthesizerPreset": "PING",
+      "velocity": 0.5,
+      "volume": 1
+    },
     "position": {
       "x": 0,
       "y": 0,
