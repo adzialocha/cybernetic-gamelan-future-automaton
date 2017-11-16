@@ -144,8 +144,6 @@ window.automaton = window.automaton || {
 }
 
 function initialize() {
-  view.startLoading()
-
   view.loadAllSettings()
   view.changeConnectionState(false, false)
   view.changePattern('')
@@ -300,6 +298,8 @@ window.addEventListener('resize', () => {
 }, false)
 
 // Initialize
+view.startLoading()
+
 window.addEventListener('load', () => {
   initialize()
 })
