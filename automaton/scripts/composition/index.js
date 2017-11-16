@@ -1,4 +1,4 @@
-import math from 'mathjs'
+import mergeOptions from 'merge-options'
 
 import galaxy from './galaxy.json'
 import params from './params.json'
@@ -7,14 +7,25 @@ import presets from './presets.json'
 import Instrument from '../instrument'
 import { SCALES, pickFromScale } from '../instrument/scales'
 
+import { distancesToWeights, mixEnvelopes } from './helpers'
+
+const VOLUME_CHANGE_SILENCE = 250
+const VOLUME_CHANGE_DURATION = 2
+
 function isDifferent(oldDistances, newDistances) {
   return oldDistances.some((value, index) => {
     return oldDistances[index].distance !== newDistances[index].distance
   })
 }
 
+const defaultOptions = {
+  onUniverseEntered: () => {},
+}
+
 export default class Composition {
-  constructor() {
+  constructor(options) {
+    this.options = mergeOptions({}, defaultOptions, options)
+
     // Initialise gamelan instrument
     this.instrument = new Instrument({
       baseBpm: params.instrument.baseBpm,
@@ -32,6 +43,17 @@ export default class Composition {
     // New distances
     this.distances = null
     this.isDirty = false
+
+    // Used preset names in this composition
+    const presetNames = galaxy.reduce((acc, universe) => {
+      acc.push(universe.preset.name)
+      return acc
+    }, [])
+
+    presetNames.push(params.basePreset.name)
+
+    this.presetNames = presetNames
+    this.currentUniverse = params.basePreset.name
   }
 
   queueDistances(newDistances) {
@@ -41,8 +63,8 @@ export default class Composition {
     }
   }
 
-  cycle(currentCycle) {
-    this.instrument.cycle(currentCycle)
+  tick(currentTick, totalTicksCount) {
+    this.instrument.tick(currentTick, totalTicksCount)
 
     if (this.distances && this.isDirty) {
       this.updateSynthesizer(this.distances)
@@ -50,102 +72,60 @@ export default class Composition {
     }
   }
 
+  cycle(currentCycle) {
+    this.instrument.cycle(currentCycle)
+  }
+
   updateSynthesizer(distances) {
-    const b = -1 / 10000
-
     // Calculate the weight of every universe
-    const weights = distances.reduce((acc, item) => {
-      const distanceToSphere = item.distance - item.sphereSize
+    const weights = distancesToWeights(distances)
+    const currentWeight = Math.max(...weights)
 
-      let mix = 1
+    let presetInfo
 
-      if (distanceToSphere > 0) {
-        mix = Math.pow(Math.E, b * Math.pow(distanceToSphere, 2))
-      }
+    if (currentWeight === 0) {
+      // No planet was entered, use the galaxy base preset
+      presetInfo = params.basePreset
+    } else {
+      // We entered a universe
+      presetInfo = galaxy[weights.indexOf(currentWeight)].preset
+    }
 
-      if (mix < 0.01) {
-        mix = 0
-      }
+    const { velocity, volume, name } = presetInfo
+    const preset = mergeOptions({}, presets[name])
 
-      acc.push(mix)
+    // Color the sound depending on the players position in universe
+    if (currentWeight > 0) {
+      const presetWeight = [1.0 - currentWeight, currentWeight]
 
-      return acc
-    }, [])
+      const newEnvelopes = mixEnvelopes(
+        presets,
+        [name, params.basePreset.name],
+        presetWeight
+      )
 
-    weights.push(1.0 - Math.max(...weights))
+      preset.envelopes = newEnvelopes
+    }
 
-    const presetNames = galaxy.reduce((acc, universe) => {
-      acc.push(universe.preset.name)
-      return acc
-    }, [])
+    // Call when we entered a new universe
+    if (this.currentUniverse !== name) {
+      this.currentUniverse = name
 
-    presetNames.push(params.basePreset.name)
+      // Ramp the volume change for a smooth transition
+      this.instrument.synthesizerInterface.audio.changeVolume(0.01)
 
-    const synthParams = presetNames.reduce((acc, name) => {
-      const preset = presets[name]
+      setTimeout(() => {
+        this.instrument.synthesizerInterface.audio.changeVolume(
+          volume,
+          true,
+          VOLUME_CHANGE_DURATION
+        )
+      }, VOLUME_CHANGE_SILENCE)
 
-      acc.coarse.push(preset.coarse)
-      acc.feedback.push(preset.feedback)
-      acc.fine.push(preset.fine)
+      this.options.onUniverseEntered(name)
+    }
 
-      preset.envelopes.forEach((envelope, index) => {
-        preset.envelopes[index].forEach((op, opIndex) => {
-          acc.envelopes[index][opIndex].x.push(preset.envelopes[index][opIndex].x)
-          acc.envelopes[index][opIndex].y.push(preset.envelopes[index][opIndex].y)
-        })
-      })
-
-      return acc
-    }, {
-      coarse: [],
-      feedback: [],
-      fine: [],
-      envelopes: [[
-        { x: [], y: [] },
-        { x: [], y: [] },
-        { x: [], y: [] },
-      ], [
-        { x: [], y: [] },
-        { x: [], y: [] },
-        { x: [], y: [] },
-      ], [
-        { x: [], y: [] },
-        { x: [], y: [] },
-        { x: [], y: [] },
-      ], [
-        { x: [], y: [] },
-        { x: [], y: [] },
-        { x: [], y: [] },
-      ]],
-    })
-
-    synthParams.coarse = math.chain(synthParams.coarse).transpose().multiply(weights).done()
-    synthParams.fine = math.chain(synthParams.fine).transpose().multiply(weights).done()
-    synthParams.feedback = math.chain([synthParams.feedback]).multiply(weights).done()
-
-    synthParams.envelopes.forEach((item, index) => {
-      item.forEach((opItem, opIndex) => {
-        synthParams.envelopes[index][opIndex].x = math.chain(synthParams.envelopes[index][opIndex].x).transpose().multiply(weights).done()
-        synthParams.envelopes[index][opIndex].y = math.chain(synthParams.envelopes[index][opIndex].y).transpose().multiply(weights).done()
-      })
-    })
-
-    const maxUniverseIndex = weights.indexOf(Math.max(...weights))
-    const leadingPreset = presets[presetNames[maxUniverseIndex]]
-    const basePreset = presets[presetNames[4]]
-
-    synthParams.name = basePreset.name
-    synthParams.algorithmId = basePreset.algorithmId
-    synthParams.isLoop = basePreset.isLoop
-    synthParams.isVelocitySensitive = basePreset.isVelocitySensitive
-
-    this.instrument.changePreset(synthParams, 0.5, 1.0)
-
-    console.log('=======')
-    console.log(presetNames.reduce((acc, name, index) => {
-      acc.push(name + ': ' + (Math.floor(weights[index] * 100 )) + '%')
-      return acc
-    }, []).join('\n'))
+    this.instrument.changePreset(preset, velocity)
   }
 
   getGalaxy() {

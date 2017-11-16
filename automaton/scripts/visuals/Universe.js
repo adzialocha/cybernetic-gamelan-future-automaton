@@ -17,7 +17,7 @@ import {
   Vector3,
 } from 'three'
 
-import deepAssign from 'deep-assign'
+import mergeOptions from 'merge-options'
 
 import Landscape from './Landscape'
 
@@ -78,7 +78,7 @@ export default class Universe extends Object3D {
       sphereSize: 150.0,
     }
 
-    this.options = deepAssign({}, defaultOptions, options)
+    this.options = mergeOptions({}, defaultOptions, options)
 
     // Main sphere
     const geometry = new SphereBufferGeometry(

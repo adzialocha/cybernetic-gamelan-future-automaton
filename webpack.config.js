@@ -10,9 +10,9 @@ const SRC_FOLDER = 'automaton'
 const VENDOR_FOLDER_NAME = 'lib'
 
 const APP_DEPENDENCIES = [
-  'deep-assign',
   'key-code',
   'mathjs',
+  'merge-options',
   'osc-js',
   'stats.js',
   'three',

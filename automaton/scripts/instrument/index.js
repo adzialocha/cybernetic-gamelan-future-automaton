@@ -1,4 +1,4 @@
-import deepAssign from 'deep-assign'
+import mergeOptions from 'merge-options'
 
 import Sequencer from './sequencer'
 import SynthesizerInterface from './SynthesizerInterface'
@@ -25,7 +25,7 @@ const defaultOptions = {
 
 export default class Instrument {
   constructor(options = {}) {
-    this.options = deepAssign({}, defaultOptions, options)
+    this.options = mergeOptions({}, defaultOptions, options)
 
     this.synthesizerInterface = new SynthesizerInterface()
 
@@ -38,9 +38,8 @@ export default class Instrument {
     this.velocity = 1.0
   }
 
-  changePreset(preset, velocity, volume) {
+  changePreset(preset, velocity) {
     this.synthesizerInterface.changePreset(preset)
-    this.synthesizerInterface.audio.changeVolume(volume)
     this.velocity = velocity
   }
 

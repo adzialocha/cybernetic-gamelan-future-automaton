@@ -20,8 +20,13 @@ const isVisualsEnabled = true
 let isPatternFocussed = false
 let isMoveLocked = false
 
-const composition = new Composition()
 const view = new View()
+
+const composition = new Composition({
+  onUniverseEntered: () => {
+    view.flash()
+  },
+})
 
 const visuals = new Visuals({
   canvas: view.getRendererCanvas(),
@@ -31,11 +36,10 @@ const visuals = new Visuals({
   initialWidth: window.innerWidth,
   isEnabled: isVisualsEnabled,
   isDebugMode,
+  onDistancesUpdated: distances => {
+    composition.queueDistances(distances)
+  },
 })
-
-visuals.options.onDistancesUpdated = distances => {
-  composition.queueDistances(distances)
-}
 
 const network = new Network({
   onOpen: () => {
@@ -52,7 +56,7 @@ const network = new Network({
     if (currentTick === 0) {
       view.updateOffset(Date.now() - originalTimestamp)
     }
-    composition.instrument.tick(currentTick, totalTicksCount)
+    composition.tick(currentTick, totalTicksCount)
   },
   onNextCycle: currentCycle => {
     view.tick()

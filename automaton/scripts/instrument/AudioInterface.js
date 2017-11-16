@@ -26,8 +26,17 @@ export default class AudioInterface {
     this.gainNode.connect(this.context.destination)
   }
 
-  changeVolume(volume, isRememberingValue = true) {
-    this.gainNode.gain.setValueAtTime(volume, this.context.currentTime)
+  changeVolume(volume, isRememberingValue = true, duration = 0) {
+    this.gainNode.gain.cancelScheduledValues(this.context.currentTime)
+
+    if (duration === 0) {
+      this.gainNode.gain.setValueAtTime(volume, this.context.currentTime)
+    } else {
+      this.gainNode.gain.linearRampToValueAtTime(
+        volume,
+        this.context.currentTime + duration
+      )
+    }
 
     if (isRememberingValue) {
       this.currentVolume = volume

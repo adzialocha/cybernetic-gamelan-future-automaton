@@ -8,7 +8,7 @@ import {
   WebGLRenderer,
 } from 'three'
 
-import deepAssign from 'deep-assign'
+import mergeOptions from 'merge-options'
 import Stats from 'stats.js'
 
 import PointerLockControls from './PointerLockControls'
@@ -33,7 +33,7 @@ const defaultOptions = {
 
 export default class Visuals {
   constructor(options) {
-    this.options = deepAssign({}, defaultOptions, options)
+    this.options = mergeOptions({}, defaultOptions, options)
 
     if (!this.options.isEnabled) {
       return
