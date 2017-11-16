@@ -22,5 +22,6 @@
     "name": "BELL",
     "velocity": 0.25,
     "volume": 0.25
-  }
+  },
+  "distanceFunction": "e^((-1 / 10000) * x^2)"
 }

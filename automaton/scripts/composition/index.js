@@ -7,10 +7,14 @@ import presets from './presets.json'
 import Instrument from '../instrument'
 import { SCALES, pickFromScale } from '../instrument/scales'
 
-import { distancesToWeights, mixEnvelopes } from './helpers'
+import {
+  currentUniverseIndex,
+  mixEnvelopes,
+  universeCenterWeight,
+} from './helpers'
 
 const VOLUME_CHANGE_SILENCE = 250
-const VOLUME_CHANGE_DURATION = 2
+const VOLUME_CHANGE_DURATION = 0.25
 
 function isDifferent(oldDistances, newDistances) {
   return oldDistances.some((value, index) => {
@@ -77,25 +81,33 @@ export default class Composition {
   }
 
   updateSynthesizer(distances) {
-    // Calculate the weight of every universe
-    const weights = distancesToWeights(distances)
-    const currentWeight = Math.max(...weights)
+    const universeIndex = currentUniverseIndex(distances)
+    const isInUniverse = universeIndex > -1
 
     let presetInfo
 
-    if (currentWeight === 0) {
+    if (!isInUniverse) {
       // No planet was entered, use the galaxy base preset
       presetInfo = params.basePreset
     } else {
       // We entered a universe
-      presetInfo = galaxy[weights.indexOf(currentWeight)].preset
+      presetInfo = galaxy[universeIndex].preset
     }
 
+    // Get the synthesizer preset of universe / galaxy
     const { velocity, volume, name } = presetInfo
     const preset = mergeOptions({}, presets[name])
 
     // Color the sound depending on the players position in universe
-    if (currentWeight > 0) {
+    if (isInUniverse) {
+      // Calculate the weight
+      const currentWeight = universeCenterWeight(
+        distances[universeIndex],
+        params.distanceFunction
+      )
+
+      // console.log(currentWeight)
+
       const presetWeight = [1.0 - currentWeight, currentWeight]
 
       const newEnvelopes = mixEnvelopes(
@@ -107,12 +119,16 @@ export default class Composition {
       preset.envelopes = newEnvelopes
     }
 
-    // Call when we entered a new universe
+    // Did we enter or leave a universe?
     if (this.currentUniverse !== name) {
       this.currentUniverse = name
 
-      // Ramp the volume change for a smooth transition
-      this.instrument.synthesizerInterface.audio.changeVolume(0.01)
+      // Ramp the volume for a smooth synth-sound transition
+      this.instrument.synthesizerInterface.audio.changeVolume(
+        0.01,
+        true,
+        VOLUME_CHANGE_DURATION
+      )
 
       setTimeout(() => {
         this.instrument.synthesizerInterface.audio.changeVolume(
@@ -122,9 +138,13 @@ export default class Composition {
         )
       }, VOLUME_CHANGE_SILENCE)
 
-      this.options.onUniverseEntered(name)
+      // Callback when we entered a new universe
+      if (isInUniverse) {
+        this.options.onUniverseEntered(name)
+      }
     }
 
+    // Finally change the synth preset
     this.instrument.changePreset(preset, velocity)
   }
 

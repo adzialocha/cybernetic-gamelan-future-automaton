@@ -1,35 +1,31 @@
 import math from 'mathjs'
 
-const WEIGHT_B = -1 / 10000
-
-export function combine(vector, weights) {
-  return math.chain(vector)
+export function combine(matrix, weightsVector) {
+  return math.chain(matrix)
     .transpose()
-    .multiply(weights)
+    .multiply(weightsVector)
     .done()
 }
 
-export function universeCenterWeight(universe) {
+export function universeCenterWeight(universe, distanceFunction) {
   const distanceToSphere = universe.distance - universe.sphereSize
 
   let weight = 0
 
-  if (distanceToSphere < 0) {
-    weight = Math.pow(Math.E, WEIGHT_B * Math.pow(universe.distance, 2))
+  if (distanceToSphere <= 0) {
+    weight = math.eval(distanceFunction, {
+      x: universe.distance,
+      e: Math.E,
+    })
   }
 
-  if (weight < 0.01) {
-    weight = 0
-  }
-
-  return weight
+  return weight < 0.01 ? 0 : weight
 }
 
-export function distancesToWeights(values) {
-  return values.reduce((acc, universe) => {
-    acc.push(universeCenterWeight(universe))
-    return acc
-  }, [])
+export function currentUniverseIndex(values) {
+  return values.findIndex(universe => {
+    return universe.distance - universe.sphereSize <= 0
+  })
 }
 
 export function mixEnvelopes(presets, presetNames, weights) {
