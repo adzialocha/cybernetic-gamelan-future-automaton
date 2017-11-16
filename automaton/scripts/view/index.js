@@ -18,8 +18,8 @@ export default class View {
       connectedPeers: document.getElementById('connected-peers'),
       disconnectButton: document.getElementById('disconnect-button'),
       errorMessages: document.getElementById('error-messages'),
+      latencyMonitor: document.getElementById('latency-monitor'),
       loading: document.getElementById('loading'),
-      offsetMonitor: document.getElementById('offset-monitor'),
       pattern: document.getElementById('pattern'),
       rendererCanvas: document.getElementById('renderer-canvas'),
       resetSettings: document.getElementById('reset-settings'),
@@ -172,8 +172,8 @@ export default class View {
     }, 500)
   }
 
-  updateOffset(offset) {
-    this.elements.offsetMonitor.innerText = `${offset.toFixed(1)} ms`
+  updateOffset(latency) {
+    this.elements.latencyMonitor.innerText = `${latency} ms`
   }
 
   addErrorMessage(message) {
@@ -197,18 +197,16 @@ export default class View {
     })
   }
 
-  addRemotePeer(peerId) {
-    const peer = document.createElement('div')
-    peer.class = 'connected-peer'
-    peer.innerText = peerId
-    peer.id = peerId
+  changeClients(count) {
+    this.elements.connectedPeers.innerHTML = ''
 
-    this.elements.connectedPeers.appendChild(peer)
-  }
+    for (let i = 0; i < count; i += 1) {
+      const peer = document.createElement('div')
+      peer.class = 'connected-peer'
+      peer.innerText = `client ${i + 1}`
 
-  removeRemotePeer(peerId) {
-    const peer = document.getElementById(peerId)
-    this.elements.connectedPeers.removeChild(peer)
+      this.elements.connectedPeers.appendChild(peer)
+    }
   }
 
   // View

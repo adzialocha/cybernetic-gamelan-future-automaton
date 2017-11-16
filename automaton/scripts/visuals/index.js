@@ -2,19 +2,13 @@ import {
   Clock,
   Fog,
   HemisphereLight,
-  Mesh,
-  MeshBasicMaterial,
   PerspectiveCamera,
   PointLight,
-  Raycaster,
   Scene,
-  SphereBufferGeometry,
-  Vector2,
-  Vector3,
   WebGLRenderer,
 } from 'three'
 
-import deepAssign from 'deep-assign'
+import mergeOptions from 'merge-options'
 import Stats from 'stats.js'
 
 import PointerLockControls from './PointerLockControls'
@@ -23,7 +17,6 @@ import Universe from './Universe'
 import { getColor } from './colors'
 
 const FOG_FAR_DISTANCE = 800
-const FPS_LIMIT = 30
 const HEMISPHERE_LIGHT_INTENSITY = 0.08
 const POINT_LIGHT_DISTANCE = 500
 
@@ -34,12 +27,17 @@ const defaultOptions = {
   initialHeight: 0,
   initialWidth: 0,
   isDebugMode: false,
-  onUniverseEntered: () => {},
+  isEnabled: true,
+  onDistancesUpdated: () => {},
 }
 
 export default class Visuals {
   constructor(options) {
-    this.options = deepAssign({}, defaultOptions, options)
+    this.options = mergeOptions({}, defaultOptions, options)
+
+    if (!this.options.isEnabled) {
+      return
+    }
 
     this.isEnabled = false
     this.clock = new Clock()
@@ -87,7 +85,6 @@ export default class Visuals {
     this.currentUniverse = null
 
     this.universes = []
-    this.collisionSpheres = []
 
     // Prepare light scenery
     const hemisphereLight = new HemisphereLight(
@@ -106,14 +103,6 @@ export default class Visuals {
     this.scene.add(pointLight)
     this.scene.add(hemisphereLight)
 
-    // Raycaster for collision detection
-    this.raycaster = new Raycaster(
-      new Vector3(0, 0, 0),
-      new Vector3(0, -1, 0),
-      0,
-      10
-    )
-
     // Start animation
     this.animate()
   }
@@ -127,24 +116,6 @@ export default class Visuals {
         setting.position.y,
         setting.position.z
       )
-
-      const sphere = new Mesh(
-        new SphereBufferGeometry(setting.sphereSize, 16, 16),
-        new MeshBasicMaterial({
-          color: getColor('BLACK'),
-          opacity: 0.5,
-          transparent: true,
-        })
-      )
-
-      sphere.position.set(
-        setting.position.x,
-        setting.position.y,
-        setting.position.z
-      )
-
-      this.collisionSpheres.push(sphere)
-      this.scene.add(sphere)
 
       this.universes.push(universe)
       this.scene.add(universe)
@@ -160,32 +131,27 @@ export default class Visuals {
       // Update controls
       this.controls.update(this.clock.getDelta())
 
-      // Update universes
-      this.universes.forEach(universe => {
+      // Update universes and get distances
+      const distances = this.universes.reduce((acc, universe) => {
         universe.update(this.clock)
-      })
 
-      // Check for intersections
-      this.raycaster.setFromCamera(
-        new Vector2(
-          this.controls.yawObject.rotation.y,
-          this.controls.pitchObject.rotation.x
-        ),
-        this.camera
-      )
+        const { uuid } = universe
+        const controlsPosition = this.controls.yawObject.getWorldPosition()
 
-      const intersections = this.raycaster.intersectObjects(
-        this.collisionSpheres
-      )
+        const distance = controlsPosition.distanceTo(
+          universe.getWorldPosition()
+        )
 
-      if (intersections.length > 0) {
-        const uuid = intersections[0].object.uuid
+        acc.push({
+          distance: Math.round(distance),
+          sphereSize: universe.options.sphereSize,
+          uuid,
+        })
 
-        if (uuid !== this.currentUniverse) {
-          this.currentUniverse = uuid
-          this.options.onUniverseEntered(uuid)
-        }
-      }
+        return acc
+      }, [])
+
+      this.options.onDistancesUpdated(distances)
 
       // Renderer loop
       this.renderer.render(this.scene, this.camera)
@@ -195,11 +161,9 @@ export default class Visuals {
       this.stats.end()
     }
 
-    //setTimeout(() => {
-      requestAnimationFrame(() => {
-        this.animate()
-      })
-    //}, 1000 / FPS_LIMIT)
+    requestAnimationFrame(() => {
+      this.animate()
+    })
   }
 
   resize(width, height) {

@@ -1,6 +1,11 @@
 [
   {
     "name": "allobrain",
+    "preset": {
+      "name": "GLOCKENSPIEL",
+      "velocity": 0.25,
+      "volume": 0.6
+    },
     "position": {
       "x": -450,
       "y": -450,
@@ -24,6 +29,7 @@
         "count": 100,
         "geometry": "IcosahedronGeometry",
         "attributes": [8, 2],
+        "material": "phong",
         "meshColor": "DARK_BLUE",
         "meshSpecular": "DARKER_BLUE",
         "hasWireframes": false,
@@ -35,6 +41,7 @@
         "count": 10,
         "geometry": "IcosahedronGeometry",
         "attributes": [16, 1],
+        "material": "phong",
         "meshColor": "DARKER_BLUE",
         "meshSpecular": "DARKER_BLUE",
         "hasWireframes": true,
@@ -63,6 +70,11 @@
   },
   {
     "name": "core",
+    "preset": {
+      "name": "SPACE",
+      "velocity": 0.7,
+      "volume": 0.9
+    },
     "position": {
       "x": 450,
       "y": -450,
@@ -90,6 +102,7 @@
         "geometry": "IcosahedronGeometry",
         "attributes": [32, 2],
         "meshColor": "GREEN",
+        "material": "phong",
         "meshSpecular": "LIGHT_RED",
         "hasWireframes": false,
         "hasLines": false,
@@ -133,6 +146,11 @@
   },
   {
     "name": "parametric-planet",
+    "preset": {
+      "name": "GUITAR",
+      "velocity": 0.25,
+      "volume": 0.8
+    },
     "position": {
       "x": -550,
       "y": -150,
@@ -151,6 +169,7 @@
         "attributes": [20, 4, 40, 8],
         "meshColor": "LIGHT_RED",
         "meshSpecular": "WHITE",
+        "material": "phong",
         "hasWireframes": false,
         "hasLines": false,
         "factor": 0
@@ -161,6 +180,7 @@
         "attributes": [10, 3, 80, 16],
         "meshColor": "LIGHT_RED",
         "meshSpecular": "WHITE",
+        "material": "phong",
         "hasWireframes": false,
         "hasLines": true,
         "factor": 0,
@@ -184,6 +204,7 @@
         "meshColor": "LIGHT_GRAY",
         "meshSpecular": "LIGHT_RED",
         "hasWireframes": false,
+        "material": "phong",
         "hasLines": false,
         "factor": 0
       }
@@ -191,6 +212,11 @@
   },
   {
     "name": "dunshire",
+    "preset": {
+      "name": "PING",
+      "velocity": 0.5,
+      "volume": 0.9
+    },
     "position": {
       "x": 0,
       "y": 0,
@@ -219,6 +245,7 @@
         "attributes": [7, 40, 4],
         "meshColor": "GREEN",
         "meshSpecular": "WHITE",
+        "material": "phong",
         "hasWireframes": false,
         "hasLines": false,
         "factor": 0.05

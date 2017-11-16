@@ -2,7 +2,6 @@ import '../styles/index.scss'
 
 import KeyCode from 'key-code'
 
-import Communication from './network/Communication'
 import Composition from './composition'
 import Network from './network'
 import View from './view'
@@ -15,51 +14,33 @@ const INPUT_VALID_KEY_CODES = [
   KeyCode.RIGHT,
 ]
 
-const composition = new Composition()
+const isDebugMode = false
+const isVisualsEnabled = true
+
+let isMoveLocked = false
+let isPatternFocussed = false
+let isRunning = false
+
 const view = new View()
 
-const isDebugMode = false
-let isPatternFocussed = false
-let isMoveLocked = false
-
-// Someone or me entered universe
-function onUniverseChange(isMe) {
-  // Change pattern and synth sound
-  const pattern = composition.nextPreset(isMe)
-  view.changePattern(pattern)
-  view.commitPattern(pattern)
-  composition.instrument.changePattern(pattern)
-
-  // Show a flash as signal
-  view.flash()
-}
-
-const communication = new Communication({
-  onUniverseEnterReceived: () => {
-    onUniverseChange(false)
+const composition = new Composition({
+  onUniverseEntered: () => {
+    view.flash()
   },
 })
 
 const visuals = new Visuals({
-  galaxy: composition.getGalaxy(),
   canvas: view.getRendererCanvas(),
   devicePixelRatio: window.devicePixelRatio,
+  galaxy: composition.getGalaxy(),
   initialHeight: window.innerHeight,
   initialWidth: window.innerWidth,
+  isEnabled: isVisualsEnabled,
   isDebugMode,
+  onDistancesUpdated: distances => {
+    composition.queueDistances(distances)
+  },
 })
-
-view.startLoading()
-
-setTimeout(() => {
-  visuals.createUniverses()
-  view.stopLoading()
-})
-
-visuals.options.onUniverseEntered = () => {
-  communication.sendUniverseEntered()
-  onUniverseChange(true)
-}
 
 const network = new Network({
   onOpen: () => {
@@ -69,60 +50,23 @@ const network = new Network({
     view.changeConnectionState(false, false)
     view.exitPointerLock()
   },
-  onOpenRemote: peerId => {
-    view.addRemotePeer(peerId)
+  onClientsChanged: count => {
+    view.changeClients(count)
   },
-  onCloseRemote: peerId => {
-    view.removeRemotePeer(peerId)
+  onSyncTick: (currentTick, totalTicksCount, originalTimestamp) => {
+    if (currentTick === 0) {
+      view.updateOffset(Date.now() - originalTimestamp)
+    }
+    composition.tick(currentTick, totalTicksCount)
   },
-  onSyncTick: offset => {
-    view.updateOffset(offset)
+  onNextCycle: currentCycle => {
     view.tick()
-
-    composition.instrument.syncTick()
+    composition.cycle(currentCycle)
   },
-  onReceive: (peer, data) => {
-    communication.receive(peer, data)
-  },
-  onError: err => {
-    view.addErrorMessage(err.message)
+  onError: message => {
+    view.addErrorMessage(message)
   },
 })
-
-communication.setNetwork(network)
-
-// Initialize
-window.addEventListener('load', () => {
-  view.loadAllSettings()
-  view.changeConnectionState(false, false)
-  view.changePattern(composition.getCurrentPattern())
-})
-
-// Resize rendered when window size was changed
-window.addEventListener('resize', () => {
-  visuals.resize(window.innerWidth, window.innerHeight)
-}, false)
-
-// Pointer lock state changed
-function onPointerLockChange() {
-  const element = document.pointerLockElement || document.mozPointerLockElement
-  const isPointerLocked = element === document.body
-
-  view.changeSpaceState(isPointerLocked)
-  visuals.isEnabled = isPointerLocked
-
-  if (isPointerLocked) {
-    composition.start()
-  } else {
-    composition.stop()
-  }
-}
-
-if ('onpointerlockchange' in document) {
-  document.addEventListener('pointerlockchange', onPointerLockChange, false)
-} else if ('onmozpointerlockchange' in document) {
-  document.addEventListener('mozpointerlockchange', onPointerLockChange, false)
-}
 
 // Expose some interfaces to the view
 window.automaton = window.automaton || {
@@ -189,7 +133,7 @@ window.automaton = window.automaton || {
     if (keyCode === KeyCode.ENTER) {
       const value = event.target.value
 
-      if (composition.instrument.changePattern(value)) {
+      if (composition.instrument.queuePattern(value)) {
         view.commitPattern(value)
 
         event.preventDefault()
@@ -197,6 +141,20 @@ window.automaton = window.automaton || {
       }
     }
   },
+}
+
+function initialize() {
+  view.loadAllSettings()
+  view.changeConnectionState(false, false)
+  view.changePattern('')
+
+  setTimeout(() => {
+    if (isVisualsEnabled) {
+      visuals.createUniverses()
+    }
+
+    view.stopLoading()
+  })
 }
 
 // Main keyboard control strokes
@@ -214,41 +172,41 @@ window.addEventListener('keydown', (event) => {
   }
 
   if (metaKey && shiftKey) {
-    // Reset button (Cmd + Shift + T)
-    if (keyCode === KeyCode.T) {
-      view.reset()
-      composition.reset()
-      visuals.reset()
-    }
-
-    // Reset only view (Cmd + Shift + V)
+    // Reset view (Cmd + Shift + V)
     if (keyCode === KeyCode.V) {
       visuals.reset()
     }
-
-    if (isDebugMode) {
-      // Change universe manually (Cmd + Shift + U)
-      if (keyCode === KeyCode.U) {
-        onUniverseChange(true)
-      }
-    }
   }
 
-  // Press number
-  if (keyCode >= KeyCode.ONE && keyCode <= KeyCode.NINE) {
-    const number = keyCode - KeyCode.ONE
+  // Press number + shift
+  if (
+    shiftKey && (
+      (keyCode >= KeyCode.ONE && keyCode <= KeyCode.NINE) ||
+      (keyCode === 222 || keyCode === 191)
+    )
+  ) {
+    let index
 
-    if (shiftKey) {
-      // Press shift + number
-      view.changeView(number)
+    if (keyCode === 222) {
+      index = 1
+    } else if (keyCode === 191) {
+      index = 6
+    } else {
+      index = keyCode - KeyCode.ONE
     }
 
+    view.changeView(index)
+
+    return
+  }
+
+  if (isPatternFocussed || !isRunning) {
     return
   }
 
   switch (keyCode) {
   case KeyCode.ENTER:
-    if (!isPatternFocussed && view.isMainViewActive()) {
+    if (view.isMainViewActive()) {
       view.focusPattern()
     }
     break
@@ -276,10 +234,14 @@ window.addEventListener('keydown', (event) => {
 })
 
 window.addEventListener('keyup', (event) => {
+  if (isPatternFocussed || !isRunning) {
+    return
+  }
+
   switch (event.keyCode) {
   case KeyCode.UP:
   case KeyCode.W:
-    visuals.controls.move({ forward: false })
+    visuals.controls.move({ forward: isMoveLocked || false })
     break
   case KeyCode.LEFT:
   case KeyCode.A:
@@ -296,6 +258,48 @@ window.addEventListener('keyup', (event) => {
   }
 })
 
+// Pointer lock state changed
+function onPointerLockChange() {
+  const element = document.pointerLockElement || document.mozPointerLockElement
+  const isPointerLocked = element === document.body
+
+  view.changeSpaceState(isPointerLocked)
+  visuals.isEnabled = isPointerLocked
+
+  isRunning = isPointerLocked
+
+  if (isPointerLocked) {
+    composition.start()
+  } else {
+    composition.stop()
+
+    visuals.controls.move({
+      backward: false,
+      forward: false,
+      left: false,
+      right: false,
+    })
+  }
+}
+
+if ('onpointerlockchange' in document) {
+  document.addEventListener('pointerlockchange', onPointerLockChange, false)
+} else if ('onmozpointerlockchange' in document) {
+  document.addEventListener('mozpointerlockchange', onPointerLockChange, false)
+}
+
 window.addEventListener('contextmenu', event => {
   event.preventDefault()
 }, false)
+
+// Resize rendered when window size was changed
+window.addEventListener('resize', () => {
+  visuals.resize(window.innerWidth, window.innerHeight)
+}, false)
+
+// Initialize
+view.startLoading()
+
+window.addEventListener('load', () => {
+  initialize()
+})

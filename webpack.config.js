@@ -1,5 +1,6 @@
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const path = require('path')
 const webpack = require('webpack')
@@ -10,13 +11,12 @@ const SRC_FOLDER = 'automaton'
 const VENDOR_FOLDER_NAME = 'lib'
 
 const APP_DEPENDENCIES = [
-  'deep-assign',
   'key-code',
   'mathjs',
-  'peerjs',
+  'merge-options',
+  'osc-js',
   'stats.js',
   'three',
-  'timesync',
 ]
 
 const isProduction = process.env.NODE_ENV === 'production'
@@ -50,7 +50,7 @@ const plugins = [
 ]
 
 if (isProduction) {
-  plugins.push(new webpack.optimize.UglifyJsPlugin({
+  plugins.push(new UglifyJsPlugin({
     sourceMap: false,
   }))
 }
@@ -64,7 +64,7 @@ module.exports = {
   },
   output: {
     path: getPath(`./${DIST_FOLDER}`),
-    filename: '[name].bundle.js',
+    filename: '[name].js',
   },
   module: {
     rules: [
@@ -92,10 +92,6 @@ module.exports = {
           fallback: 'style-loader',
         }),
       },
-      {
-        test: /\.wav$/,
-        loader: 'file-loader',
-      },
     ],
   },
   resolve: {
@@ -106,6 +102,9 @@ module.exports = {
       '.js',
       '.scss',
     ],
+    alias: {
+      'osc-js': getPath('./node_modules/osc-js/lib/osc.browser.js'),
+    },
   },
   devtool: isProduction ? false : 'source-map',
   devServer: {

@@ -6,6 +6,8 @@ import {
   LineBasicMaterial,
   LineSegments,
   Mesh,
+  MeshBasicMaterial,
+  MeshLambertMaterial,
   MeshPhongMaterial,
   Object3D,
   ParametricGeometry,
@@ -15,7 +17,7 @@ import {
   Vector3,
 } from 'three'
 
-import deepAssign from 'deep-assign'
+import mergeOptions from 'merge-options'
 
 import Landscape from './Landscape'
 
@@ -76,7 +78,7 @@ export default class Universe extends Object3D {
       sphereSize: 150.0,
     }
 
-    this.options = deepAssign({}, defaultOptions, options)
+    this.options = mergeOptions({}, defaultOptions, options)
 
     // Main sphere
     const geometry = new SphereBufferGeometry(
@@ -86,7 +88,7 @@ export default class Universe extends Object3D {
     )
     randomizeBufferGeometryVertices(geometry, this.options.sphereFactor)
 
-    const material = new MeshPhongMaterial({
+    const material = new MeshLambertMaterial({
       color: getColor(this.options.sphereColor),
       side: DoubleSide,
       wireframe: this.options.sphereHasWireframes,
@@ -130,14 +132,25 @@ export default class Universe extends Object3D {
 
     // Add objects to scenery
     this.options.collections.forEach(collection => {
-      const mesh = mergeRandomlyPlacedObjects(
-        collection.count,
-        getGeometry(collection.geometry, collection.attributes),
-        new MeshPhongMaterial({
+      let meshMaterial
+
+      if (collection.material === 'phong') {
+        meshMaterial = new MeshPhongMaterial({
           color: getColor(collection.meshColor),
           specular: getColor(collection.meshSpecular),
           wireframe: collection.hasWireframes,
-        }),
+        })
+      } else {
+        meshMaterial = new MeshBasicMaterial({
+          color: getColor(collection.meshColor),
+          wireframe: collection.hasWireframes,
+        })
+      }
+
+      const mesh = mergeRandomlyPlacedObjects(
+        collection.count,
+        getGeometry(collection.geometry, collection.attributes),
+        meshMaterial,
         this.options.sphereSize,
         collection.factor
       )

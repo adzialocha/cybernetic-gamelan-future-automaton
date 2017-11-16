@@ -4,61 +4,24 @@
     "scale": "PELOG",
     "notes": [6, 1, 2, 4, 5],
     "pattern": {
-      "holdNoteChar": "+",
-      "notesChar": [".", "-", "_", ":", "/"],
-      "pauseChar": " ",
-      "bpmUp": ">",
       "bpmDown": "<",
+      "bpmUp": ">",
+      "holdNoteChar": "+",
       "maxBpmLevel": 1,
-      "minBpmLevel": -3,
-      "octaveUp": "*",
-      "octaveDown": "°",
+      "maxNotesCount": 11,
       "maxOctaveLevel": 1,
-      "minOctaveLevel": -3
-    },
-    "initialPresetIndex": 0,
-    "presets": [
-      {
-        "synthesizerPreset": "BELL",
-        "velocity": 0.25,
-        "volume": 0.25,
-        "patterns": [
-          "_/ _ :/- ",
-          "_/ _ ^-:-",
-          "_/ _ °   ",
-          "_/ _ :/ -"
-        ]
-      }, {
-        "synthesizerPreset": "GLOCKENSPIEL",
-        "velocity": 0.25,
-        "volume": 0.5,
-        "patterns": [
-          "::--/_",
-          " :  /_^",
-          ": --/_°",
-          "::- /_"
-        ]
-      }, {
-        "synthesizerPreset": "SPACE",
-        "velocity": 0.8,
-        "volume": 1,
-        "patterns": [
-          "_-_-_/-",
-          "-__-__/",
-          "-__/-_-",
-          "-_-_/__"
-        ]
-      }, {
-        "synthesizerPreset": "PING",
-        "velocity": 0.5,
-        "volume": 1,
-        "patterns": [
-          ".  .  _/ ",
-          " . _ : :°",
-          "_ _ / /  ",
-          ": : _ _ ^"
-        ]
-      }
-    ]
-  }
+      "minBpmLevel": -3,
+      "minOctaveLevel": -3,
+      "notesChar": [".", "-", "_", ":", "/"],
+      "octaveDown": "°",
+      "octaveUp": "*",
+      "pauseChar": " "
+    }
+  },
+  "basePreset": {
+    "name": "BELL",
+    "velocity": 0.35,
+    "volume": 0.8
+  },
+  "distanceFunction": "x/s"
 }

@@ -1,31 +1,26 @@
-const cors = require('cors')
-const express = require('express')
-const path = require('path')
-const peerServer = require('peer').ExpressPeerServer
+/* eslint-disable no-console */
 
-const LOCAL_PORT = 9090
+const chalk = require('chalk')
 
-const app = express()
+const HTTPServer = require('./httpServer')
+const Network = require('./network')
 
-app.set(
-  'port',
-  process.env.NODE_ENV === 'production' ? process.env.PORT : LOCAL_PORT
+const pkg = require('../package.json')
+
+// hello!
+console.log(
+  chalk.bold.blue('Cybernetic'),
+  chalk.bold.red('Gamelan'),
+  chalk.bold.green('Future'),
+  chalk.bold.magenta('Automaton')
 )
 
-app.use(cors())
+console.log(`Version ${pkg.version}`)
+console.log()
 
-app.use(express.static(path.join(__dirname, '..', 'dist')))
+// initialize
+const httpServer = new HTTPServer()
+const network = new Network()
 
-const server = app.listen(app.get('port'), () => {
-  console.log( // eslint-disable-line no-console
-    'Server is running',
-    app.get('port'),
-    app.get('env')
-  )
-})
-
-const options = {
-  debug: process.env.NODE_ENV === 'development',
-}
-
-app.use('/api', peerServer(server, options))
+httpServer.open()
+network.open()

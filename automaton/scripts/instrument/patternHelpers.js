@@ -1,42 +1,53 @@
 function stringToSequencerPattern(settings, patternString, octave = 0, velocity, noteMaterial) {
   const notes = patternString.toLowerCase().split('')
+  const pureNotes = notes.filter(note => note !== settings.holdNoteChar)
 
-  if (notes.length === 0) {
+  if (pureNotes.length === 0) {
     return []
   }
 
-  let previousNote = null
   let isError = false
+  let position = 0
 
-  const result = notes.map(noteChar => {
-    let note = null
-    let isHolding = false
+  const { holdNoteChar, pauseChar, notesChar } = settings
 
-    if (noteChar === settings.holdNoteChar) {
-      if (!previousNote) {
+  const result = notes.reduce((acc, noteChar, noteIndex) => {
+    let frequency = null
+
+    const succeedingNoteChar = (
+      noteIndex < notes.length ? notes[noteIndex + 1] : null
+    )
+
+    // Does note appear with a succeeding holding symbol?
+    const isHolding = (succeedingNoteChar === holdNoteChar)
+
+    if (noteChar === holdNoteChar || noteChar === pauseChar) {
+      // Multiple hold note chars or holded pause are invalid
+      if (succeedingNoteChar && isHolding) {
         isError = true
-        return false
       }
-
-      note = previousNote
-      isHolding = true
-    } else if (noteChar === settings.pauseChar) {
-      previousNote = null
-    } else if (settings.notesChar.includes(noteChar)) {
-      const noteNumber = settings.notesChar.indexOf(noteChar)
-      note = noteMaterial[noteNumber] * Math.pow(2, octave)
-      previousNote = note
+    } else if (notesChar.includes(noteChar)) {
+      const noteNumber = notesChar.indexOf(noteChar)
+      frequency = noteMaterial[noteNumber] * Math.pow(2, octave)
     } else {
       isError = true
-      return false
     }
 
-    return {
-      isHolding,
-      note,
-      velocity: note ? velocity : 0.0,
+    // Add note or pause to pattern
+    if (!isError && (noteChar !== holdNoteChar)) {
+      acc.push({
+        frequency,
+        isHolding,
+        position: position / pureNotes.length,
+        velocity: frequency ? velocity : 0.0,
+      })
+
+      // Increase position in cycle
+      position += 1
     }
-  })
+
+    return acc
+  }, [])
 
   if (isError) {
     return false
@@ -62,6 +73,10 @@ function extractOctaveLevel(string, upCount, downCount) {
   const down = countCharInString(string, downCount)
 
   return up - down
+}
+
+export function positionToTickIndex(position, tickTotalCount) {
+  return Math.floor(position * tickTotalCount)
 }
 
 export function convertString(settings, string, velocity, noteMaterial) {
@@ -103,6 +118,10 @@ export function convertString(settings, string, velocity, noteMaterial) {
   removeChars.forEach(char => {
     cleanedString = cleanedString.replace(new RegExp('\\' + char, 'g'), '')
   })
+
+  if (cleanedString.length > settings.maxNotesCount) {
+    return false
+  }
 
   const pattern = stringToSequencerPattern(
     settings,

@@ -1,3 +1,5 @@
+import mergeOptions from 'merge-options'
+
 import galaxy from './galaxy.json'
 import params from './params.json'
 import presets from './presets.json'
@@ -5,12 +7,30 @@ import presets from './presets.json'
 import Instrument from '../instrument'
 import { SCALES, pickFromScale } from '../instrument/scales'
 
-function pickRandomItem(arr) {
-  return arr[Math.floor(Math.random() * arr.length)]
+import {
+  currentUniverseIndex,
+  universeCenterWeight,
+} from './helpers'
+
+const VOLUME_CHANGE_DURATION = 0.25
+const VOLUME_CHANGE_SILENCE = 500
+const FILTER_MAX = -20
+
+function isDifferent(oldDistances, newDistances) {
+  return oldDistances.some((value, index) => {
+    return oldDistances[index].distance !== newDistances[index].distance
+  })
+}
+
+const defaultOptions = {
+  onUniverseEntered: () => {},
 }
 
 export default class Composition {
-  constructor() {
+  constructor(options) {
+    this.options = mergeOptions({}, defaultOptions, options)
+
+    // Initialise gamelan instrument
     this.instrument = new Instrument({
       baseBpm: params.instrument.baseBpm,
       noteMaterial: pickFromScale(
@@ -20,40 +40,115 @@ export default class Composition {
       patternSettings: params.instrument.pattern,
     })
 
-    this.reset()
+    // Initialise base synthesizer sound
+    const { name, velocity, volume } = params.basePreset
+    this.instrument.changePreset(presets[name], velocity)
+    this.instrument.synthesizerInterface.audio.changeVolume(volume)
+
+    // New distances
+    this.distances = null
+    this.isDirty = false
+
+    // Used preset names in this composition
+    const presetNames = galaxy.reduce((acc, universe) => {
+      acc.push(universe.preset.name)
+      return acc
+    }, [])
+
+    presetNames.push(params.basePreset.name)
+
+    this.presetNames = presetNames
+    this.currentUniverse = params.basePreset.name
   }
 
-  nextPreset(isMe) {
-    this.currentPresetIndex += 1
-
-    if (this.currentPresetIndex > params.instrument.presets.length - 1) {
-      this.currentPresetIndex = 0
+  queueDistances(newDistances) {
+    if (!this.distances || isDifferent(newDistances, this.distances)) {
+      this.distances = newDistances
+      this.isDirty = true
     }
-
-    return this.setPreset(this.currentPresetIndex, isMe)
   }
 
-  setPreset(index, isMe) {
-    const preset = params.instrument.presets[index]
+  tick(currentTick, totalTicksCount) {
+    this.instrument.tick(currentTick, totalTicksCount)
+  }
 
-    this.currentPresetIndex = index
+  cycle(currentCycle) {
+    this.instrument.cycle(currentCycle)
 
-    if (isMe) {
-      this.instrument.changePreset(presets[preset.synthesizerPreset])
-      this.instrument.changeVelocity(preset.velocity)
+    if (this.distances && this.isDirty) {
+      this.updateSynthesizer(this.distances)
+      this.isDirty = false
+    }
+  }
 
-      this.instrument.synthesizerInterface.audio.changeVolume(preset.volume)
+  updateSynthesizer(distances) {
+    const universeIndex = currentUniverseIndex(distances)
+    const isInUniverse = universeIndex > -1
+
+    let presetInfo
+
+    if (!isInUniverse) {
+      // No planet was entered, use the galaxy base preset
+      presetInfo = params.basePreset
+    } else {
+      // We entered a universe
+      presetInfo = galaxy[universeIndex].preset
     }
 
-    return pickRandomItem(preset.patterns)
+    // Get the synthesizer preset of universe / galaxy
+    const { velocity, volume, name } = presetInfo
+    const preset = mergeOptions({}, presets[name])
+
+    // Color the sound depending on the players position in universe
+    if (isInUniverse) {
+      // Calculate the weight
+      const currentWeight = universeCenterWeight(
+        distances[universeIndex],
+        params.distanceFunction
+      )
+
+      this.instrument.synthesizerInterface.audio.changeFilter(
+        FILTER_MAX * currentWeight
+      )
+    }
+
+    // Did we enter or leave a universe?
+    if (this.currentUniverse !== name) {
+      this.currentUniverse = name
+
+      // Ramp the volume for a smooth synth-sound transition
+      this.instrument.synthesizerInterface.audio.changeVolume(
+        0,
+        true,
+        VOLUME_CHANGE_DURATION
+      )
+
+      setTimeout(() => {
+        // Change the synth preset
+        this.instrument.changePreset(preset, velocity)
+
+        if (!isInUniverse) {
+          // Reset the filter when in galaxy
+          this.instrument.synthesizerInterface.audio.changeFilter(0)
+        } else {
+          // Callback when we entered a new universe
+          this.options.onUniverseEntered(name)
+        }
+      }, VOLUME_CHANGE_SILENCE)
+
+      // Fade in after some silence
+      setTimeout(() => {
+        this.instrument.synthesizerInterface.audio.changeVolume(
+          volume,
+          true,
+          VOLUME_CHANGE_DURATION
+        )
+      }, VOLUME_CHANGE_SILENCE * 2)
+    }
   }
 
   getGalaxy() {
     return galaxy
-  }
-
-  getCurrentPattern() {
-    return this.instrument.settings.patternString
   }
 
   getValidPatternCharacters() {
@@ -83,17 +178,5 @@ export default class Composition {
 
   stop() {
     this.instrument.stop()
-  }
-
-  reset() {
-    this.currentPresetIndex = params.instrument.initialPresetIndex
-
-    const preset = params.instrument.presets[this.currentPresetIndex]
-
-    this.instrument.changePreset(presets[preset.synthesizerPreset])
-    this.instrument.changeVelocity(preset.velocity)
-    this.instrument.changePattern('')
-
-    this.instrument.synthesizerInterface.audio.changeVolume(preset.volume)
   }
 }
