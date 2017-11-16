@@ -14,7 +14,7 @@ const INPUT_VALID_KEY_CODES = [
   KeyCode.RIGHT,
 ]
 
-const isDebugMode = true
+const isDebugMode = false
 const isVisualsEnabled = true
 
 let isMoveLocked = false

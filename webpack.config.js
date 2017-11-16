@@ -1,5 +1,6 @@
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const path = require('path')
 const webpack = require('webpack')
@@ -49,7 +50,7 @@ const plugins = [
 ]
 
 if (isProduction) {
-  plugins.push(new webpack.optimize.UglifyJsPlugin({
+  plugins.push(new UglifyJsPlugin({
     sourceMap: false,
   }))
 }

@@ -12,8 +12,8 @@ import {
   universeCenterWeight,
 } from './helpers'
 
-const VOLUME_CHANGE_DURATION = 0.025
-const VOLUME_CHANGE_SILENCE = 50
+const VOLUME_CHANGE_DURATION = 0.25
+const VOLUME_CHANGE_SILENCE = 500
 const FILTER_MAX = -20
 
 function isDifferent(oldDistances, newDistances) {
