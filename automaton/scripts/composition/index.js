@@ -12,8 +12,7 @@ import {
   universeCenterWeight,
 } from './helpers'
 
-const VOLUME_CHANGE_DURATION = 0.25
-const VOLUME_CHANGE_SILENCE = 500
+const VOLUME_CHANGE_DURATION = 0.5
 const FILTER_MAX = -20
 
 function isDifferent(oldDistances, newDistances) {
@@ -117,24 +116,18 @@ export default class Composition {
       this.currentUniverse = name
 
       // Ramp the volume for a smooth synth-sound transition
-      this.instrument.synthesizerInterface.audio.changeVolume(
-        0,
-        true,
-        VOLUME_CHANGE_DURATION
-      )
+      this.instrument.synthesizerInterface.audio.changeVolume(0)
 
-      setTimeout(() => {
-        // Change the synth preset
-        this.instrument.changePreset(preset, velocity)
+      // Change the synth preset
+      this.instrument.changePreset(preset, velocity)
 
-        if (!isInUniverse) {
-          // Reset the filter when in galaxy
-          this.instrument.synthesizerInterface.audio.changeFilter(0)
-        } else {
-          // Callback when we entered a new universe
-          this.options.onUniverseEntered(name)
-        }
-      }, VOLUME_CHANGE_SILENCE)
+      if (!isInUniverse) {
+        // Reset the filter when in galaxy
+        this.instrument.synthesizerInterface.audio.changeFilter(0)
+      } else {
+        // Callback when we entered a new universe
+        this.options.onUniverseEntered(name)
+      }
 
       // Fade in after some silence
       setTimeout(() => {
@@ -143,7 +136,7 @@ export default class Composition {
           true,
           VOLUME_CHANGE_DURATION
         )
-      }, VOLUME_CHANGE_SILENCE * 2)
+      })
     }
   }
 
