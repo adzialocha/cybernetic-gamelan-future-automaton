@@ -11,19 +11,35 @@ export default class AudioInterface {
 
     // Compressor
     this.compressorNode = this.context.createDynamicsCompressor()
-    this.compressorNode.threshold.setValueAtTime(-5, currentTime)
-    this.compressorNode.knee.setValueAtTime(10, currentTime)
+    this.compressorNode.threshold.setValueAtTime(-80, currentTime)
+    this.compressorNode.knee.setValueAtTime(40, currentTime)
     this.compressorNode.ratio.setValueAtTime(20, currentTime)
     this.compressorNode.attack.setValueAtTime(0, currentTime)
-    this.compressorNode.release.setValueAtTime(0.25, currentTime)
+    this.compressorNode.release.setValueAtTime(1, currentTime)
+
+    // EQs
+    this.biquadFilterNode = this.context.createBiquadFilter()
+    this.biquadFilterNode.type = 'highshelf'
+    this.biquadFilterNode.frequency.setValueAtTime(2500, currentTime)
+
+    this.biquadFilterMainNode = this.context.createBiquadFilter()
+    this.biquadFilterMainNode.type = 'highshelf'
+    this.biquadFilterMainNode.frequency.setValueAtTime(15000, currentTime)
+    this.biquadFilterMainNode.gain.setValueAtTime(-1, currentTime)
 
     // Gain
     this.gainNode = this.context.createGain()
     this.changeVolume(INITIAL_VOLUME)
 
     // Connect nodes
-    this.compressorNode.connect(this.gainNode)
+    this.compressorNode.connect(this.biquadFilterMainNode)
+    this.biquadFilterMainNode.connect(this.biquadFilterNode)
+    this.biquadFilterNode.connect(this.gainNode)
     this.gainNode.connect(this.context.destination)
+  }
+
+  changeFilter(value) {
+    this.biquadFilterNode.gain.setValueAtTime(value, this.context.currentTime)
   }
 
   changeVolume(volume, isRememberingValue = true, duration = 0) {

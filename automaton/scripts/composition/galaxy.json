@@ -4,7 +4,7 @@
     "preset": {
       "name": "GLOCKENSPIEL",
       "velocity": 0.25,
-      "volume": 0.5
+      "volume": 0.6
     },
     "position": {
       "x": -450,
@@ -41,6 +41,7 @@
         "count": 10,
         "geometry": "IcosahedronGeometry",
         "attributes": [16, 1],
+        "material": "phong",
         "meshColor": "DARKER_BLUE",
         "meshSpecular": "DARKER_BLUE",
         "hasWireframes": true,
@@ -71,8 +72,8 @@
     "name": "core",
     "preset": {
       "name": "SPACE",
-      "velocity": 0.8,
-      "volume": 1
+      "velocity": 0.7,
+      "volume": 0.9
     },
     "position": {
       "x": 450,
@@ -147,8 +148,8 @@
     "name": "parametric-planet",
     "preset": {
       "name": "GUITAR",
-      "velocity": 0.5,
-      "volume": 1
+      "velocity": 0.25,
+      "volume": 0.8
     },
     "position": {
       "x": -550,
@@ -214,7 +215,7 @@
     "preset": {
       "name": "PING",
       "velocity": 0.5,
-      "volume": 1
+      "volume": 0.9
     },
     "position": {
       "x": 0,

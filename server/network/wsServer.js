@@ -118,7 +118,12 @@ class WebsocketServer {
         }
 
         client.isAlive = false
-        client.ping('', false, true)
+
+        try {
+          client.ping('', false, true)
+        } catch (error) {
+          client.terminate()
+        }
       })
     }, this.options.heartbeatInterval)
   }

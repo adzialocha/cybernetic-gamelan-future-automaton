@@ -20,8 +20,8 @@
   },
   "basePreset": {
     "name": "BELL",
-    "velocity": 0.25,
-    "volume": 0.25
+    "velocity": 0.35,
+    "volume": 0.8
   },
-  "distanceFunction": "e^((-1 / 10000) * x^2)"
+  "distanceFunction": "x/s"
 }

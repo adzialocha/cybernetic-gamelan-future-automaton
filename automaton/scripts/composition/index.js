@@ -9,12 +9,12 @@ import { SCALES, pickFromScale } from '../instrument/scales'
 
 import {
   currentUniverseIndex,
-  mixEnvelopes,
   universeCenterWeight,
 } from './helpers'
 
-const VOLUME_CHANGE_SILENCE = 250
-const VOLUME_CHANGE_DURATION = 0.25
+const VOLUME_CHANGE_DURATION = 0.025
+const VOLUME_CHANGE_SILENCE = 50
+const FILTER_MAX = -20
 
 function isDifferent(oldDistances, newDistances) {
   return oldDistances.some((value, index) => {
@@ -42,7 +42,8 @@ export default class Composition {
 
     // Initialise base synthesizer sound
     const { name, velocity, volume } = params.basePreset
-    this.instrument.changePreset(presets[name], velocity, volume)
+    this.instrument.changePreset(presets[name], velocity)
+    this.instrument.synthesizerInterface.audio.changeVolume(volume)
 
     // New distances
     this.distances = null
@@ -69,15 +70,15 @@ export default class Composition {
 
   tick(currentTick, totalTicksCount) {
     this.instrument.tick(currentTick, totalTicksCount)
+  }
+
+  cycle(currentCycle) {
+    this.instrument.cycle(currentCycle)
 
     if (this.distances && this.isDirty) {
       this.updateSynthesizer(this.distances)
       this.isDirty = false
     }
-  }
-
-  cycle(currentCycle) {
-    this.instrument.cycle(currentCycle)
   }
 
   updateSynthesizer(distances) {
@@ -106,17 +107,9 @@ export default class Composition {
         params.distanceFunction
       )
 
-      // console.log(currentWeight)
-
-      const presetWeight = [1.0 - currentWeight, currentWeight]
-
-      const newEnvelopes = mixEnvelopes(
-        presets,
-        [name, params.basePreset.name],
-        presetWeight
+      this.instrument.synthesizerInterface.audio.changeFilter(
+        FILTER_MAX * currentWeight
       )
-
-      preset.envelopes = newEnvelopes
     }
 
     // Did we enter or leave a universe?
@@ -125,27 +118,33 @@ export default class Composition {
 
       // Ramp the volume for a smooth synth-sound transition
       this.instrument.synthesizerInterface.audio.changeVolume(
-        0.01,
+        0,
         true,
         VOLUME_CHANGE_DURATION
       )
 
+      setTimeout(() => {
+        // Change the synth preset
+        this.instrument.changePreset(preset, velocity)
+
+        if (!isInUniverse) {
+          // Reset the filter when in galaxy
+          this.instrument.synthesizerInterface.audio.changeFilter(0)
+        } else {
+          // Callback when we entered a new universe
+          this.options.onUniverseEntered(name)
+        }
+      }, VOLUME_CHANGE_SILENCE)
+
+      // Fade in after some silence
       setTimeout(() => {
         this.instrument.synthesizerInterface.audio.changeVolume(
           volume,
           true,
           VOLUME_CHANGE_DURATION
         )
-      }, VOLUME_CHANGE_SILENCE)
-
-      // Callback when we entered a new universe
-      if (isInUniverse) {
-        this.options.onUniverseEntered(name)
-      }
+      }, VOLUME_CHANGE_SILENCE * 2)
     }
-
-    // Finally change the synth preset
-    this.instrument.changePreset(preset, velocity)
   }
 
   getGalaxy() {

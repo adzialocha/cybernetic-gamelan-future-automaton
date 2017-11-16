@@ -15,6 +15,7 @@ export function universeCenterWeight(universe, distanceFunction) {
   if (distanceToSphere <= 0) {
     weight = math.eval(distanceFunction, {
       x: universe.distance,
+      s: universe.sphereSize,
       e: Math.E,
     })
   }
@@ -28,15 +29,13 @@ export function currentUniverseIndex(values) {
   })
 }
 
-export function mixEnvelopes(presets, presetNames, weights) {
+export function mixEnvelopes(envelopes, weights) {
   // Merge all given values
-  const envelopes = presetNames.reduce((acc, name) => {
-    const preset = presets[name]
-
-    preset.envelopes.forEach((envelope, index) => {
-      preset.envelopes[index].forEach((opItem, opIndex) => {
-        acc[index][opIndex].x.push(opItem.x)
-        acc[index][opIndex].y.push(opItem.y)
+  const newEnvelopes = envelopes.reduce((acc, envelope) => {
+    envelope.forEach((envelopeItem, envelopeIndex) => {
+      envelopeItem.forEach((opItem, opIndex) => {
+        acc[envelopeIndex][opIndex].x.push(opItem.x)
+        acc[envelopeIndex][opIndex].y.push(opItem.y)
       })
     })
 
@@ -49,12 +48,12 @@ export function mixEnvelopes(presets, presetNames, weights) {
   ])
 
   // Calculate the final weighted values
-  envelopes.forEach((envelope, index) => {
-    envelope.forEach((opItem, opIndex) => {
-      envelopes[index][opIndex].x = combine(opItem.x, weights)
-      envelopes[index][opIndex].y = combine(opItem.y, weights)
+  newEnvelopes.forEach((envelopeItem, envelopeIndex) => {
+    envelopeItem.forEach((opItem, opIndex) => {
+      newEnvelopes[envelopeIndex][opIndex].x = combine(opItem.x, weights)
+      newEnvelopes[envelopeIndex][opIndex].y = combine(opItem.y, weights)
     })
   })
 
-  return envelopes
+  return newEnvelopes
 }

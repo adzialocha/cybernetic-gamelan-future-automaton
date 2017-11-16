@@ -17,8 +17,9 @@ const INPUT_VALID_KEY_CODES = [
 const isDebugMode = true
 const isVisualsEnabled = true
 
-let isPatternFocussed = false
 let isMoveLocked = false
+let isPatternFocussed = false
+let isRunning = false
 
 const view = new View()
 
@@ -201,7 +202,7 @@ window.addEventListener('keydown', (event) => {
     return
   }
 
-  if (isPatternFocussed) {
+  if (isPatternFocussed || !isRunning) {
     return
   }
 
@@ -235,7 +236,7 @@ window.addEventListener('keydown', (event) => {
 })
 
 window.addEventListener('keyup', (event) => {
-  if (isPatternFocussed) {
+  if (isPatternFocussed || !isRunning) {
     return
   }
 
@@ -267,10 +268,19 @@ function onPointerLockChange() {
   view.changeSpaceState(isPointerLocked)
   visuals.isEnabled = isPointerLocked
 
+  isRunning = isPointerLocked
+
   if (isPointerLocked) {
     composition.start()
   } else {
     composition.stop()
+
+    visuals.controls.move({
+      backward: false,
+      forward: false,
+      left: false,
+      right: false,
+    })
   }
 }
 
