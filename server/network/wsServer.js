@@ -99,11 +99,11 @@ class WebsocketServer {
         try {
           client.send(binary, { binary: true }, error => {
             if (error) {
-              client.terminate()
+              client.close()
             }
           })
         } catch (error) {
-          client.terminate()
+          client.close()
         }
       }
     })
@@ -113,7 +113,7 @@ class WebsocketServer {
     this.pingInterval = setInterval(() => {
       this.socket.clients.forEach(client => {
         if (client.isAlive === false) {
-          client.terminate()
+          client.close()
           return
         }
 
@@ -122,7 +122,7 @@ class WebsocketServer {
         try {
           client.ping('', false, true)
         } catch (error) {
-          client.terminate()
+          client.close()
         }
       })
     }, this.options.heartbeatInterval)

@@ -60,7 +60,7 @@ function getGeometry(name, attributes) {
 }
 
 export default class Universe extends Object3D {
-  constructor(options) {
+  constructor(options, isMinimalMode = false) {
     super()
 
     const defaultOptions = {
@@ -102,39 +102,41 @@ export default class Universe extends Object3D {
     this.lightsAngle = []
     this.lightsRadius = []
 
-    for (let i = 0; i < this.options.lightsCount; i += 1) {
-      const light = new PointLight(
-        getColor(this.options.lightsColor),
-        this.options.lightsStrength,
-        this.options.lightsDistance,
-        2
-      )
-
-      randomlyPositionObject(light, this.options.sphereSize)
-
-      this.lightsAngle.push(
-        new Vector3(
-          randomRangePercentage(0.3, 0.8),
-          randomRangePercentage(0.3, 0.8),
-          randomRangePercentage(0.3, 0.8)
+    if (!isMinimalMode) {
+      for (let i = 0; i < this.options.lightsCount; i += 1) {
+        const light = new PointLight(
+          getColor(this.options.lightsColor),
+          this.options.lightsStrength,
+          this.options.lightsDistance,
+          2
         )
-      )
 
-      const radius = randomRange(10, this.options.sphereSize / 2)
+        randomlyPositionObject(light, this.options.sphereSize)
 
-      this.lightsRadius.push(new Vector3(radius, radius + 10, radius - 10))
-      this.lights.push(light)
+        this.lightsAngle.push(
+          new Vector3(
+            randomRangePercentage(0.3, 0.8),
+            randomRangePercentage(0.3, 0.8),
+            randomRangePercentage(0.3, 0.8)
+          )
+        )
+
+        const radius = randomRange(10, this.options.sphereSize / 2)
+
+        this.lightsRadius.push(new Vector3(radius, radius + 10, radius - 10))
+        this.lights.push(light)
+      }
+
+      this.lights.forEach(light => {
+        this.add(light)
+      })
     }
-
-    this.lights.forEach(light => {
-      this.add(light)
-    })
 
     // Add objects to scenery
     this.options.collections.forEach(collection => {
       let meshMaterial
 
-      if (collection.material === 'phong') {
+      if (collection.material === 'phong' && !isMinimalMode) {
         meshMaterial = new MeshPhongMaterial({
           color: getColor(collection.meshColor),
           specular: getColor(collection.meshSpecular),
@@ -143,12 +145,12 @@ export default class Universe extends Object3D {
       } else {
         meshMaterial = new MeshBasicMaterial({
           color: getColor(collection.meshColor),
-          wireframe: collection.hasWireframes,
+          wireframe: isMinimalMode ? true : collection.hasWireframes,
         })
       }
 
       const mesh = mergeRandomlyPlacedObjects(
-        collection.count,
+        isMinimalMode ? Math.round(collection.count / 2) : collection.count,
         getGeometry(collection.geometry, collection.attributes),
         meshMaterial,
         this.options.sphereSize,

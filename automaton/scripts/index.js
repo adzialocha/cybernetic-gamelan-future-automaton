@@ -14,8 +14,13 @@ const INPUT_VALID_KEY_CODES = [
   KeyCode.RIGHT,
 ]
 
-const isDebugMode = false
-const isVisualsEnabled = true
+function hasMode(key) {
+  return window.location.href.includes(key)
+}
+
+const isDebugMode = hasMode('debug')
+const isMinimalMode = hasMode('minimal')
+const isVisualsEnabled = !hasMode('novisuals')
 
 let isMoveLocked = false
 let isPatternFocussed = false
@@ -37,6 +42,7 @@ const visuals = new Visuals({
   initialWidth: window.innerWidth,
   isEnabled: isVisualsEnabled,
   isDebugMode,
+  isMinimalMode,
   onDistancesUpdated: distances => {
     composition.queueDistances(distances)
   },
@@ -200,16 +206,17 @@ window.addEventListener('keydown', (event) => {
     return
   }
 
-  if (isPatternFocussed || !isRunning) {
+  if (keyCode === KeyCode.ENTER) {
+    if (view.isMainViewActive()) {
+      view.focusPattern()
+    }
+  }
+
+  if (isPatternFocussed || !isRunning || !isVisualsEnabled) {
     return
   }
 
   switch (keyCode) {
-  case KeyCode.ENTER:
-    if (view.isMainViewActive()) {
-      view.focusPattern()
-    }
-    break
   case KeyCode.CAPS_LOCK:
     isMoveLocked = !isMoveLocked
     visuals.controls.move({ forward: isMoveLocked })
@@ -234,7 +241,7 @@ window.addEventListener('keydown', (event) => {
 })
 
 window.addEventListener('keyup', (event) => {
-  if (isPatternFocussed || !isRunning) {
+  if (isPatternFocussed || !isRunning || !isVisualsEnabled) {
     return
   }
 
@@ -264,7 +271,10 @@ function onPointerLockChange() {
   const isPointerLocked = element === document.body
 
   view.changeSpaceState(isPointerLocked)
-  visuals.isEnabled = isPointerLocked
+
+  if (isVisualsEnabled) {
+    visuals.isEnabled = isPointerLocked
+  }
 
   isRunning = isPointerLocked
 
@@ -273,12 +283,14 @@ function onPointerLockChange() {
   } else {
     composition.stop()
 
-    visuals.controls.move({
-      backward: false,
-      forward: false,
-      left: false,
-      right: false,
-    })
+    if (isVisualsEnabled) {
+      visuals.controls.move({
+        backward: false,
+        forward: false,
+        left: false,
+        right: false,
+      })
+    }
   }
 }
 

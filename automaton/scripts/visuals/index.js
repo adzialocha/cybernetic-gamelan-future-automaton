@@ -28,6 +28,7 @@ const defaultOptions = {
   initialWidth: 0,
   isDebugMode: false,
   isEnabled: true,
+  isMinimalMode: false,
   onDistancesUpdated: () => {},
 }
 
@@ -109,7 +110,7 @@ export default class Visuals {
 
   createUniverses() {
     this.options.galaxy.forEach(setting => {
-      const universe = new Universe(setting)
+      const universe = new Universe(setting, this.options.isMinimalMode)
 
       universe.position.set(
         setting.position.x,
