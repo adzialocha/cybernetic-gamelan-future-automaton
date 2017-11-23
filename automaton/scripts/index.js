@@ -165,7 +165,7 @@ function initialize() {
 
 // Main keyboard control strokes
 window.addEventListener('keydown', (event) => {
-  const { keyCode, shiftKey, altKey, metaKey } = event
+  const { keyCode, shiftKey, altKey, metaKey, key } = event
 
   // Block everything to avoid browser keys
   if (
@@ -186,7 +186,7 @@ window.addEventListener('keydown', (event) => {
 
   // Press number + shift
   if (
-    shiftKey && (
+    shiftKey && key !== '*' && (
       (keyCode >= KeyCode.ONE && keyCode <= KeyCode.NINE) ||
       (keyCode === 222 || keyCode === 191)
     )
