@@ -1,4 +1,5 @@
 const INITIAL_VOLUME = 0.5
+const VOLUME_CHANGE_RATE = 0.1
 
 export default class AudioInterface {
   constructor() {
@@ -56,6 +57,20 @@ export default class AudioInterface {
 
     if (isRememberingValue) {
       this.currentVolume = volume
+    }
+  }
+
+  volumeUp() {
+    this.changeVolume(this.currentVolume + VOLUME_CHANGE_RATE)
+  }
+
+  volumeDown() {
+    const targetValue = this.currentVolume - VOLUME_CHANGE_RATE
+
+    if (targetValue < 0) {
+      this.changeVolume(0)
+    } else {
+      this.changeVolume(targetValue)
     }
   }
 

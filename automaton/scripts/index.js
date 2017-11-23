@@ -20,6 +20,7 @@ function hasMode(key) {
 
 const isDebugMode = hasMode('debug')
 const isMinimalMode = hasMode('minimal')
+const isStandaloneMode = hasMode('standalone')
 const isVisualsEnabled = !hasMode('novisuals')
 
 let isMoveLocked = false
@@ -49,6 +50,7 @@ const visuals = new Visuals({
 })
 
 const network = new Network({
+  isStandaloneMode,
   onOpen: () => {
     view.changeConnectionState(false, true)
   },
@@ -216,7 +218,15 @@ window.addEventListener('keydown', (event) => {
     return
   }
 
+  const { audio } = composition.instrument.synthesizerInterface
+
   switch (keyCode) {
+  case KeyCode.N:
+    audio.volumeDown()
+    break
+  case KeyCode.M:
+    audio.volumeUp()
+    break
   case KeyCode.CAPS_LOCK:
     isMoveLocked = !isMoveLocked
     visuals.controls.move({ forward: isMoveLocked })

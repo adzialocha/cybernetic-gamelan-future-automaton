@@ -3,7 +3,11 @@ import OSC, {
   IS_OPEN,
 } from 'osc-js'
 
+const TICK_INTERVAL = 8.333333333333334
+const TOTAL_TICKS = 120
+
 const defaultOptions = {
+  isStandaloneMode: false,
   onClientsChanged: () => true,
   onClose: () => true,
   onError: () => true,
@@ -15,6 +19,10 @@ const defaultOptions = {
 export default class Network {
   constructor(options) {
     this.options = Object.assign({}, defaultOptions, options)
+
+    this.standaloneInterval = null
+    this.standaloneCurrentTick = 0
+    this.standaloneCurrentCycle = 0
 
     this.osc = new OSC()
 
@@ -63,6 +71,11 @@ export default class Network {
   }
 
   connect(configuration) {
+    if (this.options.isStandaloneMode) {
+      this.startStandalone()
+      return true
+    }
+
     if (this.osc.status() === IS_OPEN) {
       this.options.onError(new Error('Connection is already open'))
 
@@ -79,6 +92,11 @@ export default class Network {
   }
 
   disconnect() {
+    if (this.options.isStandaloneMode) {
+      this.stopStandalone()
+      return
+    }
+
     if (this.osc.status() === IS_CLOSED) {
       this.options.onError(new Error('Connection is already closed'))
     }
@@ -86,8 +104,39 @@ export default class Network {
     this.osc.close()
   }
 
-  sendToAll() {
-    // const message = new OSC.Message(address)
-    // osc.send(message)
+  startStandalone() {
+    this.standaloneCurrentTick = 0
+    this.standaloneCurrentCycle = 0
+
+    this.standaloneInterval = setInterval(() => {
+      this.options.onSyncTick(
+        this.standaloneCurrentTick,
+        TOTAL_TICKS,
+        Date.now()
+      )
+
+      this.standaloneCurrentTick += 1
+
+      if (this.standaloneCurrentTick > TOTAL_TICKS) {
+        this.standaloneCurrentTick = 0
+        this.standaloneCurrentCycle += 1
+
+        this.options.onNextCycle(this.standaloneCurrentCycle)
+      }
+    }, TICK_INTERVAL)
+
+    setTimeout(() => {
+      this.options.onOpen()
+    })
+  }
+
+  stopStandalone() {
+    if (this.standaloneInterval) {
+      clearInterval(this.standaloneInterval)
+    }
+
+    setTimeout(() => {
+      this.options.onClose()
+    })
   }
 }
