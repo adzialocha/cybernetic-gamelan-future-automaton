@@ -14,8 +14,14 @@ const INPUT_VALID_KEY_CODES = [
   KeyCode.RIGHT,
 ]
 
-const isDebugMode = false
-const isVisualsEnabled = true
+function hasMode(key) {
+  return window.location.href.includes(key)
+}
+
+const isDebugMode = hasMode('debug')
+const isMinimalMode = hasMode('minimal')
+const isStandaloneMode = hasMode('standalone')
+const isVisualsEnabled = !hasMode('novisuals')
 
 let isMoveLocked = false
 let isPatternFocussed = false
@@ -37,12 +43,14 @@ const visuals = new Visuals({
   initialWidth: window.innerWidth,
   isEnabled: isVisualsEnabled,
   isDebugMode,
+  isMinimalMode,
   onDistancesUpdated: distances => {
     composition.queueDistances(distances)
   },
 })
 
 const network = new Network({
+  isStandaloneMode,
   onOpen: () => {
     view.changeConnectionState(false, true)
   },
@@ -159,7 +167,7 @@ function initialize() {
 
 // Main keyboard control strokes
 window.addEventListener('keydown', (event) => {
-  const { keyCode, shiftKey, altKey, metaKey } = event
+  const { keyCode, shiftKey, altKey, metaKey, key } = event
 
   // Block everything to avoid browser keys
   if (
@@ -180,7 +188,7 @@ window.addEventListener('keydown', (event) => {
 
   // Press number + shift
   if (
-    shiftKey && (
+    shiftKey && key !== '*' && (
       (keyCode >= KeyCode.ONE && keyCode <= KeyCode.NINE) ||
       (keyCode === 222 || keyCode === 191)
     )
@@ -200,15 +208,24 @@ window.addEventListener('keydown', (event) => {
     return
   }
 
-  if (isPatternFocussed || !isRunning) {
-    return
-  }
-
-  switch (keyCode) {
-  case KeyCode.ENTER:
+  if (keyCode === KeyCode.ENTER) {
     if (view.isMainViewActive()) {
       view.focusPattern()
     }
+  }
+
+  if (isPatternFocussed || !isRunning || !isVisualsEnabled) {
+    return
+  }
+
+  const { audio } = composition.instrument.synthesizerInterface
+
+  switch (keyCode) {
+  case KeyCode.N:
+    audio.volumeDown()
+    break
+  case KeyCode.M:
+    audio.volumeUp()
     break
   case KeyCode.CAPS_LOCK:
     isMoveLocked = !isMoveLocked
@@ -234,7 +251,7 @@ window.addEventListener('keydown', (event) => {
 })
 
 window.addEventListener('keyup', (event) => {
-  if (isPatternFocussed || !isRunning) {
+  if (isPatternFocussed || !isRunning || !isVisualsEnabled) {
     return
   }
 
@@ -264,7 +281,10 @@ function onPointerLockChange() {
   const isPointerLocked = element === document.body
 
   view.changeSpaceState(isPointerLocked)
-  visuals.isEnabled = isPointerLocked
+
+  if (isVisualsEnabled) {
+    visuals.isEnabled = isPointerLocked
+  }
 
   isRunning = isPointerLocked
 
@@ -273,12 +293,14 @@ function onPointerLockChange() {
   } else {
     composition.stop()
 
-    visuals.controls.move({
-      backward: false,
-      forward: false,
-      left: false,
-      right: false,
-    })
+    if (isVisualsEnabled) {
+      visuals.controls.move({
+        backward: false,
+        forward: false,
+        left: false,
+        right: false,
+      })
+    }
   }
 }
 
