@@ -3,7 +3,7 @@ import OSC, {
   IS_OPEN,
 } from 'osc-js'
 
-const TICK_INTERVAL = 8.333333333333334
+const TICK_INTERVAL = 16
 const TOTAL_TICKS = 120
 
 const defaultOptions = {
