@@ -3,6 +3,7 @@
 const chalk = require('chalk')
 const cors = require('cors')
 const express = require('express')
+const http = require('http')
 const path = require('path')
 
 const defaultOptions = {
@@ -13,15 +14,16 @@ class HTTPServer {
   constructor(options) {
     this.options = Object.assign({}, defaultOptions, options)
 
-    this.server = express()
+    this.app = express()
 
-    this.server.set('port', process.env.PORT || this.options.port)
-    this.server.use(cors({ origin: '*' }))
-    this.server.use(express.static(path.join(__dirname, '..', 'dist')))
+    this.app.use(cors({ origin: '*' }))
+    this.app.use(express.static(path.join(__dirname, '..', 'dist')))
+
+    this.server = http.createServer(this.app)
   }
 
   open() {
-    const port = this.server.get('port')
+    const port = process.env.PORT || this.options.port
 
     this.server.listen(port, () => {
       console.log(chalk.green('HTTP Server is running'), `(port ${port})`)
