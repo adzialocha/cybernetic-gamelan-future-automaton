@@ -19,10 +19,10 @@ console.log(`Version ${pkg.version}`)
 console.log()
 
 // initialize
-const server = new HTTPServer()
+const httpServer = new HTTPServer()
 const network = new Network({
-  server,
+  server: httpServer.server,
 })
 
-server.open()
+httpServer.open()
 network.open()

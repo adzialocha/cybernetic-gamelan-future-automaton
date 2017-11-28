@@ -13,7 +13,6 @@ const defaultOptions = {
   host: '0.0.0.0',
   onClientClose: () => true,
   onClientOpen: () => true,
-  port: 52525,
   server: null,
 }
 
@@ -38,7 +37,7 @@ class WebsocketServer {
 
   open(customOptions = {}) {
     const options = Object.assign({}, this.options, customOptions)
-    const { port, host, server } = options
+    const { host, server } = options
 
     // close socket when already given
     if (this.socket) {
@@ -46,7 +45,7 @@ class WebsocketServer {
     }
 
     // create websocket server
-    this.socket = new WSServer({ host, port, server })
+    this.socket = new WSServer({ host, server })
     this.socket.binaryType = 'arraybuffer'
     this.socketStatus = STATUS.IS_CONNECTING
 
