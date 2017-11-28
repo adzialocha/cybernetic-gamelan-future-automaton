@@ -12,6 +12,7 @@ const defaultOptions = {
   onClose: () => true,
   onOpen: () => true,
   port: 52525,
+  server: null,
 }
 
 class Network {
@@ -22,6 +23,7 @@ class Network {
 
     this.osc = new OSC({
       plugin: new WebsocketServer({
+        server: this.options.server,
         onClientOpen: (client, req) => {
           this.clientsCount += 1
           const ip = req.connection.remoteAddress
