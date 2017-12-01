@@ -74,7 +74,7 @@ All sounds behave differently depending on how fast or slow or in what octave yo
 
 Use `[Caps-Lock]` to keep automatically moving forwards. Hit it again to disable this mode.
 
-You can also use the shortcut combination `[Command] + [Shift] + [V]` to reset your current position to the original one. This might be helpful if you get lost in the Galaxy.
+You can also use the shortcut combination `[Command]` + `[Shift]` + `[V]` to reset your current position to the original one. This might be helpful if you get lost in the Galaxy.
 
 ## Setup
 
@@ -84,7 +84,7 @@ Use external projectors and a PA to show your audience what you are doing. The b
 
 The safest way to perform this game is to use a local network. For setting this up you might need to be familiar with command line tools and JavaScript development. Check the development chapter below for further steps.
 
-The game has a *Settings view* which you can reach through the shortcut `[Shift] + [2]`. Here you can customise the server settings according to your individual network setup. You get back to the *Main view* via `[Shift] + [1]`.
+The game has a *Settings view* which you can reach through the shortcut `[Shift]` + `[2]`. Here you can customise the server settings according to your individual network setup. You get back to the *Main view* via `[Shift]` + `[1]`.
 
 ## About
 
