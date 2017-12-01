@@ -50,7 +50,7 @@ const plugins = [
     },
   }),
   new FaviconsPlugin({
-    logo: getPath(`./${SRC_FOLDER}/images/favicon.png`),
+    logo: getPath(`./${SRC_FOLDER}/favicon.png`),
     persistentCache: false,
     prefix: '',
     icons: {
