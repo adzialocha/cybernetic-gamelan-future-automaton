@@ -3,7 +3,6 @@
   &:before,
   &:after {
     box-sizing: border-box;
-    font-smoothing: antialiased;
 
     text-rendering: optimizeLegibility;
   }
@@ -18,7 +17,7 @@
 
 html,
 body {
-  font-family: $font-family-regular;
   font-weight: $font-weight-regular;
   font-size: $font-size-regular;
+  font-family: $font-family-regular;
 }
