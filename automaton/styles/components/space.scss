@@ -35,6 +35,12 @@
   }
 }
 
+.space--browser-warning {
+  .space__warning {
+    display: block;
+  }
+}
+
 .space--flash {
   &::after {
     display: block;
@@ -56,6 +62,7 @@
     display: block;
   }
 
+  .space__warning,
   .space__start {
     display: none;
   }
@@ -121,6 +128,20 @@
   left: 50%;
 
   transform: translate(-50%, -50%);
+
+  user-select: none;
+}
+
+.space__warning {
+  position: absolute;
+
+  right: 0;
+  bottom: 50px;
+  left: 0;
+
+  display: none;
+
+  text-align: center;
 
   user-select: none;
 }

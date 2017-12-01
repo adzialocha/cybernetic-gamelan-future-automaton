@@ -87,6 +87,14 @@ export default class View {
     this.elements.loading.classList.remove('space__loading--visible')
   }
 
+  // Firefox warning
+
+  checkBrowser() {
+    if (!navigator.userAgent.includes('Firefox')) {
+      this.elements.space.classList.add('space--browser-warning')
+    }
+  }
+
   // View navigation
 
   isMainViewActive() {

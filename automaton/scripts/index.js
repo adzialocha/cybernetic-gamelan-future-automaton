@@ -152,6 +152,7 @@ window.automaton = window.automaton || {
 }
 
 function initialize() {
+  view.checkBrowser()
   view.loadAllSettings()
   view.changeConnectionState(false, false)
   view.changePattern('')
