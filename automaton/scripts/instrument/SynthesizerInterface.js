@@ -49,7 +49,7 @@ export default class SynthesizerInterface {
     scriptProcessorNode.connect(compressorNode)
 
     // Start FM synthesis
-    scriptProcessorNode.onaudioprocess = (event) => {
+    scriptProcessorNode.onaudioprocess = event => {
       const buffer = new Float32Array(BUFFER_SIZE)
 
       this.channels.forEach(channel => {
