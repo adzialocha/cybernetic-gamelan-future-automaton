@@ -19,16 +19,17 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700" rel="stylesheet">
 </head>
 <body>
-  <header>
-    <h1>{{ meta.title }}</h1>
-    <hr>
-  </header>
   <main>
-    {% if heading %}<h2>{{ heading }}</h2>{% endif %}
     {{ content | safe }}
   </main>
   <footer>
-    <p>&copy; {{ meta.year }}</p>
+    <ul>
+      {% for item in footer %}
+        <li>
+          ↠ <a href="{{ item.href }}" target="_blank">{{ item.title }}</a>
+        </li>
+      {% endfor %}
+    </ul>
   </footer>
 </body>
 </html>

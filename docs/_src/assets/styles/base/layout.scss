@@ -1,0 +1,29 @@
+body {
+  margin: 40px;
+
+  background-color: $gray-light;
+}
+
+main,
+footer {
+  min-width: 320px;
+  max-width: 700px;
+
+  margin: 0 auto;
+}
+
+footer {
+  margin-top: 80px;
+}
+
+ul {
+  padding: 0;
+
+  list-style: none;
+}
+
+li {
+  + li {
+    margin-top: .5rem;
+  }
+}

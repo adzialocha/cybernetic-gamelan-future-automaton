@@ -2,17 +2,31 @@
   "meta": {
     "version": "1.2.0",
     "title": "Cybernetic Gamelan Future Automaton",
-    "url": "https://andreasdzialocha.com/cybernetic-gamelan-future-automaton",
+    "url": "https://cybernetic-gamelan-automaton.herokuapp.com/docs",
     "year": 2017,
     "description": "Network-based browser game for human laptop performers",
     "image": {
-      "src": "https://andreasdzialocha.com/cybernetic-gamelan-future-automaton/assets/images/bg.jpg",
+      "src": "/docs/assets/images/bg.jpg",
       "width": "1600",
       "height": "1000",
       "type": "image/jpeg"
     },
     "charset": "utf-8",
-    "favicon": "/assets/images/favicon.ico",
-    "styles": "/assets/styles/app.css"
-  }
+    "favicon": "/docs/assets/images/favicon.ico",
+    "styles": "/docs/assets/styles/app.css"
+  },
+  "footer": [
+    {
+      "title": "andreasdzialocha.com",
+      "href": "https://andreasdzialocha.com"
+    },
+    {
+      "title": "github.com",
+      "href": "https://github.com/adzialocha/cybernetic-gamelan-future-automaton"
+    },
+    {
+      "title": "y-e-s.org",
+      "href": "https://y-e-s.org"
+    }
+  ]
 }
