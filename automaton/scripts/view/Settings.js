@@ -14,8 +14,8 @@ function resetStorage() {
 }
 
 const defaultConfiguration = {
-  serverHost: '192.168.178.115',
-  serverPort: 52525,
+  serverHost: window.location.hostname,
+  serverPort: window.location.port,
 }
 
 export default class Settings {

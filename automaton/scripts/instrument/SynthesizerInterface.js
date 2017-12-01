@@ -43,13 +43,15 @@ export default class SynthesizerInterface {
     }
 
     const { context, compressorNode } = this.audio
-    const scriptProcessorNode = context.createScriptProcessor(BUFFER_SIZE, 1, 1)
+
+    // We need to bring the script processor node to class scope for safari gc
+    this.scriptProcessorNode = context.createScriptProcessor(BUFFER_SIZE, 1, 1)
 
     // Connect audio nodes
-    scriptProcessorNode.connect(compressorNode)
+    this.scriptProcessorNode.connect(compressorNode)
 
     // Start FM synthesis
-    scriptProcessorNode.onaudioprocess = (event) => {
+    this.scriptProcessorNode.onaudioprocess = event => {
       const buffer = new Float32Array(BUFFER_SIZE)
 
       this.channels.forEach(channel => {
@@ -58,7 +60,12 @@ export default class SynthesizerInterface {
         }
       })
 
-      event.outputBuffer.copyToChannel(buffer, 0, 0)
+      // CopyToChannel is not supported in Safari
+      if ('copyToChannel' in event.outputBuffer) {
+        event.outputBuffer.copyToChannel(buffer, 0, 0)
+      } else {
+        event.outputBuffer.getChannelData(0).set(buffer)
+      }
     }
   }
 

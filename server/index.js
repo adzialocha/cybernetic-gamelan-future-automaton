@@ -20,9 +20,9 @@ console.log()
 
 // initialize
 const httpServer = new HTTPServer()
-const network = new Network({
-  server: httpServer.server,
-})
+const { server } = httpServer
+
+const network = new Network({ server })
 
 httpServer.open()
 network.open()

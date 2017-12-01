@@ -1,0 +1,35 @@
+html,
+body,
+div,
+span,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a,
+img,
+strong,
+ul,
+li,
+article {
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+
+  font: inherit;
+  font-size: 100%;
+
+  vertical-align: baseline;
+}
+
+body {
+  line-height: 1;
+}
+
+ul {
+  list-style: none;
+}

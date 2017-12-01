@@ -156,6 +156,10 @@ function initialize() {
   view.changeConnectionState(false, false)
   view.changePattern('')
 
+  if (network.connect(view.getSettings())) {
+    view.changeConnectionState(true, false)
+  }
+
   setTimeout(() => {
     if (isVisualsEnabled) {
       visuals.createUniverses()
