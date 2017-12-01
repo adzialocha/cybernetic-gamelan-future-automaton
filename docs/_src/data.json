@@ -1,12 +1,12 @@
 {
   "meta": {
     "version": "0.1.0",
-    "title": "Static page",
-    "url": "https://staticpage.com",
+    "title": "Cybernetic Gamelan Future Automaton",
+    "url": "https://andreasdzialocha.com/cybernetic-gamelan-future-automaton",
     "year": 2017,
-    "description": "Static page",
+    "description": "Network-based browser game for human laptop performers",
     "image": {
-      "src": "https://staticpage.com/assets/images/bg.jpg",
+      "src": "https://andreasdzialocha.com/cybernetic-gamelan-future-automaton/assets/images/bg.jpg",
       "width": "1200",
       "height": "1200",
       "type": "image/jpeg"
@@ -15,17 +15,5 @@
     "favicon": "/assets/images/favicon.ico",
     "styles": "/assets/styles/app.css",
     "scripts": "/assets/scripts/app.js"
-  },
-  "navigation": {
-    "Static page": [
-      {
-        "title": "About",
-        "slug": "about"
-      },
-      {
-        "title": "Contact",
-        "slug": "contact"
-      }
-    ]
   }
 }

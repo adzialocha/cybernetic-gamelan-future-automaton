@@ -15,7 +15,7 @@
     "lint": "npm run lint:js && npm run lint:scss",
     "lint:js": "eslint automaton/scripts; exit 0",
     "lint:scss": "sass-lint -c .sass-lint.yml 'automaton/styles/*.scss' -v -q",
-    "postinstall": "npm run build",
+    "postinstall": "npm run build && npm run docs",
     "serve": "webpack-dev-server --host 0.0.0.0",
     "start": "node server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
