@@ -6,8 +6,6 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const path = require('path')
 const webpack = require('webpack')
 
-const pkg = require('./package.json')
-
 const SERVER_PORT = 9000
 const DIST_FOLDER = 'dist'
 const SRC_FOLDER = 'automaton'
@@ -77,7 +75,7 @@ module.exports = {
     [VENDOR_FOLDER_NAME]: APP_DEPENDENCIES,
   },
   output: {
-    path: getPath(`./${DIST_FOLDER}`),
+    path: getPath(`./${DIST_FOLDER}/play`),
     filename: '[name].js',
   },
   module: {

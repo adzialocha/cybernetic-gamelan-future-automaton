@@ -8,16 +8,17 @@
     "npm": "~5.5.1"
   },
   "scripts": {
-    "build": "npm run clean:dist && cross-env NODE_ENV=production webpack",
-    "clean": "npm run clean:dist && npm run clean:docs && npm run clean:node",
-    "clean:dist": "rimraf dist/",
-    "clean:docs": "rimraf static/",
+    "build": "npm run build:docs && npm run build:play",
+    "build:docs": "make-dir ./dist && static-generator build --source_dir ./docs --output_dir ./dist",
+    "build:play": "npm run clean:play && cross-env NODE_ENV=production webpack",
+    "clean": "npm run clean:dist && npm run clean:node",
+    "clean:dist": "rimraf dist",
     "clean:node": "rimraf node_modules/",
-    "docs": "make-dir ./static && static-generator build --source_dir ./docs --output_dir ./static",
+    "clean:play": "rimraf dist/play",
     "lint": "npm run lint:js && npm run lint:scss",
     "lint:js": "eslint automaton/scripts; exit 0",
     "lint:scss": "sass-lint -c .sass-lint.yml '{automaton,docs}/**/*.scss' -v -q",
-    "postinstall": "npm run build && npm run docs",
+    "postinstall": "npm run build",
     "serve": "webpack-dev-server --host 0.0.0.0",
     "start": "node server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
