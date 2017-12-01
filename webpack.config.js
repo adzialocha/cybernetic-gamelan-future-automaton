@@ -1,9 +1,12 @@
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const FaviconsPlugin = require('favicons-webpack-plugin')
+const HtmlPlugin = require('html-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const path = require('path')
 const webpack = require('webpack')
+
+const pkg = require('./package.json')
 
 const SERVER_PORT = 9000
 const DIST_FOLDER = 'dist'
@@ -35,7 +38,7 @@ const plugins = [
   }),
   new webpack.optimize.AggressiveMergingPlugin({}),
   new webpack.optimize.OccurrenceOrderPlugin(true),
-  new HtmlWebpackPlugin({
+  new HtmlPlugin({
     filename: 'index.html',
     hash: true,
     inject: 'body',
@@ -44,6 +47,17 @@ const plugins = [
       collapseWhitespace: true,
       minifyJS: true,
       removeComments: true,
+    },
+  }),
+  new FaviconsPlugin({
+    logo: getPath(`./${SRC_FOLDER}/images/favicon.png`),
+    persistentCache: false,
+    prefix: '',
+    icons: {
+      android: false,
+      appleIcon: false,
+      appleStartup: false,
+      firefox: false,
     },
   }),
   extractSassPlugin,
