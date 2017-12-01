@@ -63,7 +63,6 @@ export default class SynthesizerInterface {
         event.outputBuffer.copyToChannel(buffer, 0, 0)
       } else {
         event.outputBuffer.getChannelData(0).set(buffer)
-        event.outputBuffer.getChannelData(1).set(buffer)
       }
     }
   }
