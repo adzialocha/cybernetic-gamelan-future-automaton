@@ -17,8 +17,8 @@ class HTTPServer {
     this.app = express()
 
     this.app.use(cors({ origin: '*' }))
-    this.app.use(express.static(path.join(__dirname, '..', 'dist')))
-    this.app.use('/docs', express.static(path.join(__dirname, '..', 'docs')))
+    this.app.use(express.static(path.join(__dirname, '..', 'static')))
+    this.app.use('/play', express.static(path.join(__dirname, '..', 'dist')))
 
     this.server = http.createServer(this.app)
   }

@@ -2,17 +2,17 @@
 
 ### Network-based browser game for human laptop performers
 
-Play the [Cybernetic Gamelan Future Automaton](https://cybernetic-gamelan-automaton.herokuapp.com) or watch a [video](https://www.youtube.com/watch?v=qc2i82y4oS0) here.
+Play the [Cybernetic Gamelan Future Automaton](/play) or watch a [video](https://www.youtube.com/watch?v=qc2i82y4oS0) here.
 
 Read the instructions below to learn how to fly in the Galaxy and how to make sounds - alone or together with other players.
 
 *Please note: The game is relatively heavy on your computer! Make sure you have a modern machine with the latest browser version installed - otherwise some glitches might occur. Tested with Google Chrome 64, Firefox 57 (recommended), Safari 11 on a MacBook Pro 13" 2015.*
 
-![Galaxy](/docs/assets/images/galaxy.jpg)
+![Galaxy](/assets/images/galaxy.jpg)
 
 ## How to play
 
-Go to [Cybernetic Gamelan Future Automaton](https://cybernetic-gamelan-automaton.herokuapp.com) and wait until the page loaded. Change the window to full-screen if you want and click the *Start* button (you can press `[ESC]` to leave the game again).
+Go to [Cybernetic Gamelan Future Automaton](/play) and wait until the page loaded. Change the window to full-screen if you want and click the *Start* button (you can press `[ESC]` to leave the game again).
 
 Your friends should do the same with their laptops if you want to play together in the same room.
 
@@ -46,25 +46,25 @@ The Galaxy consists of four *Planets*. When flying through the Galaxy you will h
 
 All sounds behave differently depending on how fast or slow or in what octave you play them. Also your position inside the Planet changes the sound a little bit!
 
-![Core Planet](/docs/assets/images/planet-core.jpg)
+![Core Planet](/assets/images/planet-core.jpg)
 
 <p style="text-align: center; padding-bottom: 40px;">
   *Core* Planet **SPACE** sound
 </p>
 
-![Allobrain Planet](/docs/assets/images/planet-allobrain.jpg)
+![Allobrain Planet](/assets/images/planet-allobrain.jpg)
 
 <p style="text-align: center; padding-bottom: 40px;">
   *Allobrain* Planet **GLOCKENSPIEL** sound
 </p>
 
-![Parametric Planet](/docs/assets/images/planet-parametric.jpg)
+![Parametric Planet](/assets/images/planet-parametric.jpg)
 
 <p style="text-align: center; padding-bottom: 40px;">
   *Parametric* Planet **GUITAR** sound
 </p>
 
-![Cones Planet](/docs/assets/images/planet-cones.jpg)
+![Cones Planet](/assets/images/planet-cones.jpg)
 
 <p style="text-align: center; padding-bottom: 40px;">
   *Cones* Planet **PING** sound

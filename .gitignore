@@ -5,5 +5,4 @@ node_modules
 dist
 
 # docs
-docs/index.html
-docs/assets
+static

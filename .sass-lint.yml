@@ -1,7 +1,7 @@
 files:
   include:
     - automaton/styles/**/*.scss
-    - docs/_src/assets/styles/**/*.scss
+    - docs/assets/styles/**/*.scss
 options:
   formatter: stylish
   merge-default-rules: false
