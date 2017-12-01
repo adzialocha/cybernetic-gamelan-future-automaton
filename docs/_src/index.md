@@ -6,7 +6,7 @@ Play the [Cybernetic Gamelan Future Automaton](https://cybernetic-gamelan-automa
 
 Read the instructions below to learn how to fly in the Galaxy and how to make sounds - alone or together with other players.
 
-*Please note: The game is relatively heavy on your computer! Make sure you have a modern machine with a latest browser version installed, otherwise some glitches might occur. Tested with Google Chrome 64, Firefox 57 (recommended), Safari 11 on a MacBook Pro 13" 2015.*
+*Please note: The game is relatively heavy on your computer! Make sure you have a modern machine with the latest browser version installed - otherwise some glitches might occur. Tested with Google Chrome 64, Firefox 57 (recommended), Safari 11 on a MacBook Pro 13" 2015.*
 
 ![Galaxy](/docs/assets/images/galaxy.jpg)
 
@@ -49,30 +49,30 @@ All sounds behave differently depending on how fast or slow or in what octave yo
 ![Core Planet](/docs/assets/images/planet-core.jpg)
 
 <p style="text-align: center; padding-bottom: 40px;">
-  *Core* Planet with a **SPACE** sound.
+  *Core* Planet **SPACE** sound
 </p>
 
 ![Allobrain Planet](/docs/assets/images/planet-allobrain.jpg)
 
 <p style="text-align: center; padding-bottom: 40px;">
-  *Allobrain* Planet with a **GLOCKENSPIEL** sound.
+  *Allobrain* Planet **GLOCKENSPIEL** sound
 </p>
 
 ![Parametric Planet](/docs/assets/images/planet-parametric.jpg)
 
 <p style="text-align: center; padding-bottom: 40px;">
-  *Parametric* Planet with a **GUITAR** sound.
+  *Parametric* Planet **GUITAR** sound
 </p>
 
 ![Cones Planet](/docs/assets/images/planet-cones.jpg)
 
 <p style="text-align: center; padding-bottom: 40px;">
-  *Cones* Planet with a **PING** sound.
+  *Cones* Planet **PING** sound
 </p>
 
 ### Extras
 
-Use the `[Caps-Lock]` key to keep automatically moving forwards. Hit it again to disable this mode.
+Use `[Caps-Lock]` to keep automatically moving forwards. Hit it again to disable this mode.
 
 You can also use the shortcut combination `[Command] + [Shift] + [V]` to reset your current position to the original one. This might be helpful if you get lost in the Galaxy.
 
