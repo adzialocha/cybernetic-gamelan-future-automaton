@@ -43,13 +43,14 @@ export default class SynthesizerInterface {
     }
 
     const { context, compressorNode } = this.audio
-    const scriptProcessorNode = context.createScriptProcessor(BUFFER_SIZE, 1, 1)
+
+    this.scriptProcessorNode = context.createScriptProcessor(BUFFER_SIZE, 1, 1)
 
     // Connect audio nodes
-    scriptProcessorNode.connect(compressorNode)
+    this.scriptProcessorNode.connect(compressorNode)
 
     // Start FM synthesis
-    scriptProcessorNode.onaudioprocess = event => {
+    this.scriptProcessorNode.onaudioprocess = event => {
       const buffer = new Float32Array(BUFFER_SIZE)
 
       this.channels.forEach(channel => {
@@ -58,7 +59,12 @@ export default class SynthesizerInterface {
         }
       })
 
-      event.outputBuffer.copyToChannel(buffer, 0, 0)
+      if ('copyToChannel' in event.outputBuffer) {
+        event.outputBuffer.copyToChannel(buffer, 0, 0)
+      } else {
+        event.outputBuffer.getChannelData(0).set(buffer)
+        event.outputBuffer.getChannelData(1).set(buffer)
+      }
     }
   }
 
