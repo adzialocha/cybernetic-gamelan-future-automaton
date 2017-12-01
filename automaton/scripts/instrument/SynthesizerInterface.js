@@ -44,6 +44,7 @@ export default class SynthesizerInterface {
 
     const { context, compressorNode } = this.audio
 
+    // We need to bring the script processor node to class scope for safari gc
     this.scriptProcessorNode = context.createScriptProcessor(BUFFER_SIZE, 1, 1)
 
     // Connect audio nodes
@@ -59,6 +60,7 @@ export default class SynthesizerInterface {
         }
       })
 
+      // CopyToChannel is not supported in Safari
       if ('copyToChannel' in event.outputBuffer) {
         event.outputBuffer.copyToChannel(buffer, 0, 0)
       } else {
