@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "0.1.0",
+    "title": "Static page",
+    "url": "https://staticpage.com",
+    "year": 2017,
+    "description": "Static page",
+    "image": {
+      "src": "https://staticpage.com/assets/images/bg.jpg",
+      "width": "1200",
+      "height": "1200",
+      "type": "image/jpeg"
+    },
+    "charset": "utf-8",
+    "favicon": "/assets/images/favicon.ico",
+    "styles": "/assets/styles/app.css",
+    "scripts": "/assets/scripts/app.js"
+  },
+  "navigation": {
+    "Static page": [
+      {
+        "title": "About",
+        "slug": "about"
+      },
+      {
+        "title": "Contact",
+        "slug": "contact"
+      }
+    ]
+  }
+}
