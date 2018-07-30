@@ -1,3 +1,6 @@
+# env
+.python-version
+
 # dependencies
 node_modules
 

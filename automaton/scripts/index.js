@@ -20,7 +20,7 @@ function hasMode(key) {
 
 const isDebugMode = hasMode('debug')
 const isMinimalMode = hasMode('minimal')
-const isStandaloneMode = hasMode('standalone')
+const isStandaloneMode = !hasMode('multiplayer')
 const isVisualsEnabled = !hasMode('novisuals')
 
 let isMoveLocked = false
