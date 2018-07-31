@@ -5,6 +5,7 @@ import {
   PerspectiveCamera,
   PointLight,
   Scene,
+  Vector3,
   WebGLRenderer,
 } from 'three'
 
@@ -137,10 +138,10 @@ export default class Visuals {
         universe.update(this.clock)
 
         const { uuid } = universe
-        const controlsPosition = this.controls.yawObject.getWorldPosition()
+        const controlsPosition = this.controls.yawObject.getWorldPosition(new Vector3())
 
         const distance = controlsPosition.distanceTo(
-          universe.getWorldPosition()
+          universe.getWorldPosition(new Vector3())
         )
 
         acc.push({
